@@ -1,0 +1,45 @@
+[project]
+name = "cqp-tree"
+version = "0.0.1"
+description = "Translate queries from tree-based formats to sequential CQP format used by Corpus Workbench."
+keywords = ["corpus search", "query translation", "corpus workbench", "korp"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator",
+    "Topic :: Text Processing :: Linguistic",
+    "Typing :: Typed"
+]
+
+license = "MPL-2.0"
+readme = { file = "README.md", content-type = "text/markdown" }
+authors = [
+    { name = "Niklas Deworetzki" },
+    { name = "Arianna Masciolini" },
+]
+
+requires-python = ">=3.13,<4"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 100
+skip-string-normalization = true
+
+[tool.pylint]
+max-line-length = 100
+min-public-methods = 1
+disable = [
+    'W0511',
+
+    # Control flow should be readable, not dictated by a tool.
+    'R1705',
+
+    # Not everything needs a docstring (for now).
+    'C0114',
+    'C0115',
+    'C0116',
+]
