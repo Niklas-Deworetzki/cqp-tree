@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Iterator, Iterable
 
-from cqp_tree import query
+from cqp_tree.translation import query
 from cqp_tree.utils import flatmap_set, to_str, partition_set
 
 Environment = dict[query.Identifier, str]
@@ -143,61 +143,6 @@ def format_predicate(predicate: query.Predicate, environment: Environment) -> st
         return to_str(predicates, '(', f' {operators[predicate.__class__]} ', ')')
 
 
-def raise_operand[O: query.Operand](operand: O, on: query.Identifier) -> O:
-    """Raise an operand into global context.
-
-    This is done by explicitly introducing an identifier
-    for "local" attributes which had no identifier before.
-    """
-    if isinstance(operand, query.Attribute):
-        if operand.reference is None:
-            return query.Attribute(on, operand.attribute)
-    return operand
-
-
-def raise_predicate[P: query.Predicate](predicate: P, on: query.Identifier) -> P:
-    """Raise all operands in a Predicate into global context."""
-    if isinstance(predicate, query.Exists):
-        return query.Exists(raise_operand(predicate.attribute, on))
-    elif isinstance(predicate, query.Negation):
-        return query.Negation(raise_predicate(predicate.predicate, on))
-    elif isinstance(predicate, query.Conjunction):
-        return query.Conjunction([raise_predicate(p, on) for p in predicate.predicates])
-    elif isinstance(predicate, query.Disjunction):
-        return query.Disjunction([raise_predicate(p, on) for p in predicate.predicates])
-    assert isinstance(predicate, query.Expression)
-    lhs = raise_operand(predicate.lhs, on)
-    rhs = raise_operand(predicate.rhs, on)
-    return query.Expression(lhs, predicate.operator, rhs)
-
-
-def lower_operand[O: query.Operand](operand: O, on: query.Identifier) -> O:
-    """Lower an operand into local context.
-
-    This is done by explicitly removing identifiers to introduce "local" attributes.
-    """
-    if isinstance(operand, query.Attribute):
-        if operand.reference == on:
-            return query.Attribute(None, operand.attribute)
-    return operand
-
-
-def lower_predicate[P: query.Predicate](predicate: P, on: query.Identifier) -> P:
-    """Lower all operands in a Predicate into local context."""
-    if isinstance(predicate, query.Exists):
-        return query.Exists(lower_operand(predicate.attribute, on))
-    elif isinstance(predicate, query.Negation):
-        return query.Negation(lower_predicate(predicate.predicate, on))
-    elif isinstance(predicate, query.Conjunction):
-        return query.Conjunction([lower_predicate(p, on) for p in predicate.predicates])
-    elif isinstance(predicate, query.Disjunction):
-        return query.Disjunction([lower_predicate(p, on) for p in predicate.predicates])
-    assert isinstance(predicate, query.Expression)
-    lhs = lower_operand(predicate.lhs, on)
-    rhs = lower_operand(predicate.rhs, on)
-    return query.Expression(lhs, predicate.operator, rhs)
-
-
 def distance_between(
     constraints: Iterable[query.Constraint],
     a: query.Identifier,
@@ -263,7 +208,7 @@ def from_sequence(
 
         token.associated_dependencies.update(committable_dependencies)
         token.associated_predicates.update(  # Lower predicates when associating with token.
-            lower_predicate(p, token.identifier) for p in committable_predicates
+            p.lower_onto(token.identifier) for p in committable_predicates
         )
 
     # Build all tokens into a sequence.
@@ -282,10 +227,11 @@ def from_query(q: query.Query) -> Query:
     dependencies = set(q.dependencies)
     constraints = set(q.constraints)
 
-    predicates = set(q.predicates)
+    predicates = set(pred.normalize() for pred in q.predicates)
     for token in q.tokens:  # Raise local predicates to prepare re-ordering.
         if token.attributes is not None:
-            raised_predicate = raise_predicate(token.attributes, token.identifier)
+            raised_predicate = token.attributes.raise_from(token.identifier)
+            raised_predicate = raised_predicate.normalize()
             predicates.add(raised_predicate)
 
     all_arrangements = []

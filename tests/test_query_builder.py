@@ -1,8 +1,8 @@
 import math
 import unittest
 
-import cqp_tree.cqp as cqp
-import cqp_tree.query as query
+import cqp_tree.translation.cqp as cqp
+import cqp_tree.translation.query as query
 
 
 class TranslatorTests(unittest.TestCase):

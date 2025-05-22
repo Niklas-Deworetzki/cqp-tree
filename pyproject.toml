@@ -20,7 +20,9 @@ authors = [
 ]
 
 requires-python = ">=3.13,<4"
-dependencies = []
+dependencies = [
+    "antlr4-python3-runtime",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -28,10 +30,17 @@ where = ["src"]
 [tool.black]
 line-length = 100
 skip-string-normalization = true
+extend-exclude = "antlr"
 
 [tool.pylint]
 max-line-length = 100
 min-public-methods = 1
+max-locals = 20
+max-positional-arguments = 7
+max-args = 10
+ignore-paths = [
+    'src/cqp_tree/grew/antlr/'
+]
 disable = [
     'W0511',
 

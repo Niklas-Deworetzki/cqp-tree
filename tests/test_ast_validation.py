@@ -1,6 +1,6 @@
 import unittest
 
-import cqp_tree.query as query
+import cqp_tree.translation.query as query
 
 
 class ValidationTests(unittest.TestCase):

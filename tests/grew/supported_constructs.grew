@@ -1,0 +1,43 @@
+
+pattern {
+    % Different node clauses
+    X [upos = VERB, Mood = Ind|Imp, Tense <> Fut, Number, !Person, form = "être", lemma = re"s.*", Gloss = /.*POSS.*/i];
+    X [upos=VERB, VerbForm=Part, Tense=Past]|[upos=ADJ];
+    X [upos=ADV, !ExtPos]|[ExtPos=ADV];
+
+    % Different edge clauses
+    X -> Y;
+    X -[nsubj]-> Y;
+    X -[nsubj|obj]-> Y;
+    X -[^nsubj|obj]-> Y;
+    X -[re".*subj"]-> Y;
+
+    % Repeat edge clauses but with labels
+    e: X -> Y;
+    e: X -[nsubj]-> Y;
+    e: X -[nsubj|obj]-> Y;
+    e: X -[^nsubj|obj]-> Y;
+    e: X -[re".*subj"]-> Y;
+
+    % Note that edges may refer to undeclared nodes.
+    X -[nsubj]-> Y ;
+    X[]; Y[]; X -[nsubj]-> Y ;
+
+    % Constraints on feature values
+    X.lemma = Y.lemma;
+    X.lemma <> Y.lemma;
+    X.lemma = "constant";
+    X.lemma = re".*ing";
+    X.lemma = /.*ing/;
+    X.lemma = /.*ing/i;
+
+    % Constraints on node ordering
+    X < Y;
+    X << Y;
+}
+with {
+
+}
+without {
+
+}
