@@ -27,6 +27,9 @@ dependencies = [
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[project.scripts]
+cqp-tree = "cqp_tree:main"
+
 [tool.black]
 line-length = 100
 skip-string-normalization = true
