@@ -12,7 +12,7 @@ class ValidationTests(unittest.TestCase):
 
         tree = query.Conjunction(
             [
-                query.Expression(query.Attribute(a, 'attr_a'), '===', query.Literal('42')),
+                query.Operation(query.Attribute(a, 'attr_a'), '===', query.Literal('42')),
                 query.Disjunction(
                     [
                         query.Exists(
@@ -73,7 +73,7 @@ class ValidationTests(unittest.TestCase):
                 query.Token(a, None),
             ]
             predicates = [
-                query.Expression(query.Attribute(unknown, 'attribute'), '=', query.Literal('2'))
+                query.Operation(query.Attribute(unknown, 'attribute'), '=', query.Literal('2'))
             ]
 
             query.Query(tokens, [], [], predicates)

@@ -1,4 +1,4 @@
-from .frontends import ParseError, ParsingFailed, NotSupported
+from .errors import ParseError, ParsingFailed, NotSupported
 from .cqp import from_query as cqp_from_query
 from .query import (
     Identifier,
@@ -8,7 +8,7 @@ from .query import (
     Attribute,
     # Predicate + subclasses
     Predicate,
-    Expression,
+    Operation,
     Exists,
     Negation,
     Conjunction,

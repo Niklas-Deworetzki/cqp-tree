@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from itertools import count
-from typing import Annotated, ClassVar, Optional, Set, Iterable
+from typing import Annotated, ClassVar, Iterable, List, Optional, Set, Type
 
 from cqp_tree.utils import flatmap_set
 
@@ -103,7 +103,7 @@ class Predicate(ABC):
 
 
 @dataclass(frozen=True)
-class Expression(Predicate):
+class Operation(Predicate):
     lhs: Operand
     operator: str
     rhs: Operand
@@ -111,18 +111,18 @@ class Expression(Predicate):
     def referenced_identifiers(self) -> set[Identifier]:
         return flatmap_set([self.lhs, self.rhs], lambda o: o.referenced_identifiers())
 
-    def raise_from(self, on: Identifier) -> 'Expression':
+    def raise_from(self, on: Identifier) -> 'Operation':
         lhs = self.lhs.raise_from(on)
         rhs = self.rhs.raise_from(on)
-        return Expression(lhs, self.operator, rhs)
+        return Operation(lhs, self.operator, rhs)
 
-    def lower_onto(self, on: Identifier) -> 'Expression':
+    def lower_onto(self, on: Identifier) -> 'Operation':
         lhs = self.lhs.lower_onto(on)
         rhs = self.rhs.lower_onto(on)
-        return Expression(lhs, self.operator, rhs)
+        return Operation(lhs, self.operator, rhs)
 
-    def normalize(self) -> 'Expression':
-        return Expression(self.lhs, self.operator, self.rhs)
+    def normalize(self) -> 'Operation':
+        return Operation(self.lhs, self.operator, self.rhs)
 
 
 @dataclass(frozen=True)
@@ -132,13 +132,13 @@ class Exists(Predicate):
     def referenced_identifiers(self) -> set[Identifier]:
         return self.attribute.referenced_identifiers()
 
-    def raise_from(self, on: Identifier) -> 'Predicate':
+    def raise_from(self, on: Identifier) -> 'Exists':
         return Exists(self.attribute.raise_from(on))
 
-    def lower_onto(self, on: Identifier) -> 'Predicate':
+    def lower_onto(self, on: Identifier) -> 'Exists':
         return Exists(self.attribute.lower_onto(on))
 
-    def normalize(self) -> 'Predicate':
+    def normalize(self) -> 'Exists':
         return Exists(self.attribute)
 
 
@@ -155,8 +155,11 @@ class Negation(Predicate):
     def lower_onto(self, on: Identifier) -> 'Negation':
         return Negation(self.predicate.lower_onto(on))
 
-    def normalize(self) -> 'Negation':
-        return Negation(self.predicate.normalize())
+    def normalize(self) -> Predicate:
+        predicate = self.predicate.normalize()
+        if isinstance(predicate, Negation):
+            return predicate  # remove double negation.
+        return Negation(predicate)
 
 
 @dataclass(frozen=True)
@@ -181,9 +184,8 @@ class Conjunction(Predicate):
         predicates = tuple(p.lower_onto(on) for p in self.predicates)
         return Conjunction(predicates)
 
-    def normalize(self) -> 'Conjunction':
-        predicates = tuple(p.normalize() for p in self.predicates)
-        return Conjunction(predicates)
+    def normalize(self) -> Predicate:
+        return _simplify_junction(self.predicates, Conjunction)
 
 
 @dataclass(frozen=True)
@@ -208,9 +210,25 @@ class Disjunction(Predicate):
         predicates = tuple(p.lower_onto(on) for p in self.predicates)
         return Disjunction(predicates)
 
-    def normalize(self) -> 'Disjunction':
-        predicates = tuple(p.normalize() for p in self.predicates)
-        return Disjunction(predicates)
+    def normalize(self) -> Predicate:
+        return _simplify_junction(self.predicates, Disjunction)
+
+
+def _simplify_junction(
+    predicates: Iterable[Predicate],
+    cls: Type[Conjunction | Disjunction],
+) -> Predicate:
+    normalized_predicates: List[Predicate] = []
+    for predicate in predicates:
+        normalized_predicate = predicate.normalize()
+        if isinstance(normalized_predicate, cls):  # unfold nested.
+            normalized_predicates.extend(normalized_predicate.predicates)
+        else:
+            normalized_predicates.append(normalized_predicate)
+
+    if len(normalized_predicates) == 1:  # avoid unnecessary nesting.
+        return normalized_predicates[0]
+    return cls(tuple(normalized_predicates))
 
 
 @dataclass(frozen=True)

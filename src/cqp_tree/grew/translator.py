@@ -1,12 +1,12 @@
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import List, override
+from typing import Callable, List, override
 
-from antlr4 import InputStream, CommonTokenStream, TerminalNode
+from antlr4 import CommonTokenStream, InputStream, TerminalNode
 from antlr4.error.ErrorListener import ErrorListener
 
 import cqp_tree.translation as ct
-from .antlr import GrewParser, GrewLexer
+from .antlr import GrewLexer, GrewParser
 
 
 @dataclass
@@ -87,15 +87,27 @@ class QueryBuilder:
 
         assert False, f'Unknown operator: {type(grew)}'
 
+    @staticmethod
+    def wrap(
+        predicates: List[ct.Predicate], ctor: Callable[[List[ct.Predicate]], ct.Predicate]
+    ) -> ct.Predicate:
+        if len(predicates) > 1:
+            return ctor(predicates)
+        return predicates[0]
+
     def translate_clause(self, environment: Environment, clause: GrewParser.ClauseContext):
         if isinstance(clause, GrewParser.NodeClauseContext):
             identifier = environment[clause.label.text]
-            features = [self.to_predicate(environment, fs) for fs in clause.featureStructure()]
+            features = [
+                translated_predicate
+                for fs in clause.featureStructure()
+                if (translated_predicate := self.to_predicate(environment, fs))
+            ]
             # Only has empty feature structure.
-            if len(features) == 1 and not features[0].predicates:
+            if not features:
                 token = ct.Token(identifier)
             else:
-                token = ct.Token(identifier, ct.Disjunction(features))
+                token = ct.Token(identifier, self.wrap(features, ct.Disjunction))
 
             self.tokens.append(token)
 
@@ -113,13 +125,15 @@ class QueryBuilder:
             deprel = ct.Attribute(dst, 'deprel')
             deptypes = [self.to_operand(environment, dt) for dt in arrow.edgeTypes().literal()]
             if isinstance(arrow, GrewParser.PositiveArrowContext):
-                dependency_constraint = ct.Disjunction(
-                    [ct.Expression(deprel, '=', deptype) for deptype in deptypes]
+                dependency_constraint = self.wrap(
+                    [ct.Operation(deprel, '=', deptype) for deptype in deptypes],
+                    ct.Disjunction,
                 )
 
             elif isinstance(arrow, GrewParser.NegatedArrowContext):
-                dependency_constraint = ct.Conjunction(
-                    [ct.Expression(deprel, '!=', deptype) for deptype in deptypes]
+                dependency_constraint = self.wrap(
+                    [ct.Operation(deprel, '!=', deptype) for deptype in deptypes],
+                    ct.Conjunction,
                 )
 
             else:
@@ -130,7 +144,7 @@ class QueryBuilder:
         elif isinstance(clause, GrewParser.ConstraintClauseContext):
             lhs = self.to_operand(environment, clause.lhs)
             rhs = self.to_operand(environment, clause.rhs)
-            predicate = ct.Expression(
+            predicate = ct.Operation(
                 lhs,
                 self.to_cqp_operator(clause.compare()),
                 rhs,
@@ -153,7 +167,7 @@ class QueryBuilder:
         self,
         environment: Environment,
         grew: GrewParser.FeatureContext | GrewParser.FeatureStructureContext,
-    ) -> ct.Predicate:
+    ) -> ct.Predicate | None:
         # Checking for existence of feature: Tense
         if isinstance(grew, GrewParser.PresenceContext):
             attribute_name = self.string_of_token(grew.Identifier())
@@ -174,17 +188,26 @@ class QueryBuilder:
             ]
             comparison = grew.compare()
             if isinstance(comparison, GrewParser.EqualityContext):
-                return ct.Disjunction([ct.Expression(attribute, '=', alt) for alt in alternatives])
+                return self.wrap(
+                    [ct.Operation(attribute, '=', alt) for alt in alternatives],
+                    ct.Disjunction,
+                )
 
             if isinstance(comparison, GrewParser.InequalityContext):
-                return ct.Conjunction([ct.Expression(attribute, '!=', alt) for alt in alternatives])
+                return self.wrap(
+                    [ct.Operation(attribute, '!=', alt) for alt in alternatives],
+                    ct.Conjunction,
+                )
 
             raise ct.NotSupported(f'Unknown comparison type: {type(comparison)}')
 
         # Translate entire feature structure: [Tense, !Number, lemma = re"a.*"]
         if isinstance(grew, GrewParser.FeatureStructureContext):
+            if not grew.feature():
+                return None
+
             features = [self.to_predicate(environment, feature) for feature in grew.feature()]
-            return ct.Conjunction(features)
+            return self.wrap(features, ct.Conjunction)
 
         assert False, f'Unknown predicate: {type(grew)}'
 

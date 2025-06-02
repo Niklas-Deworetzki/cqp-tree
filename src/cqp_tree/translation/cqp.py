@@ -1,10 +1,10 @@
 import itertools
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Iterator, Iterable
+from typing import Iterable, Iterator
 
 from cqp_tree.translation import query
-from cqp_tree.utils import flatmap_set, to_str, partition_set
+from cqp_tree.utils import flatmap_set, partition_set, to_str
 
 Environment = dict[query.Identifier, str]
 
@@ -73,7 +73,7 @@ class Operator(Query):
     def format(self, environment: Environment) -> str:
         parts = []
         for q in self.queries:
-            if type(q) in {Token, Sequence}:
+            if isinstance(q, (Token, Sequence)):
                 parts.append(q.format(environment))
             else:
                 parts.append('(' + q.format(environment) + ')')
@@ -101,7 +101,11 @@ class Token(Query):
         prefix = environment[self.identifier] + ':' if self.identifier in environment else ''
         predicates = []
         for attribute in self.associated_predicates:
-            predicates.append(format_predicate(attribute, environment))
+            # Expand conjunction as all predicates on token are already conjunct.
+            if isinstance(attribute, query.Conjunction):
+                predicates.extend(format_predicate(p, environment) for p in attribute.predicates)
+            else:
+                predicates.append(format_predicate(attribute, environment))
 
         for dependency in self.associated_dependencies:
             if dependency.src == self.identifier:
@@ -129,7 +133,7 @@ def format_predicate(predicate: query.Predicate, environment: Environment) -> st
         return format_operand(predicate.attribute, environment)
     elif isinstance(predicate, query.Negation):
         return f'!{format_predicate(predicate.predicate, environment)}'
-    if isinstance(predicate, query.Expression):
+    if isinstance(predicate, query.Operation):
         lhs = format_operand(predicate.lhs, environment)
         rhs = format_operand(predicate.rhs, environment)
         return f'({lhs} {predicate.operator} {rhs})'
@@ -140,7 +144,7 @@ def format_predicate(predicate: query.Predicate, environment: Environment) -> st
             query.Disjunction: '|',
         }
         predicates = map(lambda p: format_predicate(p, environment), predicate.predicates)
-        return to_str(predicates, '(', f' {operators[predicate.__class__]} ', ')')
+        return to_str(predicates, '(', f' {operators[type(predicate)]} ', ')')
 
 
 def distance_between(
@@ -182,8 +186,8 @@ def arrangements(
     yield from arrange(0, identifiers)
 
 
-def from_sequence(
-    sequence: list[query.Identifier],
+def from_arrangement(
+    arrangement: list[query.Identifier],
     dependencies: set[query.Dependency],
     predicates: set[query.Predicate],
     constraints: set[query.Constraint],
@@ -193,7 +197,7 @@ def from_sequence(
     remaining_dependencies = dependencies
     remaining_predicates = predicates
 
-    converted_tokens = [Token(i) for i in sequence]
+    converted_tokens = [Token(i) for i in arrangement]
     for token in converted_tokens:
         visited_tokens.add(token.identifier)
 
@@ -213,7 +217,7 @@ def from_sequence(
 
     # Build all tokens into a sequence.
     res = converted_tokens[0]
-    for index in range(len(sequence) - 1):
+    for index in range(len(arrangement) - 1):
         dist = distance_between(
             constraints, converted_tokens[index].identifier, converted_tokens[index + 1].identifier
         )
@@ -236,5 +240,12 @@ def from_query(q: query.Query) -> Query:
 
     all_arrangements = []
     for arrangement in arrangements(identifiers, q.constraints):
-        all_arrangements.append(from_sequence(arrangement, dependencies, predicates, constraints))
+        all_arrangements.append(
+            from_arrangement(
+                arrangement,
+                dependencies,
+                predicates,
+                constraints,
+            )
+        )
     return Operator('|', all_arrangements)
