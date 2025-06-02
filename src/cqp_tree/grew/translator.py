@@ -11,21 +11,23 @@ from .antlr import GrewLexer, GrewParser
 
 @dataclass
 class ParseErrorListener(ErrorListener):
-    errors: List[ct.ParseError] = field(default_factory=list)
+    errors: List[ct.InputError] = field(default_factory=list)
 
     @override
     def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
-        self.errors.append(ct.ParseError(f'{line}, {column}', msg))
+        self.errors.append(ct.InputError(f'{line}, {column}', msg))
 
 
 def parse(query: str) -> GrewParser.RequestContext:
+    listener = ParseErrorListener()
+
     lexer = GrewLexer(InputStream(query))
     stream = CommonTokenStream(lexer)
     parser = GrewParser(stream)
 
-    listener = ParseErrorListener()
-    parser.removeErrorListeners()
-    parser.addErrorListener(listener)
+    for antlr in [lexer, parser]:
+        antlr.removeErrorListeners()
+        antlr.addErrorListener(listener)
 
     result = parser.request()
     if listener.errors:

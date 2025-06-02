@@ -13,7 +13,7 @@ def parse(s: str):
     try:
         parsed = nestedExpr().parseString(s)
     except ParseException as ex:
-        error = ct.ParseError(f'line: {ex.line}, col: {ex.col}', ex.msg)
+        error = ct.InputError(f'line: {ex.line}, col: {ex.col}', ex.msg)
         raise ct.ParsingFailed([error])
 
     def to_lisp(lisp):

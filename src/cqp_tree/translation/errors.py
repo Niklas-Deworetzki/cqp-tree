@@ -1,11 +1,13 @@
 from dataclasses import dataclass
-from typing import Any, Tuple
+from typing import Any
+
+from cqp_tree.utils import NonEmpty
 
 
 @dataclass(frozen=True)
-class ParseError:
+class InputError:
     """
-    Error discovered while parsing.
+    Error discovered while parsing input.
     """
 
     position: Any
@@ -15,16 +17,13 @@ class ParseError:
         return f'{self.position}: {self.message}'
 
 
-NonEmpty = Tuple[ParseError, *tuple[ParseError, ...]]
-
-
 @dataclass
 class ParsingFailed(Exception):
     """
     Exception raised when parsing fails.
     """
 
-    errors: NonEmpty
+    errors: NonEmpty[InputError]
 
     def __post_init__(self):
         super().__init__(f'Parsing failed. Detected {len(self.errors)} error(s).')

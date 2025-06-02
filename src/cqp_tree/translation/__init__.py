@@ -1,5 +1,5 @@
-from .errors import ParseError, ParsingFailed, NotSupported
 from .cqp import from_query as cqp_from_query
+from .errors import InputError, ParsingFailed, NotSupported
 from .query import (
     Identifier,
     # Operand + subclasses

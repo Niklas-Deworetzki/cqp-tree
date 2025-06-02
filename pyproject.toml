@@ -29,7 +29,7 @@ dependencies = [
 where = ["src"]
 
 [project.scripts]
-cqp-tree = "cqp_tree:main"
+cqp-tree = "cqp_tree.cli:main"
 
 [tool.black]
 line-length = 100
