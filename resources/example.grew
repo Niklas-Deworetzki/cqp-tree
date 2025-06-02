@@ -1,0 +1,6 @@
+pattern {
+    X [pos = NN];
+    Y [pos = JJ, word = re"a.*"];
+
+    X -> Y;
+}

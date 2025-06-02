@@ -4,115 +4,41 @@
 ![GitHub Tag](https://img.shields.io/github/v/tag/Niklas-Deworetzki/cqp-tree)
 ![GitHub License](https://img.shields.io/github/license/Niklas-Deworetzki/cqp-tree)
 
-
 A framework to translate tree-style linguistic queries into sequential queries for use in [Sketch Engine](https://www.sketchengine.eu/), [Corpus Workbench](https://cwb.sourceforge.io/) or [Korp](https://spraakbanken.gu.se/korp).
-This framework supports:
-1. Arbitrary tokens with predicates on their feature structures.
-2. Dependencies between tokens.
-3. Automatic re-ordering of predicates. 
-4. Constraints on token order.
 
-# Installation
+## Installation
 
+This module requires Python version 3.12 or higher to be installed.
+Installation is possible by cloning this repository and running `pip install .`.
 
-
-# How to Use
-
-With this tool, you can build your query *programmatically* and automatically convert it into a query string for execution in Corpus Workbench.
-Import this package, build an object, and call the `cqp_from_query` method, returning the query ***string***.
-
-```python
-from cqp_tree import *
-
-q = ...  # Build your query.
-cqp_from_query(q)
+```shell
+git clone https://github.com/Niklas-Deworetzki/cqp-tree.git
+pip install .
 ```
 
-Support for common query languages like [Grew-match](https://match.grew.fr/) or [deptreepy](https://github.com/aarneranta/deptreepy) will be added soon.
-This will make it possible to provide a query for these languages and automatically have it translated.
+## Translating Queries
 
+The module provides one main executable called `cqp-tree`.
+It can translate different queries into a common CQP representation.
+Currently, the following other query-languages are (partially) supported:
+1. [Grew-match](https://match.grew.fr/)
+2. [deptreepy](https://github.com/aarneranta/deptreepy/tree/main)
 
-# Tokens
+In order to translate a query, you can provide it either via the command line, as the contents of a file or by directly typing it out into the program:
 
-A query consists of a collection of tokens, each of which have a unique identifier and some predicates on their feature structure.
-
-
-```python
-t1 = Token(
-    Identifier(),
-    Conjunction(
-        Expression(
-            Attribute(None, 'upos'), 
-            "=", 
-            Literal('"Verb"')
-        ),
-        Exists(
-            Attribute(None, 'Tense')
-        )
-    )
-)
-q = Query(tokens=[t1])
+```shell
+$ cqp-tree deptreepy --query 'TREE_ (pos NN) (AND (pos JJ) (word a.*))'
 ```
 
-This token would be represented in CQP as `[upos = "VERB" & Tense]`, a token acting as a *VERB* with a *Tense* present on its feature structure.
-Here are some important details to note:
-1. We **do not** validate the query.
-   It is your responsibility to make sure your data and query refer to the same annotations.
-2. Attributes on other tokens can be referred to by providing that tokens identifier instead of `None` as the first argument in Attribute's constructor.
-
-
-# Dependencies
-
-We expect dependency relations to be annotated as `ref` and `dephead` fields on each token.
-The `ref` field encodes a unique identifier for each token within a dependency tree.
-The `dephead` field encodes the identifier of another token, from which a dependency points to the current one.
-
-<p align="center">
-  <img width="460" height="300" src="resources/example-tree.svg">
-</p>
-
-Consider the example tree shown.
-It would be encoded as the following sequence of two tokens:
-
-```
-[lemma="The", ref="1", dephead="2", deprel="det"] 
-[lemma="dog", ref="2", dephead="root", deprel="root"]
+```shell
+$ cqp-tree grew --file resources/example.grew
 ```
 
-Adding dependency edges to a query is much easier than this, by simply providing a collection of Dependency objects:
+The converted query is, by default, printed to the screen.
+Using the `--output` flag you can specify a file to which it should be written to instead.
 
-```python
-a = Identifier()
-b = Identifier()
+## Contributing
 
-tokens = [Token(a), Token(b)]
-dependencies = [
-   Dependency(b, a)
-]
-q = Query(tokens=tokens, dependencies=dependencies)
-```
-
-Notice how this example shares a reference to the same Identifier instance in multiple places of the query.
-
-# How Do I Know Where To Put Predicates?
-
-While predicates on feature structures can be placed on tokens directly, it is also possible to add them as a kind of *"global constraint"*.
-This tool will always figure out, where predicates can be placed and re-order them accordingly.
-
-```python
-a = Identifier()
-b = Identifier()
-
-tokens = [Token(a), Token(b)]
-have_same_pos = Expression(
-   Attribute(a, 'pos'),
-   '=',
-   Attribute(b, 'pos')
-)
-q = Query(tokens=tokens, predicates=[have_same_pos])
-```
-
-This query would find two tokens in the same sentence with the same part-of-speech tag.
-Note again, how identifiers are referenced multiple times and how the expression specifies equality of attributes on two tokens referred to by two different identifiers.
-
+Feel free to add to this project.
+Read [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
 
