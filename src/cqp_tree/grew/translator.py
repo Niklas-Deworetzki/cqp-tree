@@ -69,11 +69,17 @@ class QueryBuilder:
     def translate_request(self, request: GrewParser.RequestContext):
         environment = new_environment()
 
-        for clause in request.pattern().body().clause():
-            self.translate_clause(environment, clause)
+        pattern_clauses = list(request.pattern().body().clause())
+        if not pattern_clauses:
+            # Add token matching everything, if we have an empty query.
+            self.tokens.append(ct.Token(ct.Identifier()))
 
-        for _ in request.requestItem():
-            raise ct.NotSupported('Only "pattern" is supported as a query so far.')
+        else:
+            for clause in pattern_clauses:
+                self.translate_clause(environment, clause)
+
+            for _ in request.requestItem():
+                raise ct.NotSupported('Only "pattern" is supported as a query so far.')
 
     @staticmethod
     def string_of_token(token: TerminalNode) -> str:
