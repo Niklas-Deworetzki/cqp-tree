@@ -1,6 +1,6 @@
-from typing import Callable, Iterable, Tuple
+from typing import Annotated, Callable, Iterable, Sequence, Tuple
 
-type NonEmpty[T] = Tuple[T, *tuple[T, ...]]
+type NonEmpty[T] = Annotated[Sequence[T], 'Non empty Sequence of T.']
 
 
 def flatmap_set[X, Y](xs: Iterable[X], f: Callable[[X], Iterable[Y]]) -> set[Y]:
