@@ -166,8 +166,8 @@ class QueryBuilder:
             else:
                 distance = ct.Constraint.ARBITRARY_DISTANCE
 
-            lhs = environment[self.string_of_token(clause.lhs)]
-            rhs = environment[self.string_of_token(clause.rhs)]
+            lhs = environment[clause.lhs.text]
+            rhs = environment[clause.rhs.text]
 
             self.constraints.append(ct.Constraint(lhs, rhs, enforces_order=True, distance=distance))
 
