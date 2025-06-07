@@ -3,7 +3,7 @@ from flask import Flask, request, render_template, flash
 from cqp_tree import cqp_from_query
 from cqp_tree.grew import query_from_grew
 from cqp_tree.deptreepy import query_from_deptreepy
-from cqp_tree.translation.errors import *
+from cqp_tree.translation.errors import ParsingFailed, NotSupported
 
 app = Flask(__name__)
 # apparently necessary to flash messages
