@@ -7,9 +7,9 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET"])
 def main():
-    return render_template("index.html")
+    return render_template("index.html", cqp="")
 
-@app.route('/translate', methods=["POST"])
+@app.route('/', methods=["POST"])
 def translate():
     form_content = request.form
     query_str = form_content["query_str"]
@@ -20,4 +20,5 @@ def translate():
         query = query_from_grew(query_str)
     else:
         pass # guess?
-    return str(cqp_from_query(query))
+    cqp = cqp_from_query(query)
+    return render_template("index.html", cqp=str(cqp))

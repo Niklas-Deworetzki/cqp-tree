@@ -4,7 +4,7 @@
         <title>CQP/Tree</title>
     </head>
     <body>
-        <form action="{{ url_for('translate')}}" method="post">
+        <form action="{{ url_for('main')}}" method="post">
             <div id="language">
                 Language: 
                 <input type="radio" id="grew" name="language" value="grew" checked>
@@ -19,5 +19,8 @@
             
             <button type="submit">Translate to CQP</button>
         </form>
+        <div id="results">
+            CQP query: {{ cqp }}
+        </div>
     </body>
 </html> 
