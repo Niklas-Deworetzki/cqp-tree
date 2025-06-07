@@ -6,11 +6,14 @@ from cqp_tree.deptreepy import query_from_deptreepy
 from cqp_tree.translation.errors import *
 
 app = Flask(__name__)
-app.secret_key = os.urandom(12).hex() # apparently necessary to flash messages
+# apparently necessary to flash messages
+app.secret_key = os.urandom(12).hex()
+
 
 @app.route("/", methods=["GET"])
 def main():
     return render_template("index.html", cqp="")
+
 
 @app.route('/', methods=["POST"])
 def translate():
@@ -19,15 +22,13 @@ def translate():
     query = None
     try:
         if form_content["language"] == "deptreepy":
-            query = query_from_deptreepy(query_str) 
+            query = query_from_deptreepy(query_str)
         elif form_content["language"] == "grew":
             query = query_from_grew(query_str)
         else:
-            pass # guess?
+            pass  # guess?
     except ParsingFailed as parse_failure:
-        flash("\n".join(
-            ["Query cannot be parsed:"] 
-          + [str(err) for err in parse_failure.errors]))
+        flash("\n".join(["Query cannot be parsed:"] + [str(err) for err in parse_failure.errors]))
     except NotSupported as not_supported:
         if not str(not_supported):
             flash('Query cannot be translated.')
