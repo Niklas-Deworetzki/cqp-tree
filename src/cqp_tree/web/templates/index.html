@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CQP/Tree</title>
+    </head>
+    <body>
+        <form action="{{ url_for('translate')}}" method="post">
+            <div id="language">
+                Language: 
+                <input type="radio" id="grew" name="language" value="grew" checked>
+                <label for="grew">grew</label>
+            
+                <input type="radio" id="deptreepy" name="language" value="deptreepy">
+                <label for="deptreepy">deptreepy</label>
+            </div>
+            
+            <label for="query_str">Tree query: </label>
+            <input name="query_str" type="text" id="query_str">
+            
+            <button type="submit">Translate to CQP</button>
+        </form>
+    </body>
+</html> 
