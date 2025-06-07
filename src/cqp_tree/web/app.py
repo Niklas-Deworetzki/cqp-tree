@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, render_template, flash, url_for
+from flask import Flask, request, render_template, flash
 from cqp_tree import cqp_from_query
 from cqp_tree.grew import query_from_grew
 from cqp_tree.deptreepy import query_from_deptreepy
@@ -7,8 +7,6 @@ from cqp_tree.translation.errors import *
 
 app = Flask(__name__)
 app.secret_key = os.urandom(12).hex() # apparently necessary to flash messages
-
-url_for('static', filename='style.css')
 
 @app.route("/", methods=["GET"])
 def main():

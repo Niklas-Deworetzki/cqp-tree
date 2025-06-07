@@ -2,11 +2,11 @@
 <title>CQP/Tree</title>
 {% with messages = get_flashed_messages() %}
   {% if messages %}
-    <div class=flashes>
+    <ul class=flashes>
     {% for message in messages %}
     {{ message }}
     {% endfor %}
-    </div>
+    </ul>
   {% endif %}
 {% endwith %}
 {% block body %}{% endblock %}
