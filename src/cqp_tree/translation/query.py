@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from enum import Enum, auto
 from itertools import count
 from typing import Annotated, ClassVar, Iterable, List, Optional, Self, Set
 
@@ -103,7 +104,9 @@ class Predicate(ABC):
 
 
 @dataclass(frozen=True)
-class Operation(Predicate):
+class Operation(Predicate): # TODO: Name this Comparison?
+    """A Predicate comparing two Operands using an arbitrary operator."""
+
     lhs: Operand
     operator: str
     rhs: Operand
@@ -127,6 +130,8 @@ class Operation(Predicate):
 
 @dataclass(frozen=True)
 class Exists(Predicate):
+    """A Predicate requiring the existence of an Attribute."""
+
     attribute: Attribute
 
     def referenced_identifiers(self) -> set[Identifier]:
@@ -144,6 +149,8 @@ class Exists(Predicate):
 
 @dataclass(frozen=True)
 class Negation(Predicate):
+    """A negated Predicate."""
+
     predicate: Predicate
 
     def referenced_identifiers(self) -> set[Identifier]:
@@ -248,18 +255,30 @@ class Constraint:
     distance: Distance = ARBITRARY_DISTANCE
 
 
-@dataclass(frozen=True)
-class Query:
+@dataclass(frozen=True, kw_only=True)
+class WithQueryComponents(ABC):
+    """
+    Mixin holding all relevant components of a query:
+    - the tokens
+    - the dependencies between tokens
+    - predicates on tokens
+    - and constraints on the token order
+    """
+
     tokens: Iterable[Token] = field(default_factory=set)
     dependencies: Iterable[Dependency] = field(default_factory=set)
     constraints: Iterable[Constraint] = field(default_factory=set)
     predicates: Iterable[Predicate] = field(default_factory=set)
 
-    def __post_init__(self):
+    def _verify_valid_identifiers(self, visible_identifiers: set[Identifier] = frozenset()):
         defined_identifiers: Set[Identifier] = set()
+        # Unlike graph-matching systems, we allow every identifier only once, as every identifier
+        # is attached to a token and every token is unique.
+        # The translation layer should handle unifying multiple references to the same identifier.
 
         for token in self.tokens:
-            if token.identifier in defined_identifiers:
+            if token.identifier in defined_identifiers or token.identifier in visible_identifiers:
+                # Don't report identifiers here, since they are synthetic and meaningless for users.
                 raise ValueError('Multiple tokens share the same identifier.')
             defined_identifiers.add(token.identifier)
 
@@ -279,3 +298,47 @@ class Query:
         )
         if referenced_identifiers - defined_identifiers:
             raise ValueError('Query uses identifiers not defined by tokens.')
+
+
+class PartType(Enum):
+    ADDITIONAL = auto()
+    NEGATIVE = auto()
+
+
+@dataclass(frozen=True)
+class QueryPart(WithQueryComponents):
+    owning_query: 'Query'
+    query_type: PartType
+
+    def __post_init__(self):
+        visible_from_outer_scope = {
+            token.identifier for token in self.owning_query.tokens if token.identifier
+        }
+        self._verify_valid_identifiers(visible_from_outer_scope)
+
+
+@dataclass(frozen=True)
+class Query(WithQueryComponents):
+    additional_query_parts: list[QueryPart] = field(default_factory=list)
+
+    def add_query_part(
+        self,
+        query_type: PartType,
+        tokens: Iterable[Token] = None,
+        dependencies: Iterable[Dependency] = None,
+        constraints: Iterable[Constraint] = None,
+        predicates: Iterable[Predicate] = None,
+    ):
+        self.additional_query_parts.append(
+            QueryPart(
+                owning_query=self,
+                query_type=query_type,
+                tokens=tokens or frozenset(),
+                dependencies=dependencies or frozenset(),
+                constraints=constraints or frozenset(),
+                predicates=predicates or frozenset(),
+            )
+        )
+
+    def __post_init__(self):
+        self._verify_valid_identifiers()

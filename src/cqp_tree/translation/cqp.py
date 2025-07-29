@@ -1,7 +1,8 @@
 import itertools
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Iterable, Iterator
+from enum import StrEnum
+from typing import Iterable, Iterator, Tuple
 
 from cqp_tree.translation import query
 from cqp_tree.utils import flatmap_set, partition_set, to_str
@@ -225,27 +226,69 @@ def from_arrangement(
     return res
 
 
-def from_query(q: query.Query) -> Query:
+def from_all_arrangements(
+    identifiers: set[query.Identifier],
+    dependencies: set[query.Dependency],
+    constraints: set[query.Constraint],
+    predicates: set[query.Predicate],
+) -> Query:
+    """Build a query over all sequences of Identifiers."""
+    all_arrangements = [
+        from_arrangement(arrangement, dependencies, predicates, constraints)
+        for arrangement in arrangements(identifiers, constraints)
+    ]
+    return Operator('|', all_arrangements)
+
+
+class SetOperation(StrEnum):
+    INTERSECTION = '&'
+    SUBTRACTION = '-'
+
+    @staticmethod
+    def from_query_type(qpt: query.PartType) -> 'SetOperation':
+        return {
+            query.PartType.ADDITIONAL: SetOperation.INTERSECTION,
+            query.PartType.NEGATIVE: SetOperation.SUBTRACTION,
+        }[qpt]
+
+
+@dataclass(frozen=True)
+class ExecutionStep:
+    operation: SetOperation
+    query: Query
+
+
+def from_query(q: query.Query) -> Tuple[Query, Iterable[ExecutionStep]]:
     """Translate a tree-based query into a CQP query for all different arrangements of tokens."""
+
+    def collect_raised_predicates(tokens: Iterable[query.Token], into: set[query.Predicate]):
+        for token in tokens:  # Raise local predicates to prepare re-ordering.
+            if token.attributes is not None:
+                raised_predicate = token.attributes.raise_from(token.identifier)
+                raised_predicate = raised_predicate.normalize()
+                into.add(raised_predicate)
+
     identifiers = {t.identifier for t in q.tokens}
     dependencies = set(q.dependencies)
     constraints = set(q.constraints)
-
     predicates = set(pred.normalize() for pred in q.predicates)
-    for token in q.tokens:  # Raise local predicates to prepare re-ordering.
-        if token.attributes is not None:
-            raised_predicate = token.attributes.raise_from(token.identifier)
-            raised_predicate = raised_predicate.normalize()
-            predicates.add(raised_predicate)
+    collect_raised_predicates(q.tokens, into=predicates)
 
-    all_arrangements = []
-    for arrangement in arrangements(identifiers, q.constraints):
-        all_arrangements.append(
-            from_arrangement(
-                arrangement,
-                dependencies,
-                predicates,
-                constraints,
-            )
+    initial_query = from_all_arrangements(identifiers, dependencies, constraints, predicates)
+
+    subsequent_execution_steps = list[ExecutionStep]()
+    for part in q.additional_query_parts:
+        part_identifiers = identifiers | {t.identifier for t in part.tokens}
+        part_dependencies = dependencies | set(part.dependencies)
+        part_constraints = constraints | set(part.constraints)
+        part_predicates = predicates | set(part.predicates)
+        collect_raised_predicates(part.tokens, into=part_predicates)
+
+        part_query = from_all_arrangements(
+            part_identifiers, part_dependencies, part_constraints, part_predicates
         )
-    return Operator('|', all_arrangements)
+        subsequent_execution_steps.append(
+            ExecutionStep(SetOperation.from_query_type(part.query_type), part_query)
+        )
+
+    return initial_query, subsequent_execution_steps
