@@ -1,7 +1,6 @@
 import unittest
 from typing import Callable
 
-from cqp_tree.grew.translator import *
 import cqp_tree.translation as ct
 from antlr4 import InputStream, CommonTokenStream
 

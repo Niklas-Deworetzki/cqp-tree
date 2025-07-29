@@ -26,6 +26,7 @@ def parse(s: str):
     return to_lisp(parsed[0])
 
 
+@ct.translator('deptreepy')
 def query_from_deptreepy(deptreepy: str) -> ct.Query:
     tokens: List[ct.Token] = []
     dependencies: List[ct.Dependency] = []

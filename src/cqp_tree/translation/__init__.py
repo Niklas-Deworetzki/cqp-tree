@@ -20,3 +20,10 @@ from .query import (
     Constraint,
     Query,
 )
+from .registry import (
+    UnableToGuessTranslatorError,
+    guess_correct_translator,
+    known_translators,
+    translate_input,
+    translator,
+)
