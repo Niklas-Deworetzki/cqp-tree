@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from itertools import count
-from typing import Annotated, ClassVar, Iterable, List, Optional, Set, Type
+from typing import Annotated, ClassVar, Iterable, List, Optional, Self, Set
 
 from cqp_tree.utils import flatmap_set
 
@@ -163,12 +163,20 @@ class Negation(Predicate):
 
 
 @dataclass(frozen=True)
-class Conjunction(Predicate):
+class GenericJunction(Predicate, ABC):
+    """Abstract superclass for Conjunction and Disjunction.
+    Implements all their method in a generic manner."""
+
     predicates: Iterable[Predicate]
+
+    def __init_subclass__(cls):
+        super().__init_subclass__()
+        if cls.__name__ not in {'Conjunction', 'Disjunction'}:
+            raise TypeError('Only Conjunction and Disjunction are valid subclasses.')
 
     def __post_init__(self):
         if not self.predicates:
-            raise ValueError('Cannot create empty conjunction.')
+            raise ValueError(f'Cannot create empty {type(self).__name__}.')
 
     def referenced_identifiers(self) -> set[Identifier]:
         result = set()
@@ -176,59 +184,39 @@ class Conjunction(Predicate):
             result.update(predicate.referenced_identifiers())
         return result
 
-    def raise_from(self, on: Identifier) -> 'Conjunction':
-        predicates = tuple(p.raise_from(on) for p in self.predicates)
-        return Conjunction(predicates)
+    def _construct_instance(self, predicates: Iterable[Predicate]) -> Self:
+        return self.__class__(tuple(predicates))
 
-    def lower_onto(self, on: Identifier) -> 'Conjunction':
+    def raise_from(self, on: Identifier) -> Self:
+        predicates = tuple(p.raise_from(on) for p in self.predicates)
+        return self._construct_instance(predicates)
+
+    def lower_onto(self, on: Identifier) -> Self:
         predicates = tuple(p.lower_onto(on) for p in self.predicates)
-        return Conjunction(predicates)
+        return self._construct_instance(predicates)
 
     def normalize(self) -> Predicate:
-        return _simplify_junction(self.predicates, Conjunction)
+        normalized_predicates: List[Predicate] = []
+        for predicate in self.predicates:
+            normalized_predicate = predicate.normalize()
+            if isinstance(normalized_predicate, self.__class__):  # unfold nested.
+                normalized_predicates.extend(normalized_predicate.predicates)
+            else:
+                normalized_predicates.append(normalized_predicate)
+
+        if len(normalized_predicates) == 1:  # avoid unnecessary nesting.
+            return normalized_predicates[0]
+        return self._construct_instance(normalized_predicates)
 
 
 @dataclass(frozen=True)
-class Disjunction(Predicate):
-    predicates: Iterable[Predicate]
-
-    def __post_init__(self):
-        if not self.predicates:
-            raise ValueError('Cannot create empty disjunction.')
-
-    def referenced_identifiers(self) -> set[Identifier]:
-        result = set()
-        for predicate in self.predicates:
-            result.update(predicate.referenced_identifiers())
-        return result
-
-    def raise_from(self, on: Identifier) -> 'Disjunction':
-        predicates = tuple(p.raise_from(on) for p in self.predicates)
-        return Disjunction(predicates)
-
-    def lower_onto(self, on: Identifier) -> 'Disjunction':
-        predicates = tuple(p.lower_onto(on) for p in self.predicates)
-        return Disjunction(predicates)
-
-    def normalize(self) -> Predicate:
-        return _simplify_junction(self.predicates, Disjunction)
+class Conjunction(GenericJunction):
+    """A conjunction of Predicates. See GenericJunction for implementation."""
 
 
-def _simplify_junction(
-    predicates: Iterable[Predicate],
-    cls: Type[Conjunction | Disjunction],
-) -> Predicate:
-    normalized_predicates: List[Predicate] = []
-    for predicate in predicates:
-        normalized_predicate = predicate.normalize()
-        if isinstance(normalized_predicate, cls):  # unfold nested.
-            normalized_predicates.extend(normalized_predicate.predicates)
-        else:
-            normalized_predicates.append(normalized_predicate)
-
-    if len(normalized_predicates) == 1:  # avoid unnecessary nesting.
-        return normalized_predicates[0]
-    return cls(tuple(normalized_predicates))
+@dataclass(frozen=True)
+class Disjunction(GenericJunction):
+    """A disjunction of Predicates. See GenericJunction for implementation."""
 
 
 @dataclass(frozen=True)
