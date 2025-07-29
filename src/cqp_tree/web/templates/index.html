@@ -1,21 +1,34 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> <!-- don't move anywhere-->
+<script src="{{ url_for('static', filename='scripts.js') }}"></script>
+
 {% extends "layout.html" %}
+
 {% block body %}
-<form action="{{ url_for('main')}}" method="post">
-    <div id="language">
-        Language: 
-        <input type="radio" id="grew" name="language" value="grew" checked>
-        <label for="grew">grew</label>
-    
-        <input type="radio" id="deptreepy" name="language" value="deptreepy">
-        <label for="deptreepy">deptreepy</label>
+<div id="app">
+    <h1>CQP/Tree</h1>
+    <form action="{{ url_for('main')}}" method="post">
+        <div id="language" class="form_item">
+            Language: 
+            <input type="radio" id="grew" name="language" value="grew" checked>
+            <label for="grew">grew</label>
+        
+            <input type="radio" id="deptreepy" name="language" value="deptreepy">
+            <label for="deptreepy">deptreepy</label>
+        </div>
+        <div id="tree_query" class="form_item">
+            <label for="query_str">Tree query:</label>
+            <div class="text_input"> 
+                <input name="query_str" type="text" id="query_str" class="code" size=80>
+                <button type="submit">Translate to CQP</button>
+            </div>
     </div>
-    
-    <label for="query_str">Tree query: </label>
-    <input name="query_str" type="text" id="query_str">
-    
-    <button type="submit">Translate to CQP</button>
-</form>
-<div id="results">
-    CQP query: {{ cqp }}
+    </form>
+    <div id="results">
+        CQP query:
+        <div class="text_input"> 
+            <input type="text" id="cqp_query" class="code" size=80 value="{{ cqp }}" readonly>
+            <button onclick="copyCQP()">📋</button>
+        </div>
+    </div>
 </div>
 {% endblock %}

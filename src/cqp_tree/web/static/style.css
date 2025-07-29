@@ -1,0 +1,34 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.form_item {
+    padding: 0.1%;
+}
+
+.flashes {
+    background-color:rgb(255, 164, 152);
+    opacity: 0;
+    animation: fade 10s linear;
+    list-style: none;
+    padding: none;
+    position: absolute ;
+    width: 96%;
+}
+
+li {
+    text-align: center;    
+}
+
+@keyframes fade {
+  0%,100% { opacity: 0 }
+  5% { opacity: 1 }
+}
+
+.code {
+    font-family: 'Courier New', Courier, monospace;
+}
+
+#results {
+    padding: 0.1%;
+}
