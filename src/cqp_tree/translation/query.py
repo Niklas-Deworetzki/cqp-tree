@@ -10,7 +10,7 @@ class Identifier:
     _ids = count(0)
 
     def __init__(self):
-        self.id = next(self._ids)
+        self.id = next(Identifier._ids)
 
     def __repr__(self):
         return f'Identifier({self.id})'
