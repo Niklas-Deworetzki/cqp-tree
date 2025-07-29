@@ -104,7 +104,7 @@ class Predicate(ABC):
 
 
 @dataclass(frozen=True)
-class Operation(Predicate): # TODO: Name this Comparison?
+class Operation(Predicate):  # TODO: Name this Comparison?
     """A Predicate comparing two Operands using an arbitrary operator."""
 
     lhs: Operand

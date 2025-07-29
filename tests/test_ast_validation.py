@@ -38,7 +38,7 @@ class ValidationTests(unittest.TestCase):
             ]
             constraints = [query.Constraint(a, unknown)]
 
-            query.Query(tokens, [], constraints, [])
+            query.Query(tokens=tokens, constraints=constraints)
 
     def test_relation_references_unknown_identifier(self):
         with self.assertRaises(ValueError):
@@ -52,7 +52,7 @@ class ValidationTests(unittest.TestCase):
             ]
             relations = [query.Dependency(a, unknown)]
 
-            query.Query(tokens, relations, [], [])
+            query.Query(tokens=tokens, dependencies=relations)
 
     def test_local_predicate_references_unknown_identifier(self):
         with self.assertRaises(ValueError):
@@ -62,7 +62,7 @@ class ValidationTests(unittest.TestCase):
             tokens = [
                 query.Token(a, query.Exists(query.Attribute(unknown, 'attribute'))),
             ]
-            query.Query(tokens, [], [], [])
+            query.Query(tokens=tokens)
 
     def test_global_predicate_references_unknown_identifier(self):
         with self.assertRaises(ValueError):
@@ -76,7 +76,7 @@ class ValidationTests(unittest.TestCase):
                 query.Operation(query.Attribute(unknown, 'attribute'), '=', query.Literal('2'))
             ]
 
-            query.Query(tokens, [], [], predicates)
+            query.Query(tokens=tokens, predicates=predicates)
 
     def test_duplicate_identifiers(self):
         with self.assertRaises(ValueError):
@@ -86,4 +86,4 @@ class ValidationTests(unittest.TestCase):
                 query.Token(duplicate, None),
                 query.Token(duplicate, None),
             ]
-            query.Query(tokens, [], [], [])
+            query.Query(tokens=tokens)
