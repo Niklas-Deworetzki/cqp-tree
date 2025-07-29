@@ -1,4 +1,5 @@
 import os
+import urllib
 from flask import Flask, request, render_template, flash
 from cqp_tree import cqp_from_query
 from cqp_tree.grew import query_from_grew
@@ -12,7 +13,7 @@ app.secret_key = os.urandom(12).hex()
 
 @app.route("/", methods=["GET"])
 def main():
-    return render_template("index.html", cqp="")
+    return render_template("index.html", cqp="", cqp_urlenc="")
 
 
 @app.route('/', methods=["POST"])
@@ -35,4 +36,5 @@ def translate():
         else:
             flash('Query cannot be translated: ' + str(not_supported))
     cqp = cqp_from_query(query) if query else ""
-    return render_template("index.html", cqp=str(cqp))
+    cqp_urlenc = urllib.parse.quote(str(cqp), safe='/', encoding=None, errors=None)
+    return render_template("index.html", cqp=str(cqp), cqp_urlenc=cqp_urlenc)
