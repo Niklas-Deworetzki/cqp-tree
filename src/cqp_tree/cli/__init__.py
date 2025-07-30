@@ -1,1 +1,1 @@
-from .main import KNOWN_TRANSLATORS, main
+from .main import main
