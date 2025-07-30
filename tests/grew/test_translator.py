@@ -1,9 +1,11 @@
 import unittest
 from typing import Callable
 
-from cqp_tree.grew.translator import *
 import cqp_tree.translation as ct
 from antlr4 import InputStream, CommonTokenStream
+
+from cqp_tree.frontends.grew.antlr import GrewLexer, GrewParser
+from cqp_tree.frontends.grew.translator import ParseErrorListener, QueryBuilder, new_environment
 
 
 def do_parse[T](construct: Callable[[GrewParser], T], text: str) -> T:

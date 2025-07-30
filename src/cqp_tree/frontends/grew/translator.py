@@ -43,6 +43,7 @@ def new_environment() -> Environment:
     return defaultdict(ct.Identifier)
 
 
+@ct.translator('grew')
 def query_from_grew(grew: str) -> ct.Query:
     grew_request = parse(grew)
     builder = QueryBuilder()

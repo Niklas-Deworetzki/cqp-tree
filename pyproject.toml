@@ -43,7 +43,7 @@ max-locals = 20
 max-positional-arguments = 7
 max-args = 10
 ignore-paths = [
-    'src/cqp_tree/grew/antlr/'
+    'src/cqp_tree/frontends/grew/antlr/'
 ]
 disable = [
     'W0511',

@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from cqp_tree.grew.translator import parse
+from cqp_tree.frontends.grew.translator import parse
 
 
 class ValidationTests(unittest.TestCase):
