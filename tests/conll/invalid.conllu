@@ -1,0 +1,7 @@
+# sent_id = 1
+# text = This is a test.
+1	This	this	PRON	DT	Number=Sing|PronType=Dem	4	nsubj	_	TokenRange=0:4
+2	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	TokenRange=5:7
+3	a	a	DET	DT	Definite=Ind|PronType=Art	4	det	_	TokenRange=8:9
+4	test	test	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|TokenRange=10:14
+5	.	PUNCT	.	_	4	punct	_	SpaceAfter=No|TokenRange=14:15

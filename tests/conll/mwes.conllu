@@ -1,0 +1,7 @@
+1	Test	test	NOUN	S	Gender=Masc	0	root	_	TokenRange=0:4
+2	trattamento	trattamento	NOUN	S	Gender=Masc|Number=Sing	1	nmod	_	TokenRange=5:16
+3-4	delle	_	_	_	_	_	_	_	TokenRange=17:22
+3	di	di	ADP	E	_	5	case	_	_
+4	le	il	DET	RD	Definite=Def|Gender=Fem|Number=Plur|PronType=Art	5	det	_	_
+5	MWE	MWE	PROPN	SP	_	2	nmod	_	SpaceAfter=No|TokenRange=23:26
+6	.	.	PUNCT	FS	_	1	punct	_	SpaceAfter=No|TokenRange=26:27
