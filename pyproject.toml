@@ -46,6 +46,9 @@ max-args = 10
 ignore-paths = [
     'src/cqp_tree/frontends/grew/antlr/'
 ]
+allowed-redefined-builtins = [
+    'id'
+]
 disable = [
     'W0511',
 

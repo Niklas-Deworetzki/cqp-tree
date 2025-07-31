@@ -46,6 +46,7 @@ def query_from_conll(conll: str) -> ct.Query:
         if is_empty(line, "id") or is_empty(line, "head"):
             raise ct.NotSupported("IDs and HEADs cannot be omitted.")
         ops = []
+        # pylint: disable=consider-using-dict-items
         for field in FIELDS2ATTRS:
             if not is_empty(line, field):
                 ops.append(field2op(FIELDS2ATTRS[field], line[field]))
