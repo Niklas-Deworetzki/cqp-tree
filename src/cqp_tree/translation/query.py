@@ -296,7 +296,7 @@ class WithQueryComponents(ABC):
             self.tokens,
             lambda t: t.attributes.referenced_identifiers() if t.attributes else set(),
         )
-        if referenced_identifiers - defined_identifiers:
+        if referenced_identifiers - (defined_identifiers | visible_identifiers):
             raise ValueError('Query uses identifiers not defined by tokens.')
 
 

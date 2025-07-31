@@ -84,8 +84,35 @@ class TranslatorTests(unittest.TestCase):
         }
 
         arrangements = list(cqp.arrangements({a, b, c, d}, constraints))
-        self.assertEqual(len(arrangements), len(possible_arrangements), f'There are {len(possible_arrangements)} possible arrangements.')
+        self.assertEqual(
+            len(arrangements),
+            len(possible_arrangements),
+            f'There are {len(possible_arrangements)} possible arrangements.',
+        )
         for arrangement in arrangements:
             self.assertIn(arrangement, possible_arrangements)
 
+    def test_set_operation(self):
+        self.assertEqual(
+            cqp.SetOperation.from_query_type(query.PartType.NEGATIVE),
+            cqp.SetOperation.SUBTRACTION,
+        )
+        self.assertEqual(
+            cqp.SetOperation.from_query_type(query.PartType.ADDITIONAL),
+            cqp.SetOperation.INTERSECTION,
+        )
 
+    def test_multiple_steps(self):
+        a = query.Identifier()
+        b = query.Identifier()
+        c = query.Identifier()
+
+        q = query.Query(tokens=[query.Token(i, None) for i in [a, b]])
+        q.add_query_part(
+            query.PartType.NEGATIVE,
+            tokens=[query.Token(c)],
+            constraints=[query.Constraint(a, c, enforces_order=True)],
+        )
+
+        res, additional_steps = cqp.from_query(q)
+        self.assertTrue(additional_steps, 'Query should require additional steps.')
