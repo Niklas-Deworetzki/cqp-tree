@@ -9,11 +9,11 @@ A framework to translate tree-style linguistic queries into sequential queries f
 ## Installation
 
 This module requires Python version 3.12 or higher to be installed.
-Installation is possible by cloning this repository and running `pip install .`.
+Installation is possible by cloning this repository and running `pip install`.
 
 ```shell
 git clone https://github.com/Niklas-Deworetzki/cqp-tree.git
-pip install .
+pip install cqp-tree
 ```
 
 ## Translating Queries
