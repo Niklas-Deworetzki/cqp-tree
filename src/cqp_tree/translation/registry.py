@@ -10,6 +10,10 @@ known_translators = dict[str, TranslationFunction]()
 
 
 def translator(name: str):
+    """
+    Decorator used to register translation functions.
+    """
+
     def register(func: TranslationFunction) -> TranslationFunction:
         if name in known_translators:
             raise ValueError(f'Another translation function for {name} has already been registered')
@@ -38,6 +42,16 @@ class UnableToGuessTranslatorError(Exception):
 
 
 def translate_input(inp: str, use_translator: Optional[str] = None) -> Query:
+    """
+    Translates an input using the given translator. If no translator is given,
+    the correct translator is guessed by trying all available translators.
+
+    If guessing the translator gives 0 or multiple possible translators, an
+    UnableToGuessTranslatorError is raised, containing all applicable translators.
+
+    If a translator to use is specified, but the translator is not known,
+    a KeyError is raised.
+    """
     if use_translator is None:
         guessed_translations = list(guess_correct_translator(inp))
         if not guessed_translations:
@@ -55,6 +69,15 @@ def translate_input(inp: str, use_translator: Optional[str] = None) -> Query:
 
 
 def guess_correct_translator(inp: str) -> Iterator[Tuple[str, Query]]:
+    """
+    Tries to find translators applicable for the input string.
+    Returns an iterator over all successfully translated queries and the name of the
+    translation frontend that accepted the input.
+
+    If no frontend accepts the input, an empty iterator is returned.
+
+    :param inp: The input for which translation is attempted by all frontends.
+    """
     for name, function in known_translators.items():
         try:
             yield name, function(inp)
