@@ -25,14 +25,14 @@ def parse(s: str):
     return parsed[0]  # only first parsed CoNLL-U sentence
 
 
-@ct.translator('conllu')
-def query_from_conllu(conllu: str) -> ct.Query:
+@ct.translator('conll')
+def query_from_conll(conll: str) -> ct.Query:
     tokens: List[ct.Token] = []
     dependencies: List[ct.Dependency] = []
 
-    conllu_lines = parse(conllu)
+    conll_lines = parse(conll)
 
-    ids = [ct.Identifier() for _ in conllu_lines]
+    ids = [ct.Identifier() for _ in conll_lines]
 
     def field2op(field, value) -> ct.Operation:
         return ct.Operation(ct.Attribute(None, field), '=', ct.Literal(f'"{value}"'))
@@ -40,7 +40,7 @@ def query_from_conllu(conllu: str) -> ct.Query:
     def is_empty(line, field):
         return line[field] in ["_", None]
 
-    for line, id in list(zip(conllu_lines, ids)):
+    for line, id in list(zip(conll_lines, ids)):
         if is_empty(line, "id") or is_empty(line, "head"):
             raise ct.NotSupported("IDs and HEADs cannot be omitted.")
         if not isinstance(line["id"], int):
@@ -56,7 +56,7 @@ def query_from_conllu(conllu: str) -> ct.Query:
 
         if line["head"] != 0:
             dependencies.append(
-                ct.Dependency(id, ids[[line["id"] for line in conllu_lines].index(line["head"])])
+                ct.Dependency(id, ids[[line["id"] for line in conll_lines].index(line["head"])])
             )
 
     return ct.Query(tokens=tokens, dependencies=dependencies)
