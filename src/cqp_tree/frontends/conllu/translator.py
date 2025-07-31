@@ -32,14 +32,14 @@ def query_from_conllu(conllu: str) -> ct.Query:
     conllu_lines = parse(conllu)
 
     ids = [ct.Identifier() for _ in conllu_lines]
-    
+
     def field2op(field, value) -> ct.Operation:
         return ct.Operation(
             ct.Attribute(None, field),
             '=',
             ct.Literal(f'"{value}"')
         )
-    
+
     def is_empty(line, field):
         return line[field] in ["_", None]
 
@@ -49,17 +49,17 @@ def query_from_conllu(conllu: str) -> ct.Query:
         if not isinstance(line["id"], int):
             pass # skip MWE lines
         ops = []
-        for field in FIELDS2ATTRS.keys():
+        for field in FIELDS2ATTRS:
             if not is_empty(line, field):
                 ops.append(field2op(FIELDS2ATTRS[field], line[field]))
         if ops:
             tokens.append(ct.Token(id, ct.Conjunction(ops)))
         else: # token with no attributes, only there for structural reasons
             tokens.append(ct.Token(id))
-        
+
         if line["head"] != 0:
             dependencies.append(ct.Dependency(
-                id, 
+                id,
                 ids[[line["id"] for line in conllu_lines].index(line["head"])]
             ))
 
