@@ -33,7 +33,8 @@ def query_from_conllu(conllu: str) -> ct.Query:
     for (line,id) in list(zip(conllu_lines, ids)):
         ops = []
         for attr in ATTRS:
-            if line[attr]: # _ -> None
+            if line[attr] and line[attr] != "_":
+                print(line[attr])
                 ops.append(field2op(attr, line[attr]))
         tokens.append(ct.Token(id, ct.Conjunction(ops)))
         
