@@ -33,6 +33,9 @@ def query_from_deptreepy(deptreepy: str) -> ct.Query:
 
     def convert(lisp) -> ct.Identifier:
         match lisp:
+            case ['TREE', *_]:
+                raise ct.NotSupported('Only TREE_ is supported for matching subtrees.')
+
             case [singleton]:
                 return convert(singleton)
 
