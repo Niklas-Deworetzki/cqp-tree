@@ -61,10 +61,10 @@ class QueryBuilder:
 
     def build(self):
         return ct.Query(
-            self.tokens,
-            self.dependencies,
-            self.constraints,
-            self.predicates,
+            tokens=self.tokens,
+            dependencies=self.dependencies,
+            constraints=self.constraints,
+            predicates=self.predicates,
         )
 
     def translate_request(self, request: GrewParser.RequestContext):

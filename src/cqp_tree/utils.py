@@ -1,6 +1,6 @@
-from typing import Annotated, Callable, Iterable, Sequence, Tuple
+from typing import Annotated, Callable, Collection, Iterable, Tuple
 
-type NonEmpty[T] = Annotated[Sequence[T], 'Non empty Sequence of T.']
+type NonEmpty[T] = Annotated[Collection[T], 'Non empty Sequence of T.']
 
 
 def flatmap_set[X, Y](xs: Iterable[X], f: Callable[[X], Iterable[Y]]) -> set[Y]:
@@ -37,8 +37,8 @@ def format_human_readable(strings: NonEmpty[str]) -> str:
     separating the first values by a comma and the last one with "and".
     """
     if len(strings) == 1:
-        return strings[0]
+        return next(iter(strings))
     else:
-        initial = ', '.join(strings[:-1])
-        last = strings[-1]
+        *init, last = strings
+        initial = ', '.join(init)
         return f'{initial} and {last}'

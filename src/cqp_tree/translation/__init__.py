@@ -1,4 +1,4 @@
-from .cqp import from_query as cqp_from_query
+from .cqp import from_query as cqp_from_query, SetOperation
 from .errors import InputError, ParsingFailed, NotSupported
 from .query import (
     Identifier,
@@ -19,6 +19,8 @@ from .query import (
     Distance,
     Constraint,
     Query,
+    # Multi-part queries
+    PartType,
 )
 from .registry import (
     UnableToGuessTranslatorError,

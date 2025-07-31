@@ -126,9 +126,15 @@ def main():
             try:
                 query = translate(args, query_str)
                 if query:
-                    cqp = cqp_tree.cqp_from_query(query)
+                    cqp, more_execution_steps = cqp_tree.cqp_from_query(query)
                     translated_queries += 1
-                    output.write(str(cqp) + '\n')
+                    if not more_execution_steps:
+                        output.write(str(cqp) + '\n')
+                    else:
+                        warn(
+                            'Multiple steps are necessary to translate this query. '
+                            'This is not supported yet.'
+                        )
             except cqp_tree.ParsingFailed as parse_failure:
                 warn('Query could not be parsed:')
                 for error in parse_failure.errors:

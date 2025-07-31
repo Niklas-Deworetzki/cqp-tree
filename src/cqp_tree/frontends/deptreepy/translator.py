@@ -1,4 +1,4 @@
-from typing import List
+from typing import Callable, List
 
 from pyparsing import ParseException, nestedExpr
 
@@ -33,6 +33,9 @@ def query_from_deptreepy(deptreepy: str) -> ct.Query:
 
     def convert(lisp) -> ct.Identifier:
         match lisp:
+            case ['TREE', *_]:
+                raise ct.NotSupported('Only TREE_ is supported for matching subtrees.')
+
             case [singleton]:
                 return convert(singleton)
 
@@ -51,6 +54,26 @@ def query_from_deptreepy(deptreepy: str) -> ct.Query:
                 tokens.append(ct.Token(fresh_id, pred))
                 return fresh_id
 
+    def operation_constructor_for_field(field) -> Callable[[str], ct.Operation]:
+        if not isinstance(field, str):
+            raise ct.NotSupported('When matching a field, the field must be a string.')
+
+        comparison_operator = '='
+        if field.endswith('_'):
+            field = field[:-1]
+            comparison_operator = 'contains'
+
+        def constructor(strpatt: str) -> ct.Operation:
+            if not isinstance(strpatt, str):
+                raise ct.NotSupported('When matching a field, the field value must be a string.')
+            return ct.Operation(
+                ct.Attribute(None, field),
+                comparison_operator,
+                ct.Literal(f'"{strpatt}"'),
+            )
+
+        return constructor
+
     def convert_predicate(lisp) -> ct.Predicate:
         match lisp:
             case [singleton]:
@@ -66,23 +89,11 @@ def query_from_deptreepy(deptreepy: str) -> ct.Query:
                 return ct.Negation(convert_predicate(args))
 
             case [field, 'IN', *strpatts]:
-                return ct.Disjunction(
-                    [
-                        ct.Operation(
-                            ct.Attribute(None, field),
-                            '=',
-                            ct.Literal(f'"{strpatt}"'),
-                        )
-                        for strpatt in strpatts
-                    ]
-                )
+                ctor = operation_constructor_for_field(field)
+                return ct.Disjunction([ctor(strpatt) for strpatt in strpatts])
 
             case [field, strpatt]:
-                return ct.Operation(
-                    ct.Attribute(None, field),
-                    '=',
-                    ct.Literal(f'"{strpatt}"'),
-                )
+                return operation_constructor_for_field(field)(strpatt)
 
             case args:
                 raise ct.NotSupported(str(args))
