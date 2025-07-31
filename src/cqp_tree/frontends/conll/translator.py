@@ -56,7 +56,7 @@ def query_from_conll(conll: str) -> ct.Query:
 
         if line["head"] != 0:
             dependencies.append(
-                ct.Dependency(id, ids[[line["id"] for line in conll_lines].index(line["head"])])
+                ct.Dependency(ids[[line["id"] for line in conll_lines].index(line["head"])], id)
             )
 
     return ct.Query(tokens=tokens, dependencies=dependencies)
