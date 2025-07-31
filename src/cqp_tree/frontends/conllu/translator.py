@@ -4,7 +4,17 @@ import conllu
 
 import cqp_tree.translation as ct
 
-ATTRS = ["form", "lemma", "upos", "xpos", "feats", "deprel", "misc"]
+# CoNLL-U attribute column names mapped to Språkbanken Korp attributes
+ATTRS = {
+    "form": "word", 
+    "lemma": "lemma", 
+    "upos": "pos", # but upos (actual UD tags) may be added soon
+    "xpos": "msd", # not sure about this one
+    "feats": "ufeats", # actual UD features
+    "deprel": "deprel" # mambadep, but UD relations may be added soon
+    # id and head are not treated as attributes
+    # deps and misc are ignored for the time being
+}
 
 def parse(s: str):
     try:
@@ -32,10 +42,9 @@ def query_from_conllu(conllu: str) -> ct.Query:
 
     for (line,id) in list(zip(conllu_lines, ids)):
         ops = []
-        for attr in ATTRS:
+        for attr in ATTRS.keys():
             if line[attr] and line[attr] != "_":
-                print(line[attr])
-                ops.append(field2op(attr, line[attr]))
+                ops.append(field2op(ATTRS[attr], line[attr]))
         tokens.append(ct.Token(id, ct.Conjunction(ops)))
         
         if line["head"] != 0:
