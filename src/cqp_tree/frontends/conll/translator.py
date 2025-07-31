@@ -41,10 +41,10 @@ def query_from_conll(conll: str) -> ct.Query:
         return line[field] in ["_", None]
 
     for line, id in list(zip(conll_lines, ids)):
+        if not isinstance(line["id"], int):
+            continue  # skip MWE lines
         if is_empty(line, "id") or is_empty(line, "head"):
             raise ct.NotSupported("IDs and HEADs cannot be omitted.")
-        if not isinstance(line["id"], int):
-            pass  # skip MWE lines
         ops = []
         for field in FIELDS2ATTRS:
             if not is_empty(line, field):
