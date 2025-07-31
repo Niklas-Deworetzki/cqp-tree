@@ -18,6 +18,7 @@ a:[(word = "camera") & (lemma = "camera") & (pos = "NOUN") & (msd = "NN") & (ufe
 
 Note that:
 
+- the input must be 10-column CoNNL-U, but the values of the various field are __not__ checked for compliance with the UD standard, which allows using alternative tagsets
 - the order in which the tokens occur in the input CoNNL-U tree is ignored
 - the various UD fields currently map to Korp attributes:
   - `FORM` maps to `word`
