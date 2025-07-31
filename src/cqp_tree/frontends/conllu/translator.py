@@ -4,8 +4,8 @@ import conllu
 
 import cqp_tree.translation as ct
 
-# CoNLL-U attribute column names mapped to Språkbanken Korp attributes
-ATTRS = {
+# CoNLL-U fields mapped to Språkbanken Korp attributes
+FIELDS2ATTRS = {
     "form": "word", 
     "lemma": "lemma", 
     "upos": "pos", # but upos (actual UD tags) may be added soon
@@ -39,13 +39,23 @@ def query_from_conllu(conllu: str) -> ct.Query:
             '=',
             ct.Literal(f'"{value}"')
         )
+    
+    def is_empty(line, field):
+        return line[field] in ["_", None]
 
     for (line,id) in list(zip(conllu_lines, ids)):
+        if is_empty(line, "id") or is_empty(line, "head"):
+            raise ct.NotSupported("IDs and HEADs cannot be omitted.")
+        if not isinstance(line["id"], int):
+            pass # skip MWE lines
         ops = []
-        for attr in ATTRS.keys():
-            if line[attr] and line[attr] != "_":
-                ops.append(field2op(ATTRS[attr], line[attr]))
-        tokens.append(ct.Token(id, ct.Conjunction(ops)))
+        for field in FIELDS2ATTRS.keys():
+            if not is_empty(line, field):
+                ops.append(field2op(FIELDS2ATTRS[field], line[field]))
+        if ops:
+            tokens.append(ct.Token(id, ct.Conjunction(ops)))
+        else: # token with no attributes, only there for structural reasons
+            tokens.append(ct.Token(id))
         
         if line["head"] != 0:
             dependencies.append(ct.Dependency(
