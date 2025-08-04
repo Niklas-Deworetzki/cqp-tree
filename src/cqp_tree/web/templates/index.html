@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .truncated {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+    </style>
+
+    <title>CQP-Tree translator</title>
+</head>
+<body>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <h1>CQP-Tree</h1>
+
+            <div class="mb-3">
+                <label for="query-input-field"
+                       class="form-label">Your query goes here:</label>
+                <textarea id="query-input-field"
+                          class="form-control font-monospace border"
+                          rows="5"
+                          placeholder="Write your query here..."
+                ></textarea>
+            </div>
+
+            <div class="d-flex flex-column flex-md-row justify-content-between mb-3">
+                <div class="align-content-center me-md-3 mb-1 mb-md-0">
+                    <label for="query-language-selection"
+                           class="form-label">
+                        Which language is your query in?
+                    </label>
+                </div>
+                <div class="">
+                    <select id="query-language-selection"
+                            class="form-select">
+                        <option selected
+                                value="">Detect automatically
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-5 d-grid col-md-10 mx-auto">
+                <button type="button"
+                        id="submit-query"
+                        class="btn btn-primary">Translate query
+                </button>
+            </div>
+
+            <div id="error-alert"
+                 class="alert alert-warning alert-dismissible fade"
+                 role="alert">
+                <h4>Something went wrong!</h4>
+                <span id="error-msg">Unknown error</span>
+                <button type="button"
+                        class="btn-close"
+                        aria-label="Close"
+                        onclick="hideError()"></button>
+            </div>
+
+            <div class=" mb-3">
+                <label for="query-output-field"
+                       class="form-label">Generated response</label>
+                <div class="input-group">
+                    <input id="query-output-field"
+                           class="form-control border font-monospace truncated"
+                           placeholder="Your generated query will appear here."
+                           readonly>
+                    <div class="input-group-append">
+                        <button type="button"
+                                id="copy-response"
+                                class="btn btn-outline-primary"
+                                data-clipboard-target="#query-output-field"
+                                title="Copy to clipboard">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+        integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+        crossorigin="anonymous"></script>
+
+<!-- Make it possible to copy a generated query using a simple click. -->
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+    new ClipboardJS('#copy-response');
+</script>
+
+<script>
+    const alert = document.getElementById('error-alert');
+    // Hide alert, unless we actually have an error.
+    alert.style.display = 'none';
+
+    function showError(message) {
+        document.getElementById('error-msg').textContent = message;
+        // Ensure it's not display:none, but not visible yet
+        alert.style.display = 'block';
+        // Trigger fade-in
+        requestAnimationFrame(() => {
+            alert.classList.add('show');
+        });
+    }
+
+    function hideError() {
+        // Trigger fade-out
+        alert.classList.remove('show');
+        // After transition, hide from layout
+        alert.addEventListener('transitionend', function onFadeOut() {
+            alert.style.display = 'none';
+            alert.removeEventListener('transitionend', onFadeOut);
+        });
+    }
+
+    // Populate list of supported languages.
+    fetch('/translators')
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            const select = document.getElementById('query-language-selection');
+            data.forEach(lang => {
+                const option = document.createElement('option');
+                option.textContent = lang;
+                option.value = lang;
+                select.appendChild(option);
+            });
+        });
+
+    // Make the submit button call the server.
+    document.getElementById('submit-query').addEventListener('click', () => {
+        const query = document.getElementById('query-input-field').value;
+        const translator = document.getElementById('query-language-selection').value;
+
+        const request = {
+            'text': query
+        }
+        if (translator !== '') {
+            request['translator'] = translator
+        }
+
+        fetch('/translate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(request)
+        })
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'An critical error occurred.');
+                } else {
+                    const result = document.getElementById('query-output-field');
+                    result.value = data.query;
+                    hideError();
+                }
+            })
+            .catch(err => {
+                showError(err.message);
+            });
+    });
+
+    // Make TAB actually insert a tab character.
+    document.getElementById('query-input-field').addEventListener("keydown", function (e) {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+
+            // Insert a tab character at the cursor position
+            this.value = this.value.substring(0, start) + '\t' + this.value.substring(start, end + 1);
+            // Move cursor after the tab
+            this.selectionStart = this.selectionEnd = start + 1;
+        }
+    });
+
+</script>
+
+</body>
+</html>
