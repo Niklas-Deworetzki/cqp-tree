@@ -6,7 +6,7 @@ from antlr4 import CommonTokenStream, InputStream, TerminalNode
 from antlr4.error.ErrorListener import ErrorListener
 
 import cqp_tree.translation as ct
-from .antlr import GrewLexer, GrewParser
+from cqp_tree.frontends.grew.antlr import GrewLexer, GrewParser
 
 
 @dataclass

@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Callable, Collection, Iterator, Optional, Tuple
 
-from .errors import NotSupported, ParsingFailed
-from .query import Query
+from cqp_tree.translation.errors import NotSupported, ParsingFailed
+from cqp_tree.translation.query import Query
 
 type TranslationFunction = Callable[[str], Query]
 
