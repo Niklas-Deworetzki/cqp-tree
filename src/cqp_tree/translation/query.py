@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from itertools import count
-from typing import Annotated, ClassVar, Iterable, List, Optional, Self, Set
+from typing import Annotated, ClassVar, Collection, Iterable, List, Optional, Self, Set
 
 from cqp_tree.utils import flatmap_set
 from cqp_tree.translation.errors import NotSupported
@@ -266,10 +266,10 @@ class WithQueryComponents(ABC):
     - and constraints on the token order
     """
 
-    tokens: Iterable[Token] = field(default_factory=set)
-    dependencies: Iterable[Dependency] = field(default_factory=set)
-    constraints: Iterable[Constraint] = field(default_factory=set)
-    predicates: Iterable[Predicate] = field(default_factory=set)
+    tokens: Collection[Token] = field(default_factory=set)
+    dependencies: Collection[Dependency] = field(default_factory=set)
+    constraints: Collection[Constraint] = field(default_factory=set)
+    predicates: Collection[Predicate] = field(default_factory=set)
 
     def _verify_valid_identifiers(self, visible_identifiers: set[Identifier] = frozenset()):
         defined_identifiers: Set[Identifier] = set()
@@ -325,10 +325,10 @@ class Query(WithQueryComponents):
     def add_query_part(
         self,
         query_type: PartType,
-        tokens: Iterable[Token] = None,
-        dependencies: Iterable[Dependency] = None,
-        constraints: Iterable[Constraint] = None,
-        predicates: Iterable[Predicate] = None,
+        tokens: Collection[Token] = None,
+        dependencies: Collection[Dependency] = None,
+        constraints: Collection[Constraint] = None,
+        predicates: Collection[Predicate] = None,
     ):
         self.additional_query_parts.append(
             QueryPart(
@@ -340,6 +340,9 @@ class Query(WithQueryComponents):
                 predicates=predicates or frozenset(),
             )
         )
+
+    def get_token_count(self) -> int:
+        return len(self.tokens) + sum(len(part.tokens) for part in self.additional_query_parts)
 
     def __post_init__(self):
         self._verify_valid_identifiers()
