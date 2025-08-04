@@ -1,7 +1,6 @@
 from typing import Any
 
 from flask import Flask, jsonify, render_template, request
-from timeout_decorator import timeout
 
 import cqp_tree
 
@@ -24,12 +23,6 @@ def get_translators():
 
 
 @app.route('/translate', methods=['POST'])
-@timeout( # TODO: Timeout does not kill process properly.
-    seconds=1,
-    use_signals=False,
-    timeout_exception=cqp_tree.NotSupported,
-    exception_message='Request timed out.',
-)
 def translate():
     def error(message: str, status: int = 400):
         return jsonify({'error': message}), status
@@ -49,11 +42,10 @@ def translate():
         return text, translator
 
     try:
-        query, additional_steps = cqp_tree.cqp_from_query(
-            cqp_tree.translate_input(text, translator)
-        )
         text, translator = extract_request_data()
         translated_query = cqp_tree.translate_input(text, translator)
+        if translated_query.get_token_count() > 5:
+            raise ValueError('Too many tokens. CQP will not be able to handle the resulting query.')
         query, additional_steps = cqp_tree.cqp_from_query(translated_query)
 
         result: dict[str, Any] = {'query': str(query)}
