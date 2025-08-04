@@ -1,19 +1,15 @@
 from typing import Any
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, request, send_from_directory
 
 import cqp_tree
 
-app = Flask(
-    __name__,
-    static_url_path='',
-    static_folder='static',
-)
+app = Flask(__name__)
 
 
 @app.route("/")
 def main():
-    return render_template('index.html')
+    return send_from_directory('static', 'index.html')
 
 
 @app.route('/translators', methods=['GET'])
