@@ -5,6 +5,7 @@ from itertools import count
 from typing import Annotated, ClassVar, Iterable, List, Optional, Self, Set
 
 from cqp_tree.utils import flatmap_set
+from cqp_tree.translation.errors import NotSupported
 
 
 class Identifier:
@@ -279,7 +280,7 @@ class WithQueryComponents(ABC):
         for token in self.tokens:
             if token.identifier in defined_identifiers or token.identifier in visible_identifiers:
                 # Don't report identifiers here, since they are synthetic and meaningless for users.
-                raise ValueError('Multiple tokens share the same identifier.')
+                raise NotSupported('Multiple tokens share the same identifier.')
             defined_identifiers.add(token.identifier)
 
         # Collect all identifiers referenced in query.
@@ -297,7 +298,7 @@ class WithQueryComponents(ABC):
             lambda t: t.attributes.referenced_identifiers() if t.attributes else set(),
         )
         if referenced_identifiers - (defined_identifiers | visible_identifiers):
-            raise ValueError('Query uses identifiers not defined by tokens.')
+            raise NotSupported('Query uses identifiers not defined by tokens.')
 
 
 class PartType(Enum):

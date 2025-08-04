@@ -1,6 +1,6 @@
-from .cqp import from_query as cqp_from_query, SetOperation
-from .errors import InputError, ParsingFailed, NotSupported
-from .query import (
+from cqp_tree.translation.cqp import from_query as cqp_from_query, SetOperation
+from cqp_tree.translation.errors import InputError, ParsingFailed, NotSupported
+from cqp_tree.translation.query import (
     Identifier,
     # Operand + subclasses
     Operand,
@@ -22,7 +22,7 @@ from .query import (
     # Multi-part queries
     PartType,
 )
-from .registry import (
+from cqp_tree.translation.registry import (
     UnableToGuessTranslatorError,
     guess_correct_translator,
     known_translators,
