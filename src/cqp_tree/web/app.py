@@ -23,9 +23,13 @@ def get_translators():
     return jsonify(translators)
 
 
-@app.route('/translation', methods=['POST'])
-@timeout(seconds=1)
 @app.route('/translate', methods=['POST'])
+@timeout( # TODO: Timeout does not kill process properly.
+    seconds=1,
+    use_signals=False,
+    timeout_exception=cqp_tree.NotSupported,
+    exception_message='Request timed out.',
+)
 def translate():
     def error(message: str, status: int = 400):
         return jsonify({'error': message}), status
