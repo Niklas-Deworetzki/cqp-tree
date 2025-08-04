@@ -17,7 +17,7 @@ def main():
     return render_template('index.html')
 
 
-@app.route('/translation', methods=['GET'])
+@app.route('/translators', methods=['GET'])
 def get_translators():
     translators = sorted(cqp_tree.known_translators.keys())
     return jsonify(translators)
@@ -25,6 +25,7 @@ def get_translators():
 
 @app.route('/translation', methods=['POST'])
 @timeout(seconds=1)
+@app.route('/translate', methods=['POST'])
 def translate():
     def error(message: str, status: int = 400):
         return jsonify({'error': message}), status
