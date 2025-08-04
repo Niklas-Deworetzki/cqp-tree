@@ -33,6 +33,9 @@ dependencies = [
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+"*" = ["*.html"]
+
 [project.scripts]
 cqp-tree = "cqp_tree.cli:main"
 
