@@ -34,22 +34,28 @@ def translate():
     def error(message: str, status: int = 400):
         return jsonify({'error': message}), status
 
-    translation_request = request.get_json()
-    if translation_request is None or not isinstance(translation_request, dict):
-        return error('Malformed request', 422)
+    def extract_request_data():
+        translation_request = request.get_json()
+        if translation_request is None or not isinstance(translation_request, dict):
+            raise ValueError('Malformed request')
 
-    if not 'text' in translation_request:
-        return error('Malformed request', 422)
+        if not 'text' in translation_request:
+            raise ValueError('Missing required field "text"')
 
-    text = translation_request['text']
-    translator = translation_request.get('translator')
-    if translator and translator not in cqp_tree.known_translators:
-        return error('Missing required field "translator"', 422)
+        text = translation_request['text']
+        translator = translation_request.get('translator')
+        if translator and translator not in cqp_tree.known_translators:
+            raise ValueError('Unknown value for field "translator"')
+        return text, translator
 
     try:
         query, additional_steps = cqp_tree.cqp_from_query(
             cqp_tree.translate_input(text, translator)
         )
+        text, translator = extract_request_data()
+        translated_query = cqp_tree.translate_input(text, translator)
+        query, additional_steps = cqp_tree.cqp_from_query(translated_query)
+
         result: dict[str, Any] = {'query': str(query)}
         if additional_steps:
             result['additional_steps'] = [
@@ -57,6 +63,9 @@ def translate():
             ]
 
         return jsonify(result)
+
+    except ValueError as validation_error:
+        return error(str(validation_error), 422)
 
     except cqp_tree.UnableToGuessTranslatorError as unable_to_guess_translator:
         if unable_to_guess_translator.no_translator_matches():
