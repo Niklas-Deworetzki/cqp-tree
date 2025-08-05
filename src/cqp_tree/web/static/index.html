@@ -87,6 +87,10 @@
                     </div>
                 </div>
             </div>
+
+            <div class="mb-3 ms-1">
+                <a id="run-on-korp-link">Run on Korp!</a>
+            </div>
         </div>
     </div>
 </div>
@@ -107,27 +111,32 @@
 
 <script>
     const alert = document.getElementById('error-alert');
-    // Hide alert, unless we actually have an error.
-    alert.style.display = 'none';
+    const runOnKorp = document.getElementById('run-on-korp-link');
 
-    function showError(message) {
-        document.getElementById('error-msg').textContent = message;
-        // Ensure it's not display:none, but not visible yet
-        alert.style.display = 'block';
-        // Trigger fade-in
-        requestAnimationFrame(() => {
-            alert.classList.add('show');
+    // Hide unless we have something to show.
+    alert.style.display = 'none';
+    runOnKorp.style.display = 'none';
+
+    function show(element) {
+        element.style.display = 'block';
+        requestAnimationFrame(() => element.classList.add('show'));
+    }
+
+    function hide(element) {
+        element.classList.remove('show');
+        element.addEventListener('transitionend', function onFadeOut() {
+            element.style.display = 'none';
+            element.removeEventListener('transitionend', onFadeOut);
         });
     }
 
+    function showError(message) {
+        document.getElementById('error-msg').textContent = message;
+        show(alert);
+    }
+
     function hideError() {
-        // Trigger fade-out
-        alert.classList.remove('show');
-        // After transition, hide from layout
-        alert.addEventListener('transitionend', function onFadeOut() {
-            alert.style.display = 'none';
-            alert.removeEventListener('transitionend', onFadeOut);
-        });
+        hide(alert);
     }
 
     // Populate list of supported languages.
@@ -172,6 +181,10 @@
                 } else {
                     const result = document.getElementById('query-output-field');
                     result.value = data.query;
+                    runOnKorp.href = 'https://spraakbanken.gu.se/korp/#?search_tab=2&search=cqp%7C' +
+                        encodeURIComponent(data.query);
+
+                    show(runOnKorp);
                     hideError();
                 }
             })
