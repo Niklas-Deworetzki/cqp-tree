@@ -1,5 +1,19 @@
 from spacy_conll import init_parser
 import conllu
+import py3langid as langid
+
+def example2conllquery(ex_sent: str, lang=None) -> str:
+    pass
+    # TODO:
+    # - save highlighted parts
+    # - remove highlighting
+    # - infer language if necessary
+    # - parse
+    # - extract tree of the highlighted span(s) (if any, if not keep the whole tree)
+    # - return conll
+
+def guess_lang(sent: str) -> str:
+    return langid.classify(sent)[0]
 
 def parse(sent: str, lang: str="en") -> conllu.TokenTree:
     try:
