@@ -129,15 +129,21 @@
 
     function show(element) {
         element.style.display = 'block';
-        requestAnimationFrame(() => element.classList.add('show'));
+        requestAnimationFrame(() => {
+            if (!element.classList.contains('show')) {
+                element.classList.add('show');
+            }
+        });
     }
 
     function hide(element) {
-        element.classList.remove('show');
-        element.addEventListener('transitionend', function onFadeOut() {
-            element.style.display = 'none';
-            element.removeEventListener('transitionend', onFadeOut);
-        });
+        if (element.style.display !== 'none') {
+            element.classList.remove('show');
+            element.addEventListener('transitionend', function onFadeOut() {
+                element.style.display = 'none';
+                element.removeEventListener('transitionend', onFadeOut);
+            });
+        }
     }
 
     function showError(message) {
