@@ -1,28 +1,35 @@
 from spacy_conll import init_parser
 import conllu
+from marko import convert as to_html
+from bs4 import BeautifulSoup
 import py3langid as langid
 
-def example2conllquery(ex_sent: str, lang=None) -> str:
+def example2conllquery(md: str, lang=None) -> str:
+    (spans, txt) = md2spans(md)
+    if not lang:
+        lang = guess_lang(txt)
+    tree = parse(txt, lang)
     pass
     # TODO:
-    # - save highlighted parts
-    # - remove highlighting
-    # - infer language if necessary
-    # - parse
     # - extract tree of the highlighted span(s) (if any, if not keep the whole tree)
     # - return conll
 
-def guess_lang(sent: str) -> str:
-    return langid.classify(sent)[0]
+def md2spans(md: str) -> tuple[list[str], str]:
+    soup = BeautifulSoup(to_html(md))
+    spans = [tag.text for tag in soup.find_all("strong")]
+    return (spans, soup.text)
 
-def parse(sent: str, lang: str="en") -> conllu.TokenTree:
+def guess_lang(txt: str) -> str:
+    return langid.classify(txt)[0]
+
+def parse(txt: str, lang: str="en") -> conllu.TokenTree:
     try:
         parser = init_parser(lang, "udpipe")
     except AssertionError:
         print("Language {} not supported. Defaulting to English (en)..."
               .format(lang))
         parser = init_parser("en", "udpipe")
-    conllu_str = parser(sent)._.conll_str
+    conllu_str = parser(txt)._.conll_str
     trees = conllu.parse_tree(conllu_str)
     if not trees: # return dummy tree
         return conllu.TokenTree(
@@ -30,5 +37,5 @@ def parse(sent: str, lang: str="en") -> conllu.TokenTree:
             children=[])
     else:
         if len(trees) > 1:
-            print("Ignoring all sentences but the first one...")
+            print("Ignoring all but the first sentence...")
         return trees[0]
