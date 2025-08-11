@@ -23,7 +23,7 @@ import cqp_tree.translation as ct
 def translate(inp: str) -> ct.Query:
     if not inp.isnumeric():
         syntax_error = ct.InputError(inp, 'Input contained non-numeric characters.')
-        raise ct.ParsingFailed([syntax_error])
+        raise ct.ParsingFailed(syntax_error)
 
     how_many_tokens = int(inp)
     if how_many_tokens == 0:
@@ -41,7 +41,7 @@ The CLI and the server will be able to access this function in order to translat
 
 There are **2** types of errors that a frontend can recognize and report.
 If there is a syntax error, a `ct.ParsingFailed` exception should be raised.
-It contains a list of all the encountered errors and their descriptions.
+It is provided with encountered errors and their descriptions.
 The error message(s) provided here will be shown to the user, so make sure to give useful errors!
 
 The other error raised is a `ct.NotSupported`.

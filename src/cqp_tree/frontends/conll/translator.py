@@ -21,7 +21,7 @@ def parse(s: str):
     try:
         parsed = conllu.parse(s)
     except conllu.exceptions.ParseException as ex:
-        raise ct.ParsingFailed([ct.InputError(None, ex)])
+        raise ct.ParsingFailed(ct.InputError(None, ex))
     return parsed[0]  # only first parsed CoNLL-U sentence
 
 

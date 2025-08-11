@@ -31,7 +31,7 @@ def parse(query: str) -> GrewParser.RequestContext:
 
     result = parser.request()
     if listener.errors:
-        raise ct.ParsingFailed(listener.errors)
+        raise ct.ParsingFailed(*listener.errors)
 
     return result
 

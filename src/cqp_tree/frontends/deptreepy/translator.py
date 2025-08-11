@@ -14,7 +14,7 @@ def parse(s: str):
         parsed = nestedExpr().parseString(s)
     except ParseException as ex:
         error = ct.InputError(f'line: {ex.line}, col: {ex.col}', ex.msg)
-        raise ct.ParsingFailed([error])
+        raise ct.ParsingFailed(error)
 
     def to_lisp(lisp):
         match lisp:

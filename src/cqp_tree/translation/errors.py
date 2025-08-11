@@ -17,7 +17,6 @@ class InputError:
         return f'{self.position}: {self.message}'
 
 
-@dataclass(frozen=True)
 class ParsingFailed(Exception):
     """
     Exception raised when parsing fails.
@@ -25,9 +24,10 @@ class ParsingFailed(Exception):
 
     errors: NonEmpty[InputError]
 
-    def __post_init__(self):
-        super().__init__(f'Parsing failed. Detected {len(self.errors)} error(s).')
+    def __init__(self, *errors: InputError):
         assert self.errors, 'Expected at least 1 InputError as an argument.'
+        super().__init__(f'Parsing failed. Detected {len(self.errors)} error(s).')
+        self.errors = tuple(errors)
 
 
 class NotSupported(Exception):
