@@ -1,1 +1,1 @@
-from .main import main
+from cqp_tree.cli.main import main

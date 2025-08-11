@@ -1,2 +1,2 @@
-from .translation import *
-from . import frontends
+from cqp_tree.translation import *
+from cqp_tree import frontends

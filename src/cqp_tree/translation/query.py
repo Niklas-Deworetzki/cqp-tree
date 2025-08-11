@@ -2,9 +2,10 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from itertools import count
-from typing import Annotated, ClassVar, Iterable, List, Optional, Self, Set
+from typing import Annotated, ClassVar, Collection, Iterable, List, Optional, Self, Set
 
 from cqp_tree.utils import flatmap_set
+from cqp_tree.translation.errors import NotSupported
 
 
 class Identifier:
@@ -265,10 +266,10 @@ class WithQueryComponents(ABC):
     - and constraints on the token order
     """
 
-    tokens: Iterable[Token] = field(default_factory=set)
-    dependencies: Iterable[Dependency] = field(default_factory=set)
-    constraints: Iterable[Constraint] = field(default_factory=set)
-    predicates: Iterable[Predicate] = field(default_factory=set)
+    tokens: Collection[Token] = field(default_factory=set)
+    dependencies: Collection[Dependency] = field(default_factory=set)
+    constraints: Collection[Constraint] = field(default_factory=set)
+    predicates: Collection[Predicate] = field(default_factory=set)
 
     def _verify_valid_identifiers(self, visible_identifiers: set[Identifier] = frozenset()):
         defined_identifiers: Set[Identifier] = set()
@@ -279,7 +280,7 @@ class WithQueryComponents(ABC):
         for token in self.tokens:
             if token.identifier in defined_identifiers or token.identifier in visible_identifiers:
                 # Don't report identifiers here, since they are synthetic and meaningless for users.
-                raise ValueError('Multiple tokens share the same identifier.')
+                raise NotSupported('Multiple tokens share the same identifier.')
             defined_identifiers.add(token.identifier)
 
         # Collect all identifiers referenced in query.
@@ -297,7 +298,7 @@ class WithQueryComponents(ABC):
             lambda t: t.attributes.referenced_identifiers() if t.attributes else set(),
         )
         if referenced_identifiers - (defined_identifiers | visible_identifiers):
-            raise ValueError('Query uses identifiers not defined by tokens.')
+            raise NotSupported('Query uses identifiers not defined by tokens.')
 
 
 class PartType(Enum):
@@ -324,10 +325,10 @@ class Query(WithQueryComponents):
     def add_query_part(
         self,
         query_type: PartType,
-        tokens: Iterable[Token] = None,
-        dependencies: Iterable[Dependency] = None,
-        constraints: Iterable[Constraint] = None,
-        predicates: Iterable[Predicate] = None,
+        tokens: Collection[Token] = None,
+        dependencies: Collection[Dependency] = None,
+        constraints: Collection[Constraint] = None,
+        predicates: Collection[Predicate] = None,
     ):
         self.additional_query_parts.append(
             QueryPart(
@@ -339,6 +340,9 @@ class Query(WithQueryComponents):
                 predicates=predicates or frozenset(),
             )
         )
+
+    def get_token_count(self) -> int:
+        return len(self.tokens) + sum(len(part.tokens) for part in self.additional_query_parts)
 
     def __post_init__(self):
         self._verify_valid_identifiers()

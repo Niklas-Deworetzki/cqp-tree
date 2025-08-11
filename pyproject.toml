@@ -21,13 +21,18 @@ authors = [
 
 requires-python = ">=3.12,<4"
 dependencies = [
-    "antlr4-python3-runtime",
-    "pyparsing",
-    "conllu",
+    "antlr4-python3-runtime~=4.13",
+    "pyparsing~=3.2",
+    "conllu~=6.0",
+
+    "Flask~=3.1",
 ]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"*" = ["*.html"]
 
 [project.scripts]
 cqp-tree = "cqp_tree.cli:main"

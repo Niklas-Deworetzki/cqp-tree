@@ -1,6 +1,7 @@
 import unittest
 
 import cqp_tree.translation.query as query
+from cqp_tree import NotSupported
 
 
 class ValidationTests(unittest.TestCase):
@@ -27,7 +28,7 @@ class ValidationTests(unittest.TestCase):
         self.assertSetEqual({a, b, c}, tree.referenced_identifiers())
 
     def test_constraint_references_unknown_identifier(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(NotSupported):
             a = query.Identifier()
             b = query.Identifier()
             unknown = query.Identifier()
@@ -41,7 +42,7 @@ class ValidationTests(unittest.TestCase):
             query.Query(tokens=tokens, constraints=constraints)
 
     def test_relation_references_unknown_identifier(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(NotSupported):
             a = query.Identifier()
             b = query.Identifier()
             unknown = query.Identifier()
@@ -55,7 +56,7 @@ class ValidationTests(unittest.TestCase):
             query.Query(tokens=tokens, dependencies=relations)
 
     def test_local_predicate_references_unknown_identifier(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(NotSupported):
             a = query.Identifier()
             unknown = query.Identifier()
 
@@ -65,7 +66,7 @@ class ValidationTests(unittest.TestCase):
             query.Query(tokens=tokens)
 
     def test_global_predicate_references_unknown_identifier(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(NotSupported):
             a = query.Identifier()
             unknown = query.Identifier()
 
@@ -79,7 +80,7 @@ class ValidationTests(unittest.TestCase):
             query.Query(tokens=tokens, predicates=predicates)
 
     def test_duplicate_identifiers(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(NotSupported):
             duplicate = query.Identifier()
 
             tokens = [
