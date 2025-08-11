@@ -8,7 +8,7 @@ from cqp_tree.translation.query import (
     Attribute,
     # Predicate + subclasses
     Predicate,
-    Operation,
+    Comparison,
     Exists,
     Negation,
     Conjunction,

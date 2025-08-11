@@ -54,7 +54,7 @@ def query_from_deptreepy(deptreepy: str) -> ct.Query:
                 tokens.append(ct.Token(fresh_id, pred))
                 return fresh_id
 
-    def operation_constructor_for_field(field) -> Callable[[str], ct.Operation]:
+    def operation_constructor_for_field(field) -> Callable[[str], ct.Comparison]:
         if not isinstance(field, str):
             raise ct.NotSupported('When matching a field, the field must be a string.')
 
@@ -63,10 +63,10 @@ def query_from_deptreepy(deptreepy: str) -> ct.Query:
             field = field[:-1]
             comparison_operator = 'contains'
 
-        def constructor(strpatt: str) -> ct.Operation:
+        def constructor(strpatt: str) -> ct.Comparison:
             if not isinstance(strpatt, str):
                 raise ct.NotSupported('When matching a field, the field value must be a string.')
-            return ct.Operation(
+            return ct.Comparison(
                 ct.Attribute(None, field),
                 comparison_operator,
                 ct.Literal(f'"{strpatt}"'),

@@ -34,8 +34,8 @@ def query_from_conll(conll: str) -> ct.Query:
 
     ids = [ct.Identifier() for _ in conll_lines]
 
-    def field2op(field, value) -> ct.Operation:
-        return ct.Operation(ct.Attribute(None, field), '=', ct.Literal(f'"{value}"'))
+    def field2op(field, value) -> ct.Comparison:
+        return ct.Comparison(ct.Attribute(None, field), '=', ct.Literal(f'"{value}"'))
 
     def is_empty(line, field):
         return line[field] in ["_", None]

@@ -135,13 +135,13 @@ class QueryBuilder:
             deptypes = [self.to_operand(environment, dt) for dt in arrow.edgeTypes().literal()]
             if isinstance(arrow, GrewParser.PositiveArrowContext):
                 dependency_constraint = self.wrap(
-                    [ct.Operation(deprel, '=', deptype) for deptype in deptypes],
+                    [ct.Comparison(deprel, '=', deptype) for deptype in deptypes],
                     ct.Disjunction,
                 )
 
             elif isinstance(arrow, GrewParser.NegatedArrowContext):
                 dependency_constraint = self.wrap(
-                    [ct.Operation(deprel, '!=', deptype) for deptype in deptypes],
+                    [ct.Comparison(deprel, '!=', deptype) for deptype in deptypes],
                     ct.Conjunction,
                 )
 
@@ -153,7 +153,7 @@ class QueryBuilder:
         elif isinstance(clause, GrewParser.ConstraintClauseContext):
             lhs = self.to_operand(environment, clause.lhs)
             rhs = self.to_operand(environment, clause.rhs)
-            predicate = ct.Operation(
+            predicate = ct.Comparison(
                 lhs,
                 self.to_cqp_operator(clause.compare()),
                 rhs,
@@ -198,13 +198,13 @@ class QueryBuilder:
             comparison = grew.compare()
             if isinstance(comparison, GrewParser.EqualityContext):
                 return self.wrap(
-                    [ct.Operation(attribute, '=', alt) for alt in alternatives],
+                    [ct.Comparison(attribute, '=', alt) for alt in alternatives],
                     ct.Disjunction,
                 )
 
             if isinstance(comparison, GrewParser.InequalityContext):
                 return self.wrap(
-                    [ct.Operation(attribute, '!=', alt) for alt in alternatives],
+                    [ct.Comparison(attribute, '!=', alt) for alt in alternatives],
                     ct.Conjunction,
                 )
 

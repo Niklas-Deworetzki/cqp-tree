@@ -150,12 +150,12 @@ class TranslationTests(unittest.TestCase):
             result,
             ct.Disjunction(
                 [
-                    ct.Operation(
+                    ct.Comparison(
                         ct.Attribute(None, 'lemma'),
                         '=',
                         ct.Literal('"dog"'),
                     ),
-                    ct.Operation(
+                    ct.Comparison(
                         ct.Attribute(None, 'lemma'),
                         '=',
                         ct.Literal('"cat"'),
@@ -175,12 +175,12 @@ class TranslationTests(unittest.TestCase):
             result,
             ct.Conjunction(
                 [
-                    ct.Operation(
+                    ct.Comparison(
                         ct.Attribute(None, 'lemma'),
                         '!=',
                         ct.Literal('"dog"'),
                     ),
-                    ct.Operation(
+                    ct.Comparison(
                         ct.Attribute(None, 'lemma'),
                         '!=',
                         ct.Literal('"cat"'),
@@ -210,12 +210,12 @@ class TranslationTests(unittest.TestCase):
                     ),
                     ct.Disjunction(
                         [
-                            ct.Operation(
+                            ct.Comparison(
                                 ct.Attribute(None, 'lemma'),
                                 '=',
                                 ct.Literal('"A"'),
                             ),
-                            ct.Operation(
+                            ct.Comparison(
                                 ct.Attribute(None, 'lemma'),
                                 '=',
                                 ct.Literal('"B"'),

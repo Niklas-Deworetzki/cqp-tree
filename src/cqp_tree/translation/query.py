@@ -105,7 +105,7 @@ class Predicate(ABC):
 
 
 @dataclass(frozen=True)
-class Operation(Predicate):  # TODO: Name this Comparison?
+class Comparison(Predicate):
     """A Predicate comparing two Operands using an arbitrary operator."""
 
     lhs: Operand
@@ -115,18 +115,18 @@ class Operation(Predicate):  # TODO: Name this Comparison?
     def referenced_identifiers(self) -> set[Identifier]:
         return flatmap_set([self.lhs, self.rhs], lambda o: o.referenced_identifiers())
 
-    def raise_from(self, on: Identifier) -> 'Operation':
+    def raise_from(self, on: Identifier) -> 'Comparison':
         lhs = self.lhs.raise_from(on)
         rhs = self.rhs.raise_from(on)
-        return Operation(lhs, self.operator, rhs)
+        return Comparison(lhs, self.operator, rhs)
 
-    def lower_onto(self, on: Identifier) -> 'Operation':
+    def lower_onto(self, on: Identifier) -> 'Comparison':
         lhs = self.lhs.lower_onto(on)
         rhs = self.rhs.lower_onto(on)
-        return Operation(lhs, self.operator, rhs)
+        return Comparison(lhs, self.operator, rhs)
 
-    def normalize(self) -> 'Operation':
-        return Operation(self.lhs, self.operator, self.rhs)
+    def normalize(self) -> 'Comparison':
+        return Comparison(self.lhs, self.operator, self.rhs)
 
 
 @dataclass(frozen=True)

@@ -134,7 +134,7 @@ def format_predicate(predicate: query.Predicate, environment: Environment) -> st
         return format_operand(predicate.attribute, environment)
     elif isinstance(predicate, query.Negation):
         return f'!{format_predicate(predicate.predicate, environment)}'
-    if isinstance(predicate, query.Operation):
+    if isinstance(predicate, query.Comparison):
         lhs = format_operand(predicate.lhs, environment)
         rhs = format_operand(predicate.rhs, environment)
         return f'({lhs} {predicate.operator} {rhs})'

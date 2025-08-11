@@ -1,6 +1,6 @@
 import unittest
 
-from cqp_tree import Attribute, Disjunction, Literal, NotSupported, Operation
+from cqp_tree import Attribute, Disjunction, Literal, NotSupported, Comparison
 from cqp_tree.frontends.deptreepy import query_from_deptreepy
 
 
@@ -20,7 +20,7 @@ class TranslationTests(unittest.TestCase):
 
         self.assertEqual(
             token.attributes,
-            Operation(
+            Comparison(
                 Attribute(None, 'field'),
                 '=',
                 Literal('"a"'),
@@ -35,12 +35,12 @@ class TranslationTests(unittest.TestCase):
             token.attributes,
             Disjunction(
                 [
-                    Operation(
+                    Comparison(
                         Attribute(None, 'field'),
                         '=',
                         Literal('"a"'),
                     ),
-                    Operation(
+                    Comparison(
                         Attribute(None, 'field'),
                         '=',
                         Literal('"b"'),
@@ -55,7 +55,7 @@ class TranslationTests(unittest.TestCase):
 
         self.assertEqual(
             token.attributes,
-            Operation(
+            Comparison(
                 Attribute(None, 'field'),
                 'contains',
                 Literal('"a"'),
@@ -70,12 +70,12 @@ class TranslationTests(unittest.TestCase):
             token.attributes,
             Disjunction(
                 [
-                    Operation(
+                    Comparison(
                         Attribute(None, 'field'),
                         'contains',
                         Literal('"a"'),
                     ),
-                    Operation(
+                    Comparison(
                         Attribute(None, 'field'),
                         'contains',
                         Literal('"b"'),
