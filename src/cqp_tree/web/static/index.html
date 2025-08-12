@@ -25,7 +25,7 @@
                 <h1>CQP-Tree</h1>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 position-relative">
                 <label for="query-input-field"
                        class="form-label">Your query goes here:</label>
                 <textarea id="query-input-field"
@@ -33,6 +33,10 @@
                           rows="5"
                           placeholder="Write your query here..."
                 ></textarea>
+                <div id="history-dropdown"
+                     class="dropdown-menu"
+                     style="max-height: 200px; overflow-y: auto; width:100%;">
+                </div>
             </div>
 
             <div class="d-flex flex-column flex-md-row justify-content-between mb-3">
@@ -122,6 +126,12 @@
 <script>
     const alert = document.getElementById('error-alert');
     const runOnKorp = document.getElementById('run-on-korp-link');
+    const submitQuery = document.getElementById('submit-query');
+
+    const queryInput = document.getElementById('query-input-field');
+    const queryOutput = document.getElementById('query-output-field')
+    const queryLanguage = document.getElementById('query-language-selection');
+    const queryHistory = document.getElementById('history-dropdown');
 
     // Hide unless we have something to show.
     alert.style.display = 'none';
@@ -155,6 +165,34 @@
         hide(alert);
     }
 
+    // Provide functionality for query history
+    const getHistory = () =>
+        JSON.parse(localStorage.getItem('queryHistory') || '[]');
+
+    function saveToHistory(value) {
+        let history = getHistory();
+        if (!history.includes(value)) {
+            console.log('Saving item to history:', value);
+            history.push(value);
+            localStorage.setItem('queryHistory', JSON.stringify(history));
+        }
+    }
+
+    function loadHistory() {
+        queryHistory.innerHTML = '';
+        getHistory().forEach(item => {
+            const option = document.createElement('button');
+            option.type = 'button';
+            option.className = 'dropdown-item';
+            option.textContent = item;
+            option.onclick = () => {
+                queryInput.value = item;
+                queryHistory.classList.remove('show');
+            };
+            queryHistory.appendChild(option);
+        });
+    }
+
     // Populate list of supported languages.
     fetch('/translators')
         .then(response => {
@@ -162,23 +200,22 @@
             return response.json();
         })
         .then(data => {
-            const select = document.getElementById('query-language-selection');
             data.forEach(lang => {
                 const option = document.createElement('option');
                 option.textContent = lang;
                 option.value = lang;
-                select.appendChild(option);
+                queryLanguage.appendChild(option);
             });
         });
 
     // Make the submit button call the server.
-    document.getElementById('submit-query').addEventListener('click', () => {
-        const query = document.getElementById('query-input-field').value;
-        const translator = document.getElementById('query-language-selection').value;
-
+    submitQuery.addEventListener('click', () => {
+        const query = queryInput.value;
         const request = {
             'text': query
         }
+
+        const translator = queryLanguage.value;
         if (translator !== '') {
             request['translator'] = translator
         }
@@ -195,13 +232,14 @@
                 if (!response.ok) {
                     throw new Error(data.error || 'An critical error occurred.');
                 } else {
-                    const result = document.getElementById('query-output-field');
-                    result.value = data.query;
+                    queryOutput.value = data.query;
                     runOnKorp.href = 'https://spraakbanken.gu.se/korp/#?search_tab=2&search=cqp%7C' +
                         encodeURIComponent(data.query);
 
                     show(runOnKorp);
                     hideError();
+                    saveToHistory(query);
+                    loadHistory();
                 }
             })
             .catch(err => {
@@ -210,7 +248,7 @@
     });
 
     // Make TAB actually insert a tab character.
-    document.getElementById('query-input-field').addEventListener("keydown", function (e) {
+    queryInput.addEventListener("keydown", function (e) {
         if (e.key === 'Tab') {
             e.preventDefault();
 
@@ -224,6 +262,18 @@
         }
     });
 
+    // Make history selection dropdown visible when textarea is clicked.
+    queryInput.addEventListener('focus', () => {
+        if (queryHistory.children.length > 0) {
+            queryHistory.classList.add('show');
+        }
+    });
+
+    queryInput.addEventListener('blur', () => {
+        setTimeout(() => queryHistory.classList.remove('show'), 200);
+    });
+
+    loadHistory();
 </script>
 
 </body>
