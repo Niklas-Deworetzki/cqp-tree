@@ -25,8 +25,8 @@ class ParsingFailed(Exception):
     errors: NonEmpty[InputError]
 
     def __init__(self, *errors: InputError):
-        assert self.errors, 'Expected at least 1 InputError as an argument.'
-        super().__init__(f'Parsing failed. Detected {len(self.errors)} error(s).')
+        assert errors, 'Expected at least 1 InputError as an argument.'
+        super().__init__(f'Parsing failed. Detected {len(errors)} error(s).')
         self.errors = tuple(errors)
 
 
