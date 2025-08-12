@@ -70,5 +70,5 @@ def translate():
         return error('This query is not supported: ' + str(not_supported))
 
     except cqp_tree.ParsingFailed as parse_error:
-        (parse_error,) = parse_error.errors
+        parse_error = next(iter(parse_error.errors))
         return error('This query cannot be parsed: ' + parse_error.message)
