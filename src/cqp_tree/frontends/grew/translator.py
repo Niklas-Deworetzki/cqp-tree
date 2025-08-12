@@ -1,6 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Callable, List, override
+from typing import List, Type, override
 
 from antlr4 import CommonTokenStream, InputStream, TerminalNode
 from antlr4.error.ErrorListener import ErrorListener
@@ -98,7 +98,7 @@ class QueryBuilder:
 
     @staticmethod
     def wrap(
-        predicates: List[ct.Predicate], ctor: Callable[[List[ct.Predicate]], ct.Predicate]
+        predicates: List[ct.Predicate], ctor: Type[ct.Conjunction | ct.Disjunction]
     ) -> ct.Predicate:
         if len(predicates) > 1:
             return ctor(predicates)
