@@ -8,7 +8,7 @@ from cqp_tree.frontends.grew.antlr import GrewLexer, GrewParser
 from cqp_tree.frontends.grew.translator import ParseErrorListener, QueryBuilder, new_environment
 
 
-def do_parse[T](construct: Callable[[GrewParser], T], text: str) -> T:
+def do_parse[T](construct: Callable, text: str) -> T:
     lexer = GrewLexer(InputStream(text))
     stream = CommonTokenStream(lexer)
     parser = GrewParser(stream)
@@ -21,7 +21,7 @@ def do_parse[T](construct: Callable[[GrewParser], T], text: str) -> T:
     if listener.errors:
         for error in listener.errors:
             print(error.message)
-        raise ct.ParsingFailed(tuple(listener.errors))
+        raise ct.ParsingFailed(*listener.errors)
 
     return result
 
@@ -61,11 +61,11 @@ class TranslationTests(unittest.TestCase):
         self.assertIsInstance(literal, GrewParser.UnicodeStringContext)
 
         builder = QueryBuilder()
-        result = builder.to_operand(new_environment(), literal)
+        result = builder.to_operand(literal)
 
         self.assertEqual(
             result,
-            ct.Literal('"aßσþ"')
+            ct.Literal('"aßσþ"'),
         )
 
     def test_to_operand_regex_literal(self):
@@ -73,11 +73,11 @@ class TranslationTests(unittest.TestCase):
         self.assertIsInstance(literal, GrewParser.RegexContext)
 
         builder = QueryBuilder()
-        result = builder.to_operand(new_environment(), literal)
+        result = builder.to_operand(literal)
 
         self.assertEqual(
             result,
-            ct.Literal('"a.*|[abc]+"')
+            ct.Literal('"a.*|[abc]+"'),
         )
 
     def test_to_operand_simple_string_literal(self):
@@ -85,11 +85,11 @@ class TranslationTests(unittest.TestCase):
         self.assertIsInstance(literal, GrewParser.SimpleStringContext)
 
         builder = QueryBuilder()
-        result = builder.to_operand(new_environment(), literal)
+        result = builder.to_operand(literal)
 
         self.assertEqual(
             result,
-            ct.Literal('"Tense"')
+            ct.Literal('"Tense"'),
         )
 
     def test_to_operand_pcre_literal(self):
@@ -97,22 +97,21 @@ class TranslationTests(unittest.TestCase):
         self.assertIsInstance(literal, GrewParser.PCREContext)
 
         builder = QueryBuilder()
-        self.assertRaises(ct.NotSupported, lambda: builder.to_operand(new_environment(), literal))
+        with self.assertRaises(ct.NotSupported):
+            builder.to_operand(literal)
 
     def test_to_operand_attribute(self):
         value = do_parse(GrewParser.featureValue, 'a.b')
         self.assertIsInstance(value, GrewParser.AttributeContext)
 
         a = ct.Identifier()
-        environment = new_environment()
-        environment['a'] = a
-
         builder = QueryBuilder()
-        result = builder.to_operand(environment, value)
+        builder.environment['a'] = ct.Token(a)
+        result = builder.to_operand(value)
 
         self.assertEqual(
             result,
-            ct.Attribute(a, 'b')
+            ct.Attribute(a, 'b'),
         )
 
     def test_to_predicate_presence(self):
@@ -120,11 +119,11 @@ class TranslationTests(unittest.TestCase):
         self.assertIsInstance(parsed, GrewParser.PresenceContext)
 
         builder = QueryBuilder()
-        result = builder.to_predicate(new_environment(), parsed)
+        result = builder.to_predicate(parsed)
 
         self.assertEqual(
             result,
-            ct.Exists(ct.Attribute(None, 'Number'))
+            ct.Exists(ct.Attribute(None, 'Number')),
         )
 
     def test_to_predicate_absence(self):
@@ -132,11 +131,11 @@ class TranslationTests(unittest.TestCase):
         self.assertIsInstance(parsed, GrewParser.AbsenceContext)
 
         builder = QueryBuilder()
-        result = builder.to_predicate(new_environment(), parsed)
+        result = builder.to_predicate(parsed)
 
         self.assertEqual(
             result,
-            ct.Negation(ct.Exists(ct.Attribute(None, 'Tense')))
+            ct.Negation(ct.Exists(ct.Attribute(None, 'Tense'))),
         )
 
     def test_to_predicate_requires_positive(self):
@@ -144,7 +143,7 @@ class TranslationTests(unittest.TestCase):
         self.assertIsInstance(parsed, GrewParser.RequiresContext)
 
         builder = QueryBuilder()
-        result = builder.to_predicate(new_environment(), parsed)
+        result = builder.to_predicate(parsed)
 
         self.assertEqual(
             result,
@@ -159,9 +158,9 @@ class TranslationTests(unittest.TestCase):
                         ct.Attribute(None, 'lemma'),
                         '=',
                         ct.Literal('"cat"'),
-                    )
+                    ),
                 ]
-            )
+            ),
         )
 
     def test_to_predicate_requires_negative(self):
@@ -169,7 +168,7 @@ class TranslationTests(unittest.TestCase):
         self.assertIsInstance(parsed, GrewParser.RequiresContext)
 
         builder = QueryBuilder()
-        result = builder.to_predicate(new_environment(), parsed)
+        result = builder.to_predicate(parsed)
 
         self.assertEqual(
             result,
@@ -184,9 +183,9 @@ class TranslationTests(unittest.TestCase):
                         ct.Attribute(None, 'lemma'),
                         '!=',
                         ct.Literal('"cat"'),
-                    )
+                    ),
                 ]
-            )
+            ),
         )
 
     def test_to_predicate_feature_structure(self):
@@ -194,20 +193,14 @@ class TranslationTests(unittest.TestCase):
         self.assertIsInstance(parsed, GrewParser.FeatureStructureContext)
 
         builder = QueryBuilder()
-        result = builder.to_predicate(new_environment(), parsed)
+        result = builder.to_predicate(parsed)
 
         self.assertEqual(
             result,
             ct.Conjunction(
                 [
-                    ct.Exists(
-                        ct.Attribute(None, 'Tense')
-                    ),
-                    ct.Negation(
-                        ct.Exists(
-                            ct.Attribute(None, 'Number')
-                        )
-                    ),
+                    ct.Exists(ct.Attribute(None, 'Tense')),
+                    ct.Negation(ct.Exists(ct.Attribute(None, 'Number'))),
                     ct.Disjunction(
                         [
                             ct.Comparison(
@@ -219,9 +212,67 @@ class TranslationTests(unittest.TestCase):
                                 ct.Attribute(None, 'lemma'),
                                 '=',
                                 ct.Literal('"B"'),
-                            )
+                            ),
                         ]
-                    )
+                    ),
                 ]
-            )
+            ),
+        )
+
+    def test_translate_empty_request(self):
+        parsed = do_parse(GrewParser.request, 'pattern {}')
+        result = QueryBuilder.build(parsed)
+
+        self.assertTrue(result.tokens, 'Empty query should match token.')
+
+    def test_translate_multiple_items(self):
+        parsed = do_parse(
+            GrewParser.request,
+            """
+        pattern {
+            X [];
+        }
+        with {
+            Y [upos=PUNCT];
+        }
+        without {
+            A -> X;
+        }
+        """,
+        )
+
+        result = QueryBuilder.build(parsed)
+        self.assertEqual(
+            len(result.additional_query_parts), 2, 'Query should have 2 additional parts.'
+        )
+
+    def test_translate_combined_token(self):
+        parsed = do_parse(
+            GrewParser.request,
+            """
+        pattern {
+            X[lemma=dog];
+        }
+        with {
+            X[upos=NOUN];
+        }
+        """,
+        )
+
+        result = QueryBuilder.build(parsed)
+        self.assertEqual(
+            len(result.tokens),
+            1,
+            'Main query should search for 1 token.',
+        )
+        self.assertEqual(
+            len(result.additional_query_parts),
+            1,
+            'Query should have 1 additional part.',
+        )
+        additional_part = result.additional_query_parts[0]
+        self.assertCountEqual(
+            additional_part.tokens,
+            [],
+            'Additional query should not introduce additional tokens.',
         )
