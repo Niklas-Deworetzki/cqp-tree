@@ -229,7 +229,7 @@ class Disjunction(GenericJunction):
 
 @dataclass(frozen=True)
 class Token:
-    identifier: Identifier
+    identifier: Identifier = field(default_factory=Identifier)
     attributes: Optional[Predicate] = None
 
 
