@@ -65,7 +65,9 @@ class QueryBuilder:
             self.inherited_names = frozenset()
 
     def tokens(self) -> Collection[ct.Token]:
-        return [token for name, token in self.environment.items() if name not in self.inherited_names]
+        return [
+            token for name, token in self.environment.items() if name not in self.inherited_names
+        ]
 
     @staticmethod
     def build(request: GrewParser.RequestContext) -> ct.Query:
