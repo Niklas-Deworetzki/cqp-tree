@@ -1,6 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import List, Type, override
+from typing import Collection, List, Self, Type, override
 
 from antlr4 import CommonTokenStream, InputStream, TerminalNode
 from antlr4.error.ErrorListener import ErrorListener
@@ -36,51 +36,80 @@ def parse(query: str) -> GrewParser.RequestContext:
     return result
 
 
-Environment = defaultdict[str, ct.Identifier]
+Environment = defaultdict[str, ct.Token]
 
 
 def new_environment() -> Environment:
-    return defaultdict(ct.Identifier)
+    return defaultdict(ct.Token)
 
 
 @ct.translator('grew')
 def query_from_grew(grew: str) -> ct.Query:
     grew_request = parse(grew)
-    builder = QueryBuilder()
-    builder.translate_request(grew_request)
-    return builder.build()
+    return QueryBuilder().build(grew_request)
 
 
 class QueryBuilder:
 
-    def __init__(self):
-        self.tokens: list[ct.Token] = []
-        self.dependencies: list[ct.Dependency] = []
-        self.constraints: list[ct.Constraint] = []
-        self.predicates: list[ct.Predicate] = []
+    def __init__(self, inherited_environment: Environment = None):
+        self.dependencies = list[ct.Dependency]()
+        self.constraints = list[ct.Constraint]()
+        self.predicates = list[ct.Predicate]()
 
-    def build(self):
-        return ct.Query(
-            tokens=self.tokens,
-            dependencies=self.dependencies,
-            constraints=self.constraints,
-            predicates=self.predicates,
-        )
-
-    def translate_request(self, request: GrewParser.RequestContext):
-        environment = new_environment()
-
-        pattern_clauses = list(request.pattern().body().clause())
-        if not pattern_clauses:
-            # Add token matching everything, if we have an empty query.
-            self.tokens.append(ct.Token(ct.Identifier()))
-
+        self.environment = new_environment()
+        if inherited_environment:
+            self.inherited_names = set(inherited_environment)
+            for key, value in inherited_environment.items():
+                self.environment[key] = value
         else:
-            for clause in pattern_clauses:
-                self.translate_clause(environment, clause)
+            self.inherited_names = frozenset()
 
-            for _ in request.requestItem():
-                raise ct.NotSupported('Only "pattern" is supported as a query so far.')
+    def tokens(self) -> Collection[ct.Token]:
+        return [
+            token for name, token in self.environment.items() if name not in self.inherited_names
+        ]
+
+    @staticmethod
+    def build(request: GrewParser.RequestContext) -> ct.Query:
+        pattern = request.pattern().body()
+
+        builder = QueryBuilder().translate_clauses(pattern)
+
+        if builder.tokens():
+            query = ct.Query(
+                tokens=builder.tokens(),
+                dependencies=builder.dependencies,
+                constraints=builder.constraints,
+                predicates=builder.predicates,
+            )
+        else:
+            # If pattern is empty, match an arbitrary token.
+            query = ct.Query(tokens=[ct.Token()])
+
+        for item in request.requestItem():
+            builder = QueryBuilder(inherited_environment=builder.environment).translate_clauses(
+                item.body()
+            )
+
+            query_type = {
+                GrewParser.WithItemContext: ct.PartType.ADDITIONAL,
+                GrewParser.WithoutItemContext: ct.PartType.NEGATIVE,
+            }[type(item)]
+
+            query.add_query_part(
+                query_type,
+                tokens=builder.tokens(),
+                dependencies=builder.dependencies,
+                constraints=builder.constraints,
+                predicates=builder.predicates,
+            )
+
+        return query
+
+    def translate_clauses(self, clauses: GrewParser.BodyContext) -> Self:
+        for clause in clauses.clause():
+            self.translate_clause(clause)
+        return self
 
     @staticmethod
     def string_of_token(token: TerminalNode) -> str:
@@ -104,25 +133,23 @@ class QueryBuilder:
             return ctor(predicates)
         return predicates[0]
 
-    def translate_clause(self, environment: Environment, clause: GrewParser.ClauseContext):
+    def translate_clause(self, clause: GrewParser.ClauseContext):
         if isinstance(clause, GrewParser.NodeClauseContext):
-            identifier = environment[clause.label.text]
+            token = self.environment[clause.label.text]
             features = [
                 translated_predicate
                 for fs in clause.featureStructure()
-                if (translated_predicate := self.to_predicate(environment, fs))
+                if (translated_predicate := self.to_predicate(fs))
             ]
-            # Only has empty feature structure.
-            if not features:
-                token = ct.Token(identifier)
-            else:
-                token = ct.Token(identifier, self.wrap(features, ct.Disjunction))
 
-            self.tokens.append(token)
+            # Only add predicate if features are present.
+            if features:
+                predicate = self.wrap(features, ct.Disjunction).raise_from(token.identifier)
+                self.predicates.append(predicate)
 
         elif isinstance(clause, GrewParser.EdgeClauseContext):
-            src = environment[clause.src.text]
-            dst = environment[clause.dst.text]
+            src = self.environment[clause.src.text].identifier
+            dst = self.environment[clause.dst.text].identifier
 
             dependency = ct.Dependency(src, dst)
             self.dependencies.append(dependency)
@@ -132,7 +159,7 @@ class QueryBuilder:
                 return  # No dependency types specified. Nothing else to do.
 
             deprel = ct.Attribute(dst, 'deprel')
-            deptypes = [self.to_operand(environment, dt) for dt in arrow.edgeTypes().literal()]
+            deptypes = [self.to_operand(dt) for dt in arrow.edgeTypes().literal()]
             if isinstance(arrow, GrewParser.PositiveArrowContext):
                 dependency_constraint = self.wrap(
                     [ct.Comparison(deprel, '=', deptype) for deptype in deptypes],
@@ -151,8 +178,8 @@ class QueryBuilder:
             self.predicates.append(dependency_constraint)
 
         elif isinstance(clause, GrewParser.ConstraintClauseContext):
-            lhs = self.to_operand(environment, clause.lhs)
-            rhs = self.to_operand(environment, clause.rhs)
+            lhs = self.to_operand(clause.lhs)
+            rhs = self.to_operand(clause.rhs)
             predicate = ct.Comparison(
                 lhs,
                 self.to_cqp_operator(clause.compare()),
@@ -167,14 +194,13 @@ class QueryBuilder:
             else:
                 distance = ct.Constraint.ARBITRARY_DISTANCE
 
-            lhs = environment[clause.lhs.text]
-            rhs = environment[clause.rhs.text]
+            lhs = self.environment[clause.lhs.text].identifier
+            rhs = self.environment[clause.rhs.text].identifier
 
             self.constraints.append(ct.Constraint(lhs, rhs, enforces_order=True, distance=distance))
 
     def to_predicate(
         self,
-        environment: Environment,
         grew: GrewParser.FeatureContext | GrewParser.FeatureStructureContext,
     ) -> ct.Predicate | None:
         # Checking for existence of feature: Tense
@@ -192,9 +218,7 @@ class QueryBuilder:
             attribute_name = self.string_of_token(grew.Identifier())
             attribute = ct.Attribute(None, attribute_name)
 
-            alternatives = [
-                self.to_operand(environment, feature) for feature in grew.featureValue()
-            ]
+            alternatives = [self.to_operand(feature) for feature in grew.featureValue()]
             comparison = grew.compare()
             if isinstance(comparison, GrewParser.EqualityContext):
                 return self.wrap(
@@ -215,14 +239,13 @@ class QueryBuilder:
             if not grew.feature():
                 return None
 
-            features = [self.to_predicate(environment, feature) for feature in grew.feature()]
+            features = [self.to_predicate(feature) for feature in grew.feature()]
             return self.wrap(features, ct.Conjunction)
 
         assert False, f'Unknown predicate: {type(grew)}'
 
     def to_operand(
         self,
-        environment: Environment,
         grew: GrewParser.LiteralContext | GrewParser.FeatureValueContext,
     ) -> ct.Operand:
         # Proper string like: "aßσþ"
@@ -248,10 +271,10 @@ class QueryBuilder:
         if isinstance(grew, GrewParser.AttributeContext):
             instance = self.string_of_token(grew.Identifier(0))
             attribute_name = self.string_of_token(grew.Identifier(1))
-            return ct.Attribute(environment[instance], attribute_name)
+            return ct.Attribute(self.environment[instance].identifier, attribute_name)
 
         # Literal used as part of feature structure, covered by other cases.
         if isinstance(grew, GrewParser.ValueContext):
-            return self.to_operand(environment, grew.literal())
+            return self.to_operand(grew.literal())
 
         assert False, f'Unknown operand: {type(grew)}'

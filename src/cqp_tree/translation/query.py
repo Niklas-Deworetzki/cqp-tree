@@ -229,7 +229,7 @@ class Disjunction(GenericJunction):
 
 @dataclass(frozen=True)
 class Token:
-    identifier: Identifier
+    identifier: Identifier = field(default_factory=Identifier)
     attributes: Optional[Predicate] = None
 
 
@@ -312,9 +312,7 @@ class QueryPart(WithQueryComponents):
     query_type: PartType
 
     def __post_init__(self):
-        visible_from_outer_scope = {
-            token.identifier for token in self.owning_query.tokens if token.identifier
-        }
+        visible_from_outer_scope = {token.identifier for token in self.owning_query.tokens}
         self._verify_valid_identifiers(visible_from_outer_scope)
 
 
