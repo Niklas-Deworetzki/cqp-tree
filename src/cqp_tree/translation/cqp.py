@@ -1,28 +1,21 @@
-import itertools
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import StrEnum
-from typing import Iterable, Iterator, Tuple
+from typing import Iterable, Iterator, Optional, Tuple
 
 from cqp_tree.translation import query
-from cqp_tree.utils import flatmap_set, partition_set, to_str
+from cqp_tree.utils import flatmap_set, names_from_alphabet, partition_set, to_str
 
 Environment = dict[query.Identifier, str]
 
-ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
-
-
-def names():
-    """Function producing an infinite stream of fresh names."""
-    length = 0
-    while True:
-        length += 1
-        for name in itertools.combinations_with_replacement(ALPHABET, length):
-            yield ''.join(name)
+TOKEN_ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
+QUERY_ALPHABET = TOKEN_ALPHABET.upper()
 
 
 class Query(ABC):
     """Abstract base class for all queries."""
+
+    target_identifier: Optional[query.Identifier]
 
     @abstractmethod
     def referenced_identifiers(self) -> set[query.Identifier]: ...
@@ -31,7 +24,7 @@ class Query(ABC):
     def format(self, environment: Environment) -> str: ...
 
     def __str__(self):
-        environment = dict(zip(self.referenced_identifiers(), names()))
+        environment = dict(zip(self.referenced_identifiers(), names_from_alphabet(TOKEN_ALPHABET)))
         return self.format(environment)
 
 
@@ -240,55 +233,10 @@ def from_all_arrangements(
     return Operator('|', all_arrangements)
 
 
-class SetOperation(StrEnum):
-    INTERSECTION = '&'
-    SUBTRACTION = '-'
-
-    @staticmethod
-    def from_query_type(qpt: query.PartType) -> 'SetOperation':
-        return {
-            query.PartType.ADDITIONAL: SetOperation.INTERSECTION,
-            query.PartType.NEGATIVE: SetOperation.SUBTRACTION,
-        }[qpt]
-
-
-@dataclass(frozen=True)
-class ExecutionStep:
-    operation: SetOperation
-    query: Query
-
-
-def from_query(q: query.Query) -> Tuple[Query, Iterable[ExecutionStep]]:
-    """Translate a tree-based query into a CQP query for all different arrangements of tokens."""
-
-    def collect_raised_predicates(tokens: Iterable[query.Token], into: set[query.Predicate]):
-        for token in tokens:  # Raise local predicates to prepare re-ordering.
-            if token.attributes is not None:
-                raised_predicate = token.attributes.raise_from(token.identifier)
-                raised_predicate = raised_predicate.normalize()
-                into.add(raised_predicate)
-
-    identifiers = {t.identifier for t in q.tokens}
-    dependencies = set(q.dependencies)
-    constraints = set(q.constraints)
-    predicates = set(pred.normalize() for pred in q.predicates)
-    collect_raised_predicates(q.tokens, into=predicates)
-
-    initial_query = from_all_arrangements(identifiers, dependencies, constraints, predicates)
-
-    subsequent_execution_steps = list[ExecutionStep]()
-    for part in q.additional_query_parts:
-        part_identifiers = identifiers | {t.identifier for t in part.tokens}
-        part_dependencies = dependencies | set(part.dependencies)
-        part_constraints = constraints | set(part.constraints)
-        part_predicates = predicates | set(part.predicates)
-        collect_raised_predicates(part.tokens, into=part_predicates)
-
-        part_query = from_all_arrangements(
-            part_identifiers, part_dependencies, part_constraints, part_predicates
-        )
-        subsequent_execution_steps.append(
-            ExecutionStep(SetOperation.from_query_type(part.query_type), part_query)
-        )
-
-    return initial_query, subsequent_execution_steps
+def from_query(q: query.Query) -> Query:
+    return from_all_arrangements(
+        set(q.tokens),
+        set(q.dependencies),
+        set(q.constraints),
+        set(q.predicates),
+    )

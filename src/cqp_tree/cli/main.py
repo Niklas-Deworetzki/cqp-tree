@@ -89,7 +89,7 @@ def get_inputs(args: argparse.Namespace) -> Iterator[str]:
         yield from sys.stdin
 
 
-def translate(args: argparse.Namespace, query_str: str) -> cqp_tree.Query | None:
+def translate(args: argparse.Namespace, query_str: str) -> cqp_tree.ExecutionPlan | None:
     try:
         return cqp_tree.translate_input(query_str, args.translator or None)
     except cqp_tree.UnableToGuessTranslatorError as translation_error:
@@ -124,17 +124,22 @@ def main():
         translated_queries = 0
         for query_str in get_inputs(args):
             try:
-                query = translate(args, query_str)
-                if query:
-                    cqp, more_execution_steps = cqp_tree.cqp_from_query(query)
-                    translated_queries += 1
-                    if not more_execution_steps:
-                        output.write(str(cqp) + '\n')
-                    else:
-                        warn(
-                            'Multiple steps are necessary to translate this query. '
-                            'This is not supported yet.'
-                        )
+                plan = translate(args, query_str)
+                if not plan:
+                    continue
+
+                if len(plan.queries) > 1:
+                    warn(
+                        'Multiple steps are necessary to translate this query. '
+                        'This is not supported yet.'
+                    )
+                    continue
+
+                query, *_ = plan.queries
+                cqp = cqp_tree.cqp_from_query(query)
+                output.write(str(cqp) + '\n')
+                translated_queries += 1
+
             except cqp_tree.ParsingFailed as parse_failure:
                 warn('Query could not be parsed:')
                 for error in parse_failure.errors:

@@ -1,4 +1,5 @@
-from typing import Annotated, Callable, Collection, Iterable, Tuple
+import itertools
+from typing import Annotated, Callable, Collection, Iterable, Iterator, Tuple
 
 type NonEmpty[T] = Annotated[Collection[T], 'Non empty Sequence of T.']
 
@@ -42,3 +43,14 @@ def format_human_readable(strings: NonEmpty[str]) -> str:
         *init, last = strings
         initial = ', '.join(init)
         return f'{initial} and {last}'
+
+
+def names_from_alphabet(alphabet: Iterable[str]) -> Iterator[str]:
+    """Function producing an infinite stream of fresh names."""
+    assert alphabet, 'alphabet cannot be empty.'
+
+    length = 0
+    while True:
+        length += 1
+        for name in itertools.combinations_with_replacement(alphabet, length):
+            yield ''.join(name)

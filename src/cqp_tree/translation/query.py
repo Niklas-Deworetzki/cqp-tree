@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from enum import Enum, auto
+from enum import StrEnum
 from itertools import count
 from typing import Annotated, ClassVar, Collection, Iterable, List, Optional, Self, Set
 
-from cqp_tree.utils import flatmap_set
 from cqp_tree.translation.errors import NotSupported
+from cqp_tree.utils import flatmap_set
 
 
 class Identifier:
@@ -228,12 +228,6 @@ class Disjunction(GenericJunction):
 
 
 @dataclass(frozen=True)
-class Token:
-    identifier: Identifier = field(default_factory=Identifier)
-    attributes: Optional[Predicate] = None
-
-
-@dataclass(frozen=True)
 class Dependency:
     src: Identifier
     dst: Identifier
@@ -256,32 +250,25 @@ class Constraint:
     distance: Distance = ARBITRARY_DISTANCE
 
 
-@dataclass(frozen=True, kw_only=True)
-class WithQueryComponents(ABC):
-    """
-    Mixin holding all relevant components of a query:
-    - the tokens
-    - the dependencies between tokens
-    - predicates on tokens
-    - and constraints on the token order
-    """
-
-    tokens: Collection[Token] = field(default_factory=set)
+@dataclass(frozen=True)
+class Query:
+    tokens: Collection[Identifier] = field(default_factory=set)
     dependencies: Collection[Dependency] = field(default_factory=set)
     constraints: Collection[Constraint] = field(default_factory=set)
     predicates: Collection[Predicate] = field(default_factory=set)
+    identifier: Identifier = field(default_factory=Identifier)
 
-    def _verify_valid_identifiers(self, visible_identifiers: set[Identifier] = frozenset()):
+    def __post_init__(self):
         defined_identifiers: Set[Identifier] = set()
         # Unlike graph-matching systems, we allow every identifier only once, as every identifier
         # is attached to a token and every token is unique.
         # The translation layer should handle unifying multiple references to the same identifier.
 
         for token in self.tokens:
-            if token.identifier in defined_identifiers or token.identifier in visible_identifiers:
+            if token in defined_identifiers:
                 # Don't report identifiers here, since they are synthetic and meaningless for users.
                 raise NotSupported('Multiple tokens share the same identifier.')
-            defined_identifiers.add(token.identifier)
+            defined_identifiers.add(token)
 
         # Collect all identifiers referenced in query.
         referenced_identifiers = flatmap_set(self.constraints, lambda c: {c.src, c.dst})
@@ -297,50 +284,59 @@ class WithQueryComponents(ABC):
             self.tokens,
             lambda t: t.attributes.referenced_identifiers() if t.attributes else set(),
         )
-        if referenced_identifiers - (defined_identifiers | visible_identifiers):
+        if referenced_identifiers - defined_identifiers:
             raise NotSupported('Query uses identifiers not defined by tokens.')
 
 
-class PartType(Enum):
-    ADDITIONAL = auto()
-    NEGATIVE = auto()
+class SetOperator(StrEnum):
+    CONJUNCTION = '&'
+    DISJUNCTION = '|'
+    SUBTRACTION = '-'
 
 
 @dataclass(frozen=True)
-class QueryPart(WithQueryComponents):
-    owning_query: 'Query'
-    query_type: PartType
-
-    def __post_init__(self):
-        visible_from_outer_scope = {token.identifier for token in self.owning_query.tokens}
-        self._verify_valid_identifiers(visible_from_outer_scope)
+class Operation:
+    lhs: Identifier
+    operator: SetOperator
+    rhs: Identifier
+    identifier: Identifier = field(default_factory=Identifier)
 
 
 @dataclass(frozen=True)
-class Query(WithQueryComponents):
-    additional_query_parts: list[QueryPart] = field(default_factory=list)
+class ExecutionPlan:
+    queries: Collection[Query]
+    operations: Collection[Operation]
+    goal: Identifier
 
-    def add_query_part(
-        self,
-        query_type: PartType,
-        tokens: Collection[Token] = None,
-        dependencies: Collection[Dependency] = None,
-        constraints: Collection[Constraint] = None,
-        predicates: Collection[Predicate] = None,
-    ):
-        self.additional_query_parts.append(
-            QueryPart(
-                owning_query=self,
-                query_type=query_type,
-                tokens=tokens or frozenset(),
-                dependencies=dependencies or frozenset(),
-                constraints=constraints or frozenset(),
-                predicates=predicates or frozenset(),
-            )
-        )
+    @staticmethod
+    def of_query(query: Query) -> 'ExecutionPlan':
+        return ExecutionPlan([query], [], query.identifier)
 
-    def get_token_count(self) -> int:
-        return len(self.tokens) + sum(len(part.tokens) for part in self.additional_query_parts)
+    class Builder:
+        def __init__(self):
+            self.queries = list[Query]()
+            self.operations = list[Operation]()
+            self.explicit_goal: Optional[Identifier] = None
 
-    def __post_init__(self):
-        self._verify_valid_identifiers()
+        def add_query(self, query: Query) -> Identifier:
+            self.queries.append(query)
+            return query.identifier
+
+        def add_operation(self, lhs: Identifier, operator: SetOperator, rhs: Identifier) -> Identifier:
+            operation = Operation(lhs, operator, rhs)
+            self.operations.append(operation)
+            return operation.identifier
+
+        def set_goal(self, identifier: Identifier):
+            self.explicit_goal = identifier
+
+        def build(self) -> 'ExecutionPlan':
+            if not self.explicit_goal:
+                if len(self.queries) == 1:
+                    goal = self.queries[0].identifier
+                else:
+                    goal = self.operations[-1].identifier
+            else:
+                goal = self.explicit_goal
+
+            return ExecutionPlan(self.queries, self.operations, goal)
