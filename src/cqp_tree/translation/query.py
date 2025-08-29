@@ -228,6 +228,12 @@ class Disjunction(GenericJunction):
 
 
 @dataclass(frozen=True)
+class Token:
+    identifier: Identifier = field(default_factory=Identifier)
+    attributes: Optional[Predicate] = None
+
+
+@dataclass(frozen=True)
 class Dependency:
     src: Identifier
     dst: Identifier
@@ -252,7 +258,7 @@ class Constraint:
 
 @dataclass(frozen=True)
 class Query:
-    tokens: Collection[Identifier] = field(default_factory=set)
+    tokens: Collection[Token] = field(default_factory=set)
     dependencies: Collection[Dependency] = field(default_factory=set)
     constraints: Collection[Constraint] = field(default_factory=set)
     predicates: Collection[Predicate] = field(default_factory=set)
@@ -265,10 +271,10 @@ class Query:
         # The translation layer should handle unifying multiple references to the same identifier.
 
         for token in self.tokens:
-            if token in defined_identifiers:
+            if token.identifier in defined_identifiers:
                 # Don't report identifiers here, since they are synthetic and meaningless for users.
                 raise NotSupported('Multiple tokens share the same identifier.')
-            defined_identifiers.add(token)
+            defined_identifiers.add(token.identifier)
 
         # Collect all identifiers referenced in query.
         referenced_identifiers = flatmap_set(self.constraints, lambda c: {c.src, c.dst})

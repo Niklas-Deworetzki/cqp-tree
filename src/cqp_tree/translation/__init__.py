@@ -2,6 +2,7 @@ from cqp_tree.translation.cqp import from_query as cqp_from_query
 from cqp_tree.translation.errors import InputError, ParsingFailed, NotSupported
 from cqp_tree.translation.query import (
     Identifier,
+    Token,
     # Operand + subclasses
     Operand,
     Literal,

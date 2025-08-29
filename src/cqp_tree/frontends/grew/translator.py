@@ -36,15 +36,15 @@ def parse(query: str) -> GrewParser.RequestContext:
     return result
 
 
-Environment = defaultdict[str, ct.Identifier]
+Environment = defaultdict[str, ct.Token]
 
 
 def new_environment() -> Environment:
-    return defaultdict(ct.Identifier)
+    return defaultdict(ct.Token)
 
 
 @ct.translator('grew')
-def query_from_grew(grew: str) -> ct.ExecutionPlan:
+def translate_grew(grew: str) -> ct.ExecutionPlan:
     grew_request = parse(grew)
     return QueryBuilder().build(grew_request)
 
@@ -64,6 +64,7 @@ class QueryBuilder:
             self.predicates += inherited.predicates
 
             for key, value in inherited.environment.items():
+                # We never put attributes on tokens, so we are safe to copy references here.
                 self.environment[key] = value
 
     def is_empty(self):
@@ -80,10 +81,10 @@ class QueryBuilder:
     @staticmethod
     def query_operator(
         item: GrewParser.WithItemContext | GrewParser.WithoutItemContext,
-    ) -> ct.Operator:
+    ) -> ct.SetOperator:
         return {
-            GrewParser.WithItemContext: ct.Operator.CONJUNCTION,
-            GrewParser.WithoutItemContext: ct.Operator.SUBTRACTION,
+            GrewParser.WithItemContext: ct.SetOperator.CONJUNCTION,
+            GrewParser.WithoutItemContext: ct.SetOperator.SUBTRACTION,
         }[type(item)]
 
     @staticmethod
@@ -94,7 +95,7 @@ class QueryBuilder:
         root_builder = QueryBuilder().translate_clauses(pattern)
         if root_builder.is_empty():
             # If pattern is empty, match an arbitrary token.
-            query = ct.Query(tokens=[ct.Identifier()])
+            query = ct.Query(tokens=[ct.Token()])
         else:
             query = root_builder.build_query()
 
@@ -148,12 +149,13 @@ class QueryBuilder:
 
             # Only add predicate if features are present.
             if features:
-                predicate = self.wrap(features, ct.Disjunction).raise_from(token)
+                predicate = self.wrap(features, ct.Disjunction)
+                predicate.raise_from(token.identifier)
                 self.predicates.append(predicate)
 
         elif isinstance(clause, GrewParser.EdgeClauseContext):
-            src = self.environment[clause.src.text]
-            dst = self.environment[clause.dst.text]
+            src = self.environment[clause.src.text].identifier
+            dst = self.environment[clause.dst.text].identifier
 
             dependency = ct.Dependency(src, dst)
             self.dependencies.append(dependency)
@@ -198,8 +200,8 @@ class QueryBuilder:
             else:
                 distance = ct.Constraint.ARBITRARY_DISTANCE
 
-            lhs = self.environment[clause.lhs.text]
-            rhs = self.environment[clause.rhs.text]
+            lhs = self.environment[clause.lhs.text].identifier
+            rhs = self.environment[clause.rhs.text].identifier
 
             self.constraints.append(ct.Constraint(lhs, rhs, enforces_order=True, distance=distance))
 
@@ -275,7 +277,7 @@ class QueryBuilder:
         if isinstance(grew, GrewParser.AttributeContext):
             instance = self.string_of_token(grew.Identifier(0))
             attribute_name = self.string_of_token(grew.Identifier(1))
-            return ct.Attribute(self.environment[instance], attribute_name)
+            return ct.Attribute(self.environment[instance].identifier, attribute_name)
 
         # Literal used as part of feature structure, covered by other cases.
         if isinstance(grew, GrewParser.ValueContext):

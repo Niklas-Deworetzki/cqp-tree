@@ -234,9 +234,18 @@ def from_all_arrangements(
 
 
 def from_query(q: query.Query) -> Query:
+    """Translate a tree-based query into a CQP query for all different arrangements of tokens."""
+
+    predicates = set(pred.normalize() for pred in q.predicates)
+    for token in q.tokens:  # Raise local predicates to prepare re-ordering.
+        if token.attributes is not None:
+            raised_predicate = token.attributes.raise_from(token.identifier)
+            raised_predicate = raised_predicate.normalize()
+            predicates.add(raised_predicate)
+
     return from_all_arrangements(
-        set(q.tokens),
+        {token.identifier for token in q.tokens},
         set(q.dependencies),
         set(q.constraints),
-        set(q.predicates),
+        predicates,
     )
