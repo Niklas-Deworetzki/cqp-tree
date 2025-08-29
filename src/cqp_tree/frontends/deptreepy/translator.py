@@ -27,7 +27,7 @@ def parse(s: str):
 
 
 @ct.translator('deptreepy')
-def query_from_deptreepy(deptreepy: str) -> ct.Query:
+def translate_deptreepy(deptreepy: str) -> ct.ExecutionPlan:
     tokens: List[ct.Token] = []
     dependencies: List[ct.Dependency] = []
 
@@ -99,4 +99,5 @@ def query_from_deptreepy(deptreepy: str) -> ct.Query:
                 raise ct.NotSupported(str(args))
 
     convert(parse(deptreepy))
-    return ct.Query(tokens=tokens, dependencies=dependencies)
+    query = ct.Query(tokens=tokens, dependencies=dependencies)
+    return ct.ExecutionPlan.of_query(query)

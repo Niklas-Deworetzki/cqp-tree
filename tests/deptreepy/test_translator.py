@@ -1,21 +1,20 @@
 import unittest
 
 from cqp_tree import Attribute, Disjunction, Literal, NotSupported, Comparison
-from cqp_tree.frontends.deptreepy import query_from_deptreepy
+from cqp_tree.frontends.deptreepy import translate_deptreepy
 
 
 class TranslationTests(unittest.TestCase):
 
     def test_tree_(self):
         with self.assertRaises(NotSupported):
-            query_from_deptreepy('TREE a b c')
+            translate_deptreepy('TREE a b c')
 
     def test_tree(self):
-        q = query_from_deptreepy('TREE_ ((AND (POS NOUN) (DEPREL det))) (OR (LEMMA IN a b c)))')
-        self.assertIsNotNone(q)
+        translate_deptreepy('TREE_ ((AND (POS NOUN) (DEPREL det))) (OR (LEMMA IN a b c)))')
 
     def test_field_comparison(self):
-        q = query_from_deptreepy('field a')
+        (q,) = translate_deptreepy('field a').queries
         (token,) = q.tokens
 
         self.assertEqual(
@@ -28,7 +27,7 @@ class TranslationTests(unittest.TestCase):
         )
 
     def test_field_in_comparison(self):
-        q = query_from_deptreepy('field IN a b')
+        (q,) = translate_deptreepy('field IN a b').queries
         (token,) = q.tokens
 
         self.assertEqual(
@@ -50,7 +49,7 @@ class TranslationTests(unittest.TestCase):
         )
 
     def test_field_contains_comparison(self):
-        q = query_from_deptreepy('field_ a')
+        (q,) = translate_deptreepy('field_ a').queries
         (token,) = q.tokens
 
         self.assertEqual(
@@ -63,7 +62,7 @@ class TranslationTests(unittest.TestCase):
         )
 
     def test_field_in_contains_comparison(self):
-        q = query_from_deptreepy('field_ IN a b')
+        (q,) = translate_deptreepy('field_ IN a b').queries
         (token,) = q.tokens
 
         self.assertEqual(
