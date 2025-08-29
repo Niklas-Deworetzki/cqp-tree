@@ -309,14 +309,14 @@ class Operation:
 
 
 @dataclass(frozen=True)
-class ExecutionPlan:
+class QueryPlan:
     queries: Collection[Query]
     operations: Collection[Operation]
     goal: Identifier
 
     @staticmethod
-    def of_query(query: Query) -> 'ExecutionPlan':
-        return ExecutionPlan([query], [], query.identifier)
+    def of_query(query: Query) -> 'QueryPlan':
+        return QueryPlan([query], [], query.identifier)
 
     class Builder:
         def __init__(self):
@@ -336,7 +336,7 @@ class ExecutionPlan:
         def set_goal(self, identifier: Identifier):
             self.explicit_goal = identifier
 
-        def build(self) -> 'ExecutionPlan':
+        def build(self) -> 'QueryPlan':
             if not self.explicit_goal:
                 if len(self.queries) == 1:
                     goal = self.queries[0].identifier
@@ -345,4 +345,4 @@ class ExecutionPlan:
             else:
                 goal = self.explicit_goal
 
-            return ExecutionPlan(self.queries, self.operations, goal)
+            return QueryPlan(self.queries, self.operations, goal)

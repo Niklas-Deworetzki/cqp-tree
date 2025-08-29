@@ -5,6 +5,12 @@ from pyparsing import ParseException, nestedExpr
 import cqp_tree.translation as ct
 
 
+# TREE_ (AND (TREE_ X) (TREE_ Y))     R -> X & R -> Y
+# TREE_ (OR (TREE_ X) (TREE_ Y))      R -> X | R -> Y
+# TREE_ (NOT (TREE_ X))               R      - R -> X
+# TREE_ (NOT (AND (TREE_ X) (TREE_ Y)))    R - (R -> X & R -> Y)
+
+
 def parse(s: str):
     # Parsing adapted from:
     # https://github.com/aarneranta/deptreepy/blob/a3fd7aa0b01f169afe6f37277d8bc2c624bcb433/patterns.py#L334
@@ -27,7 +33,7 @@ def parse(s: str):
 
 
 @ct.translator('deptreepy')
-def translate_deptreepy(deptreepy: str) -> ct.ExecutionPlan:
+def translate_deptreepy(deptreepy: str) -> ct.QueryPlan:
     tokens: List[ct.Token] = []
     dependencies: List[ct.Dependency] = []
 
@@ -100,4 +106,4 @@ def translate_deptreepy(deptreepy: str) -> ct.ExecutionPlan:
 
     convert(parse(deptreepy))
     query = ct.Query(tokens=tokens, dependencies=dependencies)
-    return ct.ExecutionPlan.of_query(query)
+    return ct.QueryPlan.of_query(query)

@@ -22,7 +22,7 @@ from cqp_tree.translation.query import (
     Query,
     Operation,
     SetOperator,
-    ExecutionPlan,
+    QueryPlan,
 )
 from cqp_tree.translation.registry import (
     UnableToGuessTranslatorError,

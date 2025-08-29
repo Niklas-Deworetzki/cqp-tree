@@ -44,7 +44,7 @@ def new_environment() -> Environment:
 
 
 @ct.translator('grew')
-def translate_grew(grew: str) -> ct.ExecutionPlan:
+def translate_grew(grew: str) -> ct.QueryPlan:
     grew_request = parse(grew)
     return QueryBuilder().build(grew_request)
 
@@ -88,8 +88,8 @@ class QueryBuilder:
         }[type(item)]
 
     @staticmethod
-    def build(request: GrewParser.RequestContext) -> ct.ExecutionPlan:
-        plan = ct.ExecutionPlan.Builder()
+    def build(request: GrewParser.RequestContext) -> ct.QueryPlan:
+        plan = ct.QueryPlan.Builder()
 
         pattern = request.pattern().body()
         root_builder = QueryBuilder().translate_clauses(pattern)

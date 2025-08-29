@@ -2,9 +2,9 @@ from dataclasses import dataclass
 from typing import Callable, Collection, Iterator, Optional, Tuple
 
 from cqp_tree.translation.errors import NotSupported, ParsingFailed
-from cqp_tree.translation.query import ExecutionPlan
+from cqp_tree.translation.query import QueryPlan
 
-type TranslationFunction = Callable[[str], ExecutionPlan]
+type TranslationFunction = Callable[[str], QueryPlan]
 
 known_translators = dict[str, TranslationFunction]()
 
@@ -41,7 +41,7 @@ class UnableToGuessTranslatorError(Exception):
         return f'Cannot guess translator for query: {reason}'
 
 
-def translate_input(inp: str, use_translator: Optional[str] = None) -> ExecutionPlan:
+def translate_input(inp: str, use_translator: Optional[str] = None) -> QueryPlan:
     """
     Translates an input using the given translator. If no translator is given,
     the correct translator is guessed by trying all available translators.
@@ -68,7 +68,7 @@ def translate_input(inp: str, use_translator: Optional[str] = None) -> Execution
     return known_translators[use_translator](inp)
 
 
-def guess_correct_translator(inp: str) -> Iterator[Tuple[str, ExecutionPlan]]:
+def guess_correct_translator(inp: str) -> Iterator[Tuple[str, QueryPlan]]:
     """
     Tries to find translators applicable for the input string.
     Returns an iterator over all successfully translated queries and the name of the

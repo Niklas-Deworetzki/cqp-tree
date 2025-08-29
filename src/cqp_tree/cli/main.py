@@ -89,7 +89,7 @@ def get_inputs(args: argparse.Namespace) -> Iterator[str]:
         yield from sys.stdin
 
 
-def translate(args: argparse.Namespace, query_str: str) -> cqp_tree.ExecutionPlan | None:
+def translate(args: argparse.Namespace, query_str: str) -> cqp_tree.QueryPlan | None:
     try:
         return cqp_tree.translate_input(query_str, args.translator or None)
     except cqp_tree.UnableToGuessTranslatorError as translation_error:
