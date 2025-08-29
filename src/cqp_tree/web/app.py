@@ -39,17 +39,12 @@ def translate():
 
     try:
         text, translator = extract_request_data()
-        translated_query = cqp_tree.translate_input(text, translator)
-        if translated_query.get_token_count() > 5:
+        query, *_ = cqp_tree.translate_input(text, translator).queries
+
+        if len(query.tokens) > 5:
             raise ValueError('Too many tokens. CQP will not be able to handle the resulting query.')
-        query, additional_steps = cqp_tree.cqp_from_query(translated_query)
 
-        result: dict[str, Any] = {'query': str(query)}
-        if additional_steps:
-            result['additional_steps'] = [
-                {'operation': step.operation, 'query': str(step.query)} for step in additional_steps
-            ]
-
+        result: dict[str, Any] = {'query': str(cqp_tree.cqp_from_query(query))}
         return jsonify(result)
 
     except ValueError as validation_error:
