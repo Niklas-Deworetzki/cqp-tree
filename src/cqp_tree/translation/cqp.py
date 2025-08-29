@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from enum import StrEnum
-from typing import Iterable, Iterator, Optional, Tuple
+from typing import Iterable, Iterator, Optional
 
 from cqp_tree.translation import query
 from cqp_tree.utils import flatmap_set, names_from_alphabet, partition_set, to_str
@@ -9,7 +8,6 @@ from cqp_tree.utils import flatmap_set, names_from_alphabet, partition_set, to_s
 Environment = dict[query.Identifier, str]
 
 TOKEN_ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
-QUERY_ALPHABET = TOKEN_ALPHABET.upper()
 
 
 class Query(ABC):

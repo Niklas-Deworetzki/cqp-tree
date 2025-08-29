@@ -328,8 +328,8 @@ class ExecutionPlan:
             self.queries.append(query)
             return query.identifier
 
-        def add_operation(self, lhs: Identifier, operator: SetOperator, rhs: Identifier) -> Identifier:
-            operation = Operation(lhs, operator, rhs)
+        def add_operation(self, lhs: Identifier, op: SetOperator, rhs: Identifier) -> Identifier:
+            operation = Operation(lhs, op, rhs)
             self.operations.append(operation)
             return operation.identifier
 
