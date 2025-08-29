@@ -63,7 +63,7 @@ def translate_deptreepy(deptreepy: str) -> ct.ExecutionPlan:
             field = field[:-1]
             comparison_operator = 'contains'
 
-        def constructor(strpatt: str) -> ct.Comparison:
+        def constructor(strpatt) -> ct.Comparison:
             if not isinstance(strpatt, str):
                 raise ct.NotSupported('When matching a field, the field value must be a string.')
             return ct.Comparison(
