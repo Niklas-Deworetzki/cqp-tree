@@ -24,6 +24,7 @@ Currently, the following other query-languages are (partially) supported:
 1. [Grew-match](https://match.grew.fr/)
 2. [deptreepy](https://github.com/aarneranta/deptreepy/tree/main)
 3. [CoNLL-U](https://universaldependencies.org/format.html): this is not commonly intended as a query language, but (partial) trees in CoNLL-U format can be interpreted as queries. For details, see [conll_frontend.md](conll_frontend.md)
+4. [conlluc](https://github.com/LaboratorioSperimentale/adoc), a data format for UD-like constructions as defined by the ItCon project (experimental; support is very partial)
 
 In order to translate a query, you can provide it either via the command line, as the contents of a file or by directly typing it out into the program:
 

@@ -1,0 +1,10 @@
+# cxn_id = 68
+# name = salta fuori che V
+# function = ref:D is found out unexpectedly
+# horizontal_links = 167
+# vertical_links =
+# fields = ID UD.FORM LEMMA UPOS FEATS HEAD DEPREL REQUIRED WITHOUT SEM_FEATS SEM_ROLES ADJACENCY IDENTITY
+A	_	saltare	VERB	Number=Sing|Person=3	0	root	1	CHILDREN:DEPREL=nsubj	_	_	_	_
+B	fuori	fuori	ADV	_	A	advmod	1	_	_	_	A	_
+C	che	che	SCONJ	_	D	mark	1	_	_	_	_	_
+D	_	_	VERB,NOUN,ADJ	VerbForm=Fin	A	csubj	1	_	_	Eventuality	_	_
