@@ -1,1 +1,1 @@
-from .translator import query_from_conll
+from .translator import query_from_conlluc
