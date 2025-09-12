@@ -3,6 +3,8 @@ from typing import Any
 from flask import Flask, jsonify, request, send_from_directory
 
 import cqp_tree
+from cqp_tree import QueryPlan
+from cqp_tree.utils import names_from_alphabet
 
 app = Flask(__name__)
 
@@ -39,13 +41,12 @@ def translate():
 
     try:
         text, translator = extract_request_data()
-        query, *_ = cqp_tree.translate_input(text, translator).queries
+        plan = cqp_tree.translate_input(text, translator)
 
-        if len(query.tokens) > 5:
-            raise ValueError('Too many tokens. CQP will not be able to handle the resulting query.')
+        if is_too_complex(plan):
+            raise ValueError('Your query is too complex! Try using fewer tokens.')
 
-        result: dict[str, Any] = {'query': str(cqp_tree.cqp_from_query(query))}
-        return jsonify(result)
+        return jsonify(to_json(plan))
 
     except ValueError as validation_error:
         return error(str(validation_error), 422)
@@ -67,3 +68,40 @@ def translate():
     except cqp_tree.ParsingFailed as parse_error:
         parse_error = next(iter(parse_error.errors))
         return error('This query cannot be parsed: ' + parse_error.message)
+
+
+def is_too_complex(plan: QueryPlan) -> bool:
+    if len(plan.queries) > 20:
+        return True
+    if any(len(query.tokens) > 5 for query in plan.queries):
+        return True
+    return False
+
+
+def to_json(plan: QueryPlan) -> dict:
+    environment = dict(zip(plan.identifiers(), names_from_alphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ')))
+
+    queries = {
+        environment[query.identifier]: str(cqp_tree.cqp_from_query(query))
+        for query in plan.queries
+    }
+    operations = {
+        environment[operation.identifier]: {
+            'lhs': environment[operation.lhs],
+            'rhs': environment[operation.rhs],
+            'op': operation.operator,
+        }
+        for operation in plan.operations
+    }
+
+    result: dict[str, Any] = {
+        'recipe': {
+            'queries': queries,
+            'operations': operations,
+            'goal': environment[plan.goal],
+        }
+    }
+    if plan.has_simple_representation():
+        result['single_query'] = str(cqp_tree.cqp_from_query(plan.simple_representation()))
+
+    return result

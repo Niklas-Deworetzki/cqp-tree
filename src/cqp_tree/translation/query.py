@@ -318,6 +318,20 @@ class QueryPlan:
     def of_query(query: Query) -> 'QueryPlan':
         return QueryPlan([query], [], query.identifier)
 
+    def simple_representation(self) -> Optional[Query]:
+        simple, *more = self.queries
+        if not more and not self.operations:
+            return simple
+        return None
+
+    def has_simple_representation(self) -> bool:
+        return self.simple_representation() is not None
+
+    def identifiers(self) -> Collection[Identifier]:
+        operation_identifiers = {operation.identifier for operation in self.operations}
+        query_identifiers = {query.identifier for query in self.queries}
+        return operation_identifiers | query_identifiers
+
     class Builder:
         def __init__(self):
             self.queries = list[Query]()
