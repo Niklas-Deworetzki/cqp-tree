@@ -82,8 +82,7 @@ def to_json(plan: QueryPlan) -> dict:
     environment = dict(zip(plan.identifiers(), names_from_alphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ')))
 
     queries = {
-        environment[query.identifier]: str(cqp_tree.cqp_from_query(query))
-        for query in plan.queries
+        environment[query.identifier]: str(cqp_tree.cqp_from_query(query)) for query in plan.queries
     }
     operations = {
         environment[operation.identifier]: {
