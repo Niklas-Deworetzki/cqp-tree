@@ -231,10 +231,14 @@
                 const data = await response.json();
                 if (!response.ok) {
                     throw new Error(data.error || 'An critical error occurred.');
+
+                } else if (!('single_query' in data)) {
+                    throw new Error('Your query contains features that we can currently not translate.');
+
                 } else {
-                    queryOutput.value = data.query;
+                    queryOutput.value = data.single_query;
                     runOnKorp.href = 'https://spraakbanken.gu.se/korp/#?search_tab=2&search=cqp%7C' +
-                        encodeURIComponent(data.query);
+                        encodeURIComponent(data.single_query);
 
                     show(runOnKorp);
                     hideError();
