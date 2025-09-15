@@ -68,7 +68,6 @@ class DependencyConstraint(Result):
             src=self.root.identifier,
             dst=constraint.root.identifier,
         )
-        self.tokens.append(constraint.root)
         self.dependencies.append(dependency)
 
         self.tokens += constraint.tokens
