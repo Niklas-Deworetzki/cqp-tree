@@ -129,18 +129,20 @@ def translate_deptreepy(deptreepy: str) -> ct.QueryPlan:
     ) -> TokenConstraint | Query:
         if all(isinstance(part, TokenConstraint) for part in parts):
             conjuncts = [part.predicate for part in parts if part.predicate]
-            pred = ctor(*conjuncts)
+            pred = ctor(conjuncts)
             return TokenConstraint(predicate=pred)
 
         else:
             # Promote to queries
-            parts = [part.as_query(builder) for part in parts]
+            parts = [part.as_query(builder).identifier for part in parts]
 
             res, *others = parts
             for conj in others:
-                res = builder.add_operation(res.identifier, operator, conj.identifier)
-            return res
+                res = builder.add_operation(res, operator, conj)
+            return Query(res)
 
+    # we want to return here for every possible operator
+    # pylint: disable=too-many-return-statements
     def convert(lisp) -> TokenConstraint | DependencyConstraint | Query:
         match lisp:
             case ['TREE', *_]:
