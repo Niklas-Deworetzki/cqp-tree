@@ -119,7 +119,7 @@ def operation_constructor_for_field(field) -> Callable[[str], ct.Comparison]:
 
 
 @ct.translator('deptreepy')
-def translate_new(deptreepy: str) -> ct.QueryPlan:
+def translate_deptreepy(deptreepy: str) -> ct.QueryPlan:
     builder = ct.QueryPlan.Builder()
 
     def combine_operation(
