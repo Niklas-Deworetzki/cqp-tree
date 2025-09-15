@@ -1,14 +1,10 @@
-from typing import Callable, List
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from typing import Callable, List, Optional, Self, Type, override
 
 from pyparsing import ParseException, nestedExpr
 
 import cqp_tree.translation as ct
-
-
-# TREE_ (AND (TREE_ X) (TREE_ Y))     R -> X & R -> Y
-# TREE_ (OR (TREE_ X) (TREE_ Y))      R -> X | R -> Y
-# TREE_ (NOT (TREE_ X))               R      - R -> X
-# TREE_ (NOT (AND (TREE_ X) (TREE_ Y)))    R - (R -> X & R -> Y)
 
 
 def parse(s: str):
@@ -32,12 +28,121 @@ def parse(s: str):
     return to_lisp(parsed[0])
 
 
-@ct.translator('deptreepy')
-def translate_deptreepy(deptreepy: str) -> ct.QueryPlan:
-    tokens: List[ct.Token] = []
-    dependencies: List[ct.Dependency] = []
+class Result(ABC):
 
-    def convert(lisp) -> ct.Identifier:
+    @abstractmethod
+    def as_query(self, builder: ct.QueryPlan.Builder) -> 'Query': ...
+
+    @abstractmethod
+    def as_dependency_constraint(self) -> 'DependencyConstraint': ...
+
+
+@dataclass
+class Query(Result):
+    identifier: ct.Identifier
+
+    @override
+    def as_query(self, builder: ct.QueryPlan.Builder) -> Self:
+        return self
+
+    @override
+    def as_dependency_constraint(self) -> 'DependencyConstraint':
+        raise ct.NotSupported('This operation does not support ')
+
+
+class DependencyConstraint(Result):
+    root: ct.Token
+
+    tokens: List[ct.Token]
+    dependencies: List[ct.Dependency]
+
+    def __init__(self, token: ct.Token):
+        self.root = token
+        self.tokens = [token]
+        self.dependencies = []
+
+    def add_edge_to(self, target: Result):
+        constraint = target.as_dependency_constraint()
+
+        dependency = ct.Dependency(
+            src=self.root.identifier,
+            dst=constraint.root.identifier,
+        )
+        self.tokens.append(constraint.root)
+        self.dependencies.append(dependency)
+
+        self.tokens += constraint.tokens
+        self.dependencies += constraint.dependencies
+
+    @override
+    def as_query(self, builder: ct.QueryPlan.Builder) -> Query:
+        query = ct.Query(tokens=self.tokens, dependencies=self.dependencies)
+        return Query(builder.add_query(query))
+
+    @override
+    def as_dependency_constraint(self) -> Self:
+        return self
+
+
+@dataclass
+class TokenConstraint(Result):
+    predicate: Optional[ct.Predicate]
+
+    @override
+    def as_query(self, builder: ct.QueryPlan.Builder) -> Query:
+        return self.as_dependency_constraint().as_query(builder)
+
+    @override
+    def as_dependency_constraint(self) -> DependencyConstraint:
+        token = ct.Token(attributes=self.predicate)
+        return DependencyConstraint(token)
+
+
+def operation_constructor_for_field(field) -> Callable[[str], ct.Comparison]:
+    if not isinstance(field, str):
+        raise ct.NotSupported('When matching a field, the field must be a string.')
+
+    comparison_operator = '='
+    if field.endswith('_'):
+        field = field[:-1]
+        comparison_operator = 'contains'
+
+    def constructor(strpatt) -> ct.Comparison:
+        if not isinstance(strpatt, str):
+            raise ct.NotSupported('When matching a field, the field value must be a string.')
+        return ct.Comparison(
+            ct.Attribute(None, field),
+            comparison_operator,
+            ct.Literal(f'"{strpatt}"'),
+        )
+
+    return constructor
+
+
+@ct.translator('deptreepy')
+def translate_new(deptreepy: str) -> ct.QueryPlan:
+    builder = ct.QueryPlan.Builder()
+
+    def combine_operation(
+        parts: List[Query | DependencyConstraint | TokenConstraint],
+        ctor: Type[ct.Conjunction | ct.Disjunction],
+        operator: ct.SetOperator,
+    ) -> TokenConstraint | Query:
+        if all(isinstance(part, TokenConstraint) for part in parts):
+            conjuncts = [part.predicate for part in parts if part.predicate]
+            pred = ctor(*conjuncts)
+            return TokenConstraint(predicate=pred)
+
+        else:
+            # Promote to queries
+            parts = [part.as_query(builder) for part in parts]
+
+            res, *others = parts
+            for conj in others:
+                res = builder.add_operation(res.identifier, operator, conj.identifier)
+            return res
+
+    def convert(lisp) -> TokenConstraint | DependencyConstraint | Query:
         match lisp:
             case ['TREE', *_]:
                 raise ct.NotSupported('Only TREE_ is supported for matching subtrees.')
@@ -45,65 +150,66 @@ def translate_deptreepy(deptreepy: str) -> ct.QueryPlan:
             case [singleton]:
                 return convert(singleton)
 
-            case ['TREE_', root, *dependents]:
-                root_id = convert(root)
-                dep_ids = [convert(dep) for dep in dependents]
+            case ['TREE_', *args]:
+                if not args:
+                    raise ct.NotSupported('TREE_ requires at least 1 argument, got 0.')
+                root, *dependents = args
 
-                for dep_id in dep_ids:
-                    dependencies.append(ct.Dependency(root_id, dep_id))
+                # TODO: Does this handle nested TREE_ correctly?
+                constraint = convert(root).as_dependency_constraint()
+                for dep in dependents:
+                    constraint.add_edge_to(convert(dep))
 
-                return root_id
-
-            case args:
-                fresh_id = ct.Identifier()
-                pred = convert_predicate(args)
-                tokens.append(ct.Token(fresh_id, pred))
-                return fresh_id
-
-    def operation_constructor_for_field(field) -> Callable[[str], ct.Comparison]:
-        if not isinstance(field, str):
-            raise ct.NotSupported('When matching a field, the field must be a string.')
-
-        comparison_operator = '='
-        if field.endswith('_'):
-            field = field[:-1]
-            comparison_operator = 'contains'
-
-        def constructor(strpatt) -> ct.Comparison:
-            if not isinstance(strpatt, str):
-                raise ct.NotSupported('When matching a field, the field value must be a string.')
-            return ct.Comparison(
-                ct.Attribute(None, field),
-                comparison_operator,
-                ct.Literal(f'"{strpatt}"'),
-            )
-
-        return constructor
-
-    def convert_predicate(lisp) -> ct.Predicate:
-        match lisp:
-            case [singleton]:
-                return convert_predicate(singleton)
+                return constraint
 
             case ['AND', *args]:
-                return ct.Conjunction([convert_predicate(arg) for arg in args])
+                conjuncts = [convert(arg) for arg in args]
+                if not conjuncts:  # AND without any predicates will match every token.
+                    return TokenConstraint(predicate=None)
+
+                return combine_operation(conjuncts, ct.Conjunction, ct.SetOperator.CONJUNCTION)
 
             case ['OR', *args]:
-                return ct.Disjunction([convert_predicate(arg) for arg in args])
+                disjuncts = [convert(arg) for arg in args]
+                if not disjuncts:
+                    raise ct.NotSupported('Empty OR matches no token. This is not supported.')
+
+                return combine_operation(disjuncts, ct.Disjunction, ct.SetOperator.DISJUNCTION)
 
             case ['NOT', *args]:
-                return ct.Negation(convert_predicate(args))
+                arg, *more = args
+                if more:
+                    raise ct.NotSupported(f'NOT requires exactly 1 argument, got {len(more) + 1}.')
+
+                negated = convert(arg)
+                if not isinstance(negated, TokenConstraint):
+                    # TODO: The best way to handle this might be a flag for negated Query instances.
+                    # AND containing NOT can then be implemented as subtraction.
+                    # NOT in OR / as root will be expensive, querying entire corpus and subtracting.
+                    raise ct.NotSupported(
+                        'Searching for the absence of dependencies using NOT is not yet supported.'
+                    )
+
+                predicate = ct.Negation(negated.predicate)
+                return TokenConstraint(predicate=predicate)
 
             case [field, 'IN', *strpatts]:
                 ctor = operation_constructor_for_field(field)
-                return ct.Disjunction([ctor(strpatt) for strpatt in strpatts])
+                pred = ct.Disjunction([ctor(strpatt) for strpatt in strpatts])
+                return TokenConstraint(predicate=pred)
 
             case [field, strpatt]:
-                return operation_constructor_for_field(field)(strpatt)
+                pred = operation_constructor_for_field(field)(strpatt)
+                return TokenConstraint(predicate=pred)
 
-            case args:
-                raise ct.NotSupported(str(args))
+            case unsupported:
+                raise ct.NotSupported(f'Encountered unsupported expression: {unsupported}')
 
-    convert(parse(deptreepy))
-    query = ct.Query(tokens=tokens, dependencies=dependencies)
-    return ct.QueryPlan.of_query(query)
+    result = convert(parse(deptreepy))
+    if isinstance(result, TokenConstraint):
+        result = result.as_dependency_constraint()
+    if isinstance(result, DependencyConstraint):
+        result = result.as_query(builder)
+
+    builder.set_goal(result.identifier)
+    return builder.build()
