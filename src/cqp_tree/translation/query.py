@@ -328,9 +328,17 @@ class QueryPlan:
         return self.simple_representation() is not None
 
     def identifiers(self) -> Collection[Identifier]:
-        operation_identifiers = {operation.identifier for operation in self.operations}
-        query_identifiers = {query.identifier for query in self.queries}
-        return operation_identifiers | query_identifiers
+        query_identifiers = [query.identifier for query in self.queries]
+        operation_identifiers = [operation.identifier for operation in self.operations]
+        return operation_identifiers + query_identifiers
+
+    def as_dict(self) -> dict[Identifier, Operation | Query]:
+        result = {}
+        for query in self.queries:
+            result[query.identifier] = query
+        for operation in self.operations:
+            result[operation.identifier] = operation
+        return result
 
     class Builder:
         def __init__(self):
