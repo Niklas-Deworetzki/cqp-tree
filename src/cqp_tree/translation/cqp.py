@@ -3,11 +3,25 @@ from dataclasses import dataclass, field
 from typing import Iterable, Iterator, Optional
 
 from cqp_tree.translation import query
-from cqp_tree.utils import flatmap_set, names_from_alphabet, partition_set, to_str
+from cqp_tree.utils import (
+    LOWERCASE_ALPHABET,
+    UPPERCASE_ALPHABET,
+    associate_with_names,
+    flatmap_set,
+    partition_set,
+    to_str,
+)
 
 Environment = dict[query.Identifier, str]
 
-TOKEN_ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
+TOKEN_ALPHABET = LOWERCASE_ALPHABET
+QUERY_ALPHABET = UPPERCASE_ALPHABET
+
+CQP_OPERATIONS = {
+    query.SetOperator.CONJUNCTION: 'intersect',
+    query.SetOperator.DISJUNCTION: 'union',
+    query.SetOperator.SUBTRACTION: 'diff',
+}
 
 
 class Query(ABC):
@@ -247,3 +261,28 @@ def from_query(q: query.Query) -> Query:
         set(q.constraints),
         predicates,
     )
+
+
+def format_plan(plan: query.QueryPlan) -> Iterator[str]:
+    environment = associate_with_names(plan.identifiers(), QUERY_ALPHABET)
+    parts = plan.as_dict()
+
+    def rec(goal: query.Identifier, include_assignment: bool = True) -> Iterator[str]:
+        part = parts[goal]
+        if isinstance(part, query.Operation):
+            op, lhs, rhs = (
+                CQP_OPERATIONS[part.operator],
+                environment[part.lhs],
+                environment[part.rhs],
+            )
+            formatted = f'{op} {lhs} {rhs};'
+            yield from rec(part.lhs)
+            yield from rec(part.rhs)
+        else:
+            formatted = str(from_query(part)) + ';'
+
+        if include_assignment:
+            formatted = f'{environment[goal]} = {formatted}'
+        yield formatted
+
+    yield from rec(plan.goal, include_assignment=False)
