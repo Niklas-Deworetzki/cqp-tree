@@ -4,7 +4,7 @@ from flask import Flask, jsonify, request, send_from_directory
 
 import cqp_tree
 from cqp_tree import QueryPlan
-from cqp_tree.utils import names_from_alphabet
+from cqp_tree.utils import UPPERCASE_ALPHABET, associate_with_names
 
 app = Flask(__name__)
 
@@ -79,7 +79,7 @@ def is_too_complex(plan: QueryPlan) -> bool:
 
 
 def to_json(plan: QueryPlan) -> dict:
-    environment = dict(zip(plan.identifiers(), names_from_alphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ')))
+    environment = associate_with_names(plan.identifiers(), UPPERCASE_ALPHABET)
 
     queries = {
         environment[query.identifier]: str(cqp_tree.cqp_from_query(query)) for query in plan.queries

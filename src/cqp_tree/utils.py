@@ -45,6 +45,10 @@ def format_human_readable(strings: NonEmpty[str]) -> str:
         return f'{initial} and {last}'
 
 
+LOWERCASE_ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
+UPPERCASE_ALPHABET = LOWERCASE_ALPHABET.upper()
+
+
 def names_from_alphabet(alphabet: Iterable[str]) -> Iterator[str]:
     """Function producing an infinite stream of fresh names."""
     assert alphabet, 'alphabet cannot be empty.'
@@ -54,3 +58,7 @@ def names_from_alphabet(alphabet: Iterable[str]) -> Iterator[str]:
         length += 1
         for name in itertools.combinations_with_replacement(alphabet, length):
             yield ''.join(name)
+
+
+def associate_with_names[X](xs: Collection[X], alphabet: Iterable[str]) -> dict[X, str]:
+    return dict(zip(xs, names_from_alphabet(alphabet)))

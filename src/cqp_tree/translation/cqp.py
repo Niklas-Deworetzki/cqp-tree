@@ -22,7 +22,7 @@ class Query(ABC):
     def format(self, environment: Environment) -> str: ...
 
     def __str__(self):
-        environment = dict(zip(self.referenced_identifiers(), names_from_alphabet(TOKEN_ALPHABET)))
+        environment = associate_with_names(self.referenced_identifiers(), TOKEN_ALPHABET)
         return self.format(environment)
 
 
