@@ -26,7 +26,6 @@ def argument_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         '--quiet',
-        '-q',
         action='store_true',
         help='Don\'t print a message when reading a query from standard input.',
     )
@@ -62,14 +61,12 @@ def argument_parser() -> argparse.ArgumentParser:
         '-f',
         metavar='FILE',
         help='Input file containing a query to translate.',
-        type=str,
     )
     input_group.add_argument(
         '--query',
         '-q',
         metavar='STR',
         help='A query to translate.',
-        type=str,
     )
 
     return parser
