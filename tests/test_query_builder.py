@@ -7,17 +7,6 @@ import cqp_tree.translation.query as query
 
 class TranslatorTests(unittest.TestCase):
 
-    def test_names_generates_fresh_names(self):
-        limit = 1000
-
-        seen = set()
-        for index, name in enumerate(cqp.names()):
-            self.assertNotIn(name, seen, f'{name} should be a fresh name.')
-            seen.add(name)
-
-            if index == limit:
-                break
-
     def test_distance_between_defaults(self):
         a = query.Identifier()
         b = query.Identifier()
@@ -91,28 +80,3 @@ class TranslatorTests(unittest.TestCase):
         )
         for arrangement in arrangements:
             self.assertIn(arrangement, possible_arrangements)
-
-    def test_set_operation(self):
-        self.assertEqual(
-            cqp.SetOperation.from_query_type(query.PartType.NEGATIVE),
-            cqp.SetOperation.SUBTRACTION,
-        )
-        self.assertEqual(
-            cqp.SetOperation.from_query_type(query.PartType.ADDITIONAL),
-            cqp.SetOperation.INTERSECTION,
-        )
-
-    def test_multiple_steps(self):
-        a = query.Identifier()
-        b = query.Identifier()
-        c = query.Identifier()
-
-        q = query.Query(tokens=[query.Token(i, None) for i in [a, b]])
-        q.add_query_part(
-            query.PartType.NEGATIVE,
-            tokens=[query.Token(c)],
-            constraints=[query.Constraint(a, c, enforces_order=True)],
-        )
-
-        res, additional_steps = cqp.from_query(q)
-        self.assertTrue(additional_steps, 'Query should require additional steps.')

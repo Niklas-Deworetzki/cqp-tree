@@ -48,6 +48,7 @@ min-public-methods = 1
 max-locals = 20
 max-positional-arguments = 7
 max-args = 10
+max-branches = 15
 ignore-paths = [
     'src/cqp_tree/frontends/grew/antlr/'
 ]

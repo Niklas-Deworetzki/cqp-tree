@@ -1,6 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Collection, List, Self, Type, override
+from typing import List, Self, Type, override
 
 from antlr4 import CommonTokenStream, InputStream, TerminalNode
 from antlr4.error.ErrorListener import ErrorListener
@@ -44,67 +44,72 @@ def new_environment() -> Environment:
 
 
 @ct.translator('grew')
-def query_from_grew(grew: str) -> ct.Query:
+def translate_grew(grew: str) -> ct.QueryPlan:
     grew_request = parse(grew)
     return QueryBuilder().build(grew_request)
 
 
 class QueryBuilder:
 
-    def __init__(self, inherited_environment: Environment = None):
+    def __init__(self, inherited: 'QueryBuilder' = None):
         self.dependencies = list[ct.Dependency]()
         self.constraints = list[ct.Constraint]()
         self.predicates = list[ct.Predicate]()
 
         self.environment = new_environment()
-        if inherited_environment:
-            self.inherited_names = set(inherited_environment)
-            for key, value in inherited_environment.items():
-                self.environment[key] = value
-        else:
-            self.inherited_names = frozenset()
 
-    def tokens(self) -> Collection[ct.Token]:
-        return [
-            token for name, token in self.environment.items() if name not in self.inherited_names
-        ]
+        if inherited:
+            self.dependencies += inherited.dependencies
+            self.constraints += inherited.constraints
+            self.predicates += inherited.predicates
+
+            for key, value in inherited.environment.items():
+                # We never put attributes on tokens, so we are safe to copy references here.
+                self.environment[key] = value
+
+    def is_empty(self):
+        return not self.environment
+
+    def build_query(self) -> ct.Query:
+        return ct.Query(
+            tokens=self.environment.values(),
+            dependencies=self.dependencies,
+            constraints=self.constraints,
+            predicates=self.predicates,
+        )
 
     @staticmethod
-    def build(request: GrewParser.RequestContext) -> ct.Query:
+    def query_operator(
+        item: GrewParser.WithItemContext | GrewParser.WithoutItemContext,
+    ) -> ct.SetOperator:
+        return {
+            GrewParser.WithItemContext: ct.SetOperator.CONJUNCTION,
+            GrewParser.WithoutItemContext: ct.SetOperator.SUBTRACTION,
+        }[type(item)]
+
+    @staticmethod
+    def build(request: GrewParser.RequestContext) -> ct.QueryPlan:
+        plan = ct.QueryPlan.Builder()
+
         pattern = request.pattern().body()
-
-        builder = QueryBuilder().translate_clauses(pattern)
-
-        if builder.tokens():
-            query = ct.Query(
-                tokens=builder.tokens(),
-                dependencies=builder.dependencies,
-                constraints=builder.constraints,
-                predicates=builder.predicates,
-            )
-        else:
+        root_builder = QueryBuilder().translate_clauses(pattern)
+        if root_builder.is_empty():
             # If pattern is empty, match an arbitrary token.
             query = ct.Query(tokens=[ct.Token()])
+        else:
+            query = root_builder.build_query()
+
+        current = plan.add_query(query)
+        goal = current
 
         for item in request.requestItem():
-            builder = QueryBuilder(inherited_environment=builder.environment).translate_clauses(
-                item.body()
-            )
+            builder = QueryBuilder(root_builder).translate_clauses(item.body())
+            current = plan.add_query(builder.build_query())
 
-            query_type = {
-                GrewParser.WithItemContext: ct.PartType.ADDITIONAL,
-                GrewParser.WithoutItemContext: ct.PartType.NEGATIVE,
-            }[type(item)]
+            goal = plan.add_operation(goal, QueryBuilder.query_operator(item), current)
 
-            query.add_query_part(
-                query_type,
-                tokens=builder.tokens(),
-                dependencies=builder.dependencies,
-                constraints=builder.constraints,
-                predicates=builder.predicates,
-            )
-
-        return query
+        plan.set_goal(goal)
+        return plan.build()
 
     def translate_clauses(self, clauses: GrewParser.BodyContext) -> Self:
         for clause in clauses.clause():
@@ -144,7 +149,8 @@ class QueryBuilder:
 
             # Only add predicate if features are present.
             if features:
-                predicate = self.wrap(features, ct.Disjunction).raise_from(token.identifier)
+                predicate = self.wrap(features, ct.Disjunction)
+                predicate.raise_from(token.identifier)
                 self.predicates.append(predicate)
 
         elif isinstance(clause, GrewParser.EdgeClauseContext):
