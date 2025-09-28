@@ -1,0 +1,1 @@
+from cqp_tree.frontends.depsearch.translator import translate_depsearch
