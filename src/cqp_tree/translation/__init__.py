@@ -26,7 +26,6 @@ from cqp_tree.translation.query import (
 )
 from cqp_tree.translation.registry import (
     UnableToGuessTranslatorError,
-    guess_correct_translator,
     known_translators,
     translate_input,
     translator,

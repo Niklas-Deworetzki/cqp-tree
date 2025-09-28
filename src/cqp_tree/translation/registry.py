@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable, Collection, Iterator, Optional, Tuple
+from typing import Callable, Collection, Optional, Tuple
 
 from cqp_tree.translation.errors import NotSupported, ParsingFailed
 from cqp_tree.translation.query import QueryPlan
@@ -53,12 +53,12 @@ def translate_input(inp: str, use_translator: Optional[str] = None) -> QueryPlan
     a KeyError is raised.
     """
     if use_translator is None:
-        guessed_translations = list(guess_correct_translator(inp))
+        guessed_translations = guess_correct_translator(inp)
         if not guessed_translations:
             raise UnableToGuessTranslatorError(tuple())
 
         if len(guessed_translations) > 1:
-            raise UnableToGuessTranslatorError(tuple(trans for trans, in guessed_translations))
+            raise UnableToGuessTranslatorError(tuple(trans for trans, _ in guessed_translations))
 
         _, query = guessed_translations[0]
         return query
@@ -68,20 +68,32 @@ def translate_input(inp: str, use_translator: Optional[str] = None) -> QueryPlan
     return known_translators[use_translator](inp)
 
 
-def guess_correct_translator(inp: str) -> Iterator[Tuple[str, QueryPlan]]:
+def guess_correct_translator(inp: str) -> list[Tuple[str, QueryPlan]]:
     """
     Tries to find translators applicable for the input string.
-    Returns an iterator over all successfully translated queries and the name of the
-    translation frontend that accepted the input.
+    Returns all successfully translated queries and the name of the translation frontend that
+    accepted the input.
 
-    If no frontend accepts the input, an empty iterator is returned.
+    If only one translator parses the query but raises a NotSupported, this exception is propagated.
 
     :param inp: The input for which translation is attempted by all frontends.
     """
+    translated_queries = list[Tuple[str, QueryPlan]]()
+    unsupported_queries = list[Tuple[str, NotSupported]]()
+
     for name, function in known_translators.items():
         try:
-            yield name, function(inp)
+            parsed = function(inp)
+            translated_queries.append((name, parsed))
         except ParsingFailed:
             pass
-        except NotSupported:
-            pass
+        except NotSupported as not_supported:
+            unsupported_queries.append((name, not_supported))
+
+    if not translated_queries and len(unsupported_queries) == 1:
+        trans, raised_exception = unsupported_queries[0]
+        # Create a new exception with copied message and include original traceback.
+        raise NotSupported(
+            f'{raised_exception} (automatically selected {trans} as a translator)'
+        ) from raised_exception
+    return translated_queries
