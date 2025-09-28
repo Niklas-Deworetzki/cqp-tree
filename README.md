@@ -16,10 +16,23 @@ git clone https://github.com/Niklas-Deworetzki/cqp-tree.git
 pip install cqp-tree
 ```
 
+## Get Started in the Browser
+
+This package contains a local web-server.
+Running it allows you to open a website in your browser which has a user-friendly translation interface available.
+
+```shell
+cqp-tree-web
+```
+
+Running this command will start the server locally.
+Once it's started, click on the link displayed in your terminal or manually enter  http://localhost:5000 to start translating queries.
+To stop the server again, press Ctrl and C in your terminal window.
+
 ## Translating Queries
 
-The module provides one main executable called `cqp-tree`.
-It can translate different queries into a common CQP representation.
+The module provides an executable called `cqp-tree`.
+It can translate different queries into a common CQP representation and offers the most control over the translation process.
 Currently, the following other query-languages are (partially) supported:
 1. [Grew-match](https://match.grew.fr/)
 2. [deptreepy](https://github.com/aarneranta/deptreepy/tree/main)
@@ -28,11 +41,11 @@ Currently, the following other query-languages are (partially) supported:
 In order to translate a query, you can provide it either via the command line, as the contents of a file or by directly typing it out into the program:
 
 ```shell
-$ cqp-tree deptreepy --query 'TREE_ (pos NN) (AND (pos JJ) (word a.*))'
+cqp-tree deptreepy --query 'TREE_ (pos NN) (AND (pos JJ) (word a.*))'
 ```
 
 ```shell
-$ cqp-tree grew --file resources/example.grew
+cqp-tree grew --file resources/example.grew
 ```
 
 The converted query is, by default, printed to the screen.
