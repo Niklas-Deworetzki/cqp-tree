@@ -1,7 +1,8 @@
-from cqp_tree.translation.cqp import from_query as cqp_from_query, SetOperation
+from cqp_tree.translation.cqp import format_plan, from_query as cqp_from_query
 from cqp_tree.translation.errors import InputError, ParsingFailed, NotSupported
 from cqp_tree.translation.query import (
     Identifier,
+    Token,
     # Operand + subclasses
     Operand,
     Literal,
@@ -14,13 +15,14 @@ from cqp_tree.translation.query import (
     Conjunction,
     Disjunction,
     # Query structure
-    Token,
     Dependency,
     Distance,
     Constraint,
-    Query,
     # Multi-part queries
-    PartType,
+    Query,
+    Operation,
+    SetOperator,
+    QueryPlan,
 )
 from cqp_tree.translation.registry import (
     UnableToGuessTranslatorError,

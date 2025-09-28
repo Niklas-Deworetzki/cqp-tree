@@ -3,6 +3,8 @@ from typing import Any
 from flask import Flask, jsonify, request, send_from_directory
 
 import cqp_tree
+from cqp_tree import QueryPlan
+from cqp_tree.utils import UPPERCASE_ALPHABET, associate_with_names
 
 app = Flask(__name__)
 
@@ -39,18 +41,12 @@ def translate():
 
     try:
         text, translator = extract_request_data()
-        translated_query = cqp_tree.translate_input(text, translator)
-        if translated_query.get_token_count() > 5:
-            raise ValueError('Too many tokens. CQP will not be able to handle the resulting query.')
-        query, additional_steps = cqp_tree.cqp_from_query(translated_query)
+        plan = cqp_tree.translate_input(text, translator)
 
-        result: dict[str, Any] = {'query': str(query)}
-        if additional_steps:
-            result['additional_steps'] = [
-                {'operation': step.operation, 'query': str(step.query)} for step in additional_steps
-            ]
+        if is_too_complex(plan):
+            raise ValueError('Your query is too complex! Try using fewer tokens.')
 
-        return jsonify(result)
+        return jsonify(to_json(plan))
 
     except ValueError as validation_error:
         return error(str(validation_error), 422)
@@ -72,3 +68,39 @@ def translate():
     except cqp_tree.ParsingFailed as parse_error:
         parse_error = next(iter(parse_error.errors))
         return error('This query cannot be parsed: ' + parse_error.message)
+
+
+def is_too_complex(plan: QueryPlan) -> bool:
+    if len(plan.queries) > 20:
+        return True
+    if any(len(query.tokens) > 5 for query in plan.queries):
+        return True
+    return False
+
+
+def to_json(plan: QueryPlan) -> dict:
+    environment = associate_with_names(plan.identifiers(), UPPERCASE_ALPHABET)
+
+    queries = {
+        environment[query.identifier]: str(cqp_tree.cqp_from_query(query)) for query in plan.queries
+    }
+    operations = {
+        environment[operation.identifier]: {
+            'lhs': environment[operation.lhs],
+            'rhs': environment[operation.rhs],
+            'op': operation.operator,
+        }
+        for operation in plan.operations
+    }
+
+    result: dict[str, Any] = {
+        'recipe': {
+            'queries': queries,
+            'operations': operations,
+            'goal': environment[plan.goal],
+        }
+    }
+    if plan.has_simple_representation():
+        result['single_query'] = str(cqp_tree.cqp_from_query(plan.simple_representation()))
+
+    return result

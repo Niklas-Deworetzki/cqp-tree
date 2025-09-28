@@ -221,9 +221,10 @@ class TranslationTests(unittest.TestCase):
 
     def test_translate_empty_request(self):
         parsed = do_parse(GrewParser.request, 'pattern {}')
-        result = QueryBuilder.build(parsed)
+        query, *others = QueryBuilder.build(parsed).queries
 
-        self.assertTrue(result.tokens, 'Empty query should match token.')
+        self.assertFalse(others, 'Empty query should not produce multiple queries.')
+        self.assertTrue(query.tokens, 'Empty query should match token.')
 
     def test_translate_multiple_items(self):
         parsed = do_parse(
@@ -242,9 +243,7 @@ class TranslationTests(unittest.TestCase):
         )
 
         result = QueryBuilder.build(parsed)
-        self.assertEqual(
-            len(result.additional_query_parts), 2, 'Query should have 2 additional parts.'
-        )
+        self.assertEqual(len(result.queries), 3, 'Query should have 3 query parts.')
 
     def test_translate_combined_token(self):
         parsed = do_parse(
@@ -259,20 +258,14 @@ class TranslationTests(unittest.TestCase):
         """,
         )
 
-        result = QueryBuilder.build(parsed)
+        query1, query2 = QueryBuilder.build(parsed).queries
         self.assertEqual(
-            len(result.tokens),
+            len(query1.tokens),
             1,
             'Main query should search for 1 token.',
         )
         self.assertEqual(
-            len(result.additional_query_parts),
+            len(query2.tokens),
             1,
-            'Query should have 1 additional part.',
-        )
-        additional_part = result.additional_query_parts[0]
-        self.assertCountEqual(
-            additional_part.tokens,
-            [],
-            'Additional query should not introduce additional tokens.',
+            'Additional query should have 1 token.',
         )

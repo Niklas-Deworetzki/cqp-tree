@@ -1,7 +1,7 @@
 import argparse
 import sys
 from contextlib import ExitStack
-from typing import Any, Iterator
+from typing import Any, Optional
 
 import cqp_tree
 from cqp_tree.utils import format_human_readable
@@ -23,6 +23,11 @@ def argument_parser() -> argparse.ArgumentParser:
         '-h',
         action='store_true',
         help='Show this message and exit.',
+    )
+    parser.add_argument(
+        '--quiet',
+        action='store_true',
+        help='Don\'t print a message when reading a query from standard input.',
     )
     parser.add_argument(
         '--output',
@@ -55,41 +60,38 @@ def argument_parser() -> argparse.ArgumentParser:
         '--file',
         '-f',
         metavar='FILE',
-        help='Input file(s), each containing a query to translate.',
-        action="extend",
-        nargs="*",
-        type=str,
+        help='Input file containing a query to translate.',
     )
     input_group.add_argument(
         '--query',
         '-q',
         metavar='STR',
-        help='One or more queries to translate.',
-        action="extend",
-        nargs="*",
-        type=str,
+        help='A query to translate.',
     )
 
     return parser
 
 
-def get_inputs(args: argparse.Namespace) -> Iterator[str]:
+def get_input(args: argparse.Namespace) -> Optional[str]:
     if args.file:
-        for filename in args.file:
-            try:
-                with open(filename, 'r', encoding=args.encoding) as f:
-                    yield f.read()
-            except IOError as e:
-                warn(f'Could not read input file {filename}: {e}')
+        try:
+            with open(args.file, 'r', encoding=args.encoding) as f:
+                return f.read()
+        except IOError as e:
+            warn(f'Could not read input file {args.file}: {e}')
+            return None
+
     elif args.query:
-        yield from args.query
+        return args.query
 
     else:
-        warn('No input file specified. Reading from stdin instead.')
-        yield from sys.stdin
+        if not args.quiet:
+            warn('No input file specified. Reading from stdin instead.')
+            warn('Press Ctrl+D once you finished typing your query.')
+        return sys.stdin.read()
 
 
-def translate(args: argparse.Namespace, query_str: str) -> cqp_tree.Query | None:
+def translate(args: argparse.Namespace, query_str: str) -> cqp_tree.QueryPlan | None:
     try:
         return cqp_tree.translate_input(query_str, args.translator or None)
     except cqp_tree.UnableToGuessTranslatorError as translation_error:
@@ -121,31 +123,33 @@ def main():
                 warn(f'Could not write to output file {args.output}: {e}')
                 return 1
 
-        translated_queries = 0
-        for query_str in get_inputs(args):
-            try:
-                query = translate(args, query_str)
-                if query:
-                    cqp, more_execution_steps = cqp_tree.cqp_from_query(query)
-                    translated_queries += 1
-                    if not more_execution_steps:
-                        output.write(str(cqp) + '\n')
-                    else:
-                        warn(
-                            'Multiple steps are necessary to translate this query. '
-                            'This is not supported yet.'
-                        )
-            except cqp_tree.ParsingFailed as parse_failure:
-                warn('Query could not be parsed:')
-                for error in parse_failure.errors:
-                    warn(error)
-            except cqp_tree.NotSupported as not_supported:
-                if not str(not_supported):
-                    warn('Query cannot be translated.')
-                else:
-                    warn('Query cannot be translated: ' + str(not_supported))
+        query_str = get_input(args)
+        if query_str is None:
+            return 1
 
-        return 0 if translated_queries else 1
+        try:
+            plan = translate(args, query_str)
+            if not plan:
+                return 1
+
+            if plan.has_simple_representation():
+                cqp = cqp_tree.cqp_from_query(plan.simple_representation())
+                output.write(str(cqp) + '\n')
+            else:
+                for line in cqp_tree.format_plan(plan):
+                    output.write(line + '\n')
+
+        except cqp_tree.ParsingFailed as parse_failure:
+            warn('Query could not be parsed:')
+            for error in parse_failure.errors:
+                warn(error)
+        except cqp_tree.NotSupported as not_supported:
+            if not str(not_supported):
+                warn('Query cannot be translated.')
+            else:
+                warn('Query cannot be translated: ' + str(not_supported))
+
+        return 0
 
 
 if __name__ == '__main__':

@@ -26,7 +26,7 @@ def parse(s: str):
 
 
 @ct.translator('conll')
-def query_from_conll(conll: str) -> ct.Query:
+def translate_conll(conll: str) -> ct.QueryPlan:
     tokens: List[ct.Token] = []
     dependencies: List[ct.Dependency] = []
 
@@ -60,4 +60,5 @@ def query_from_conll(conll: str) -> ct.Query:
                 ct.Dependency(ids[[line["id"] for line in conll_lines].index(line["head"])], id)
             )
 
-    return ct.Query(tokens=tokens, dependencies=dependencies)
+    query = ct.Query(tokens=tokens, dependencies=dependencies)
+    return ct.QueryPlan.of_query(query)

@@ -1,28 +1,33 @@
-import itertools
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from enum import StrEnum
-from typing import Iterable, Iterator, Tuple
+from typing import Iterable, Iterator, Optional
 
 from cqp_tree.translation import query
-from cqp_tree.utils import flatmap_set, partition_set, to_str
+from cqp_tree.utils import (
+    LOWERCASE_ALPHABET,
+    UPPERCASE_ALPHABET,
+    associate_with_names,
+    flatmap_set,
+    partition_set,
+    to_str,
+)
 
 Environment = dict[query.Identifier, str]
 
-ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
+TOKEN_ALPHABET = LOWERCASE_ALPHABET
+QUERY_ALPHABET = UPPERCASE_ALPHABET
 
-
-def names():
-    """Function producing an infinite stream of fresh names."""
-    length = 0
-    while True:
-        length += 1
-        for name in itertools.combinations_with_replacement(ALPHABET, length):
-            yield ''.join(name)
+CQP_OPERATIONS = {
+    query.SetOperator.CONJUNCTION: 'intersect',
+    query.SetOperator.DISJUNCTION: 'union',
+    query.SetOperator.SUBTRACTION: 'diff',
+}
 
 
 class Query(ABC):
     """Abstract base class for all queries."""
+
+    target_identifier: Optional[query.Identifier]
 
     @abstractmethod
     def referenced_identifiers(self) -> set[query.Identifier]: ...
@@ -31,7 +36,7 @@ class Query(ABC):
     def format(self, environment: Environment) -> str: ...
 
     def __str__(self):
-        environment = dict(zip(self.referenced_identifiers(), names()))
+        environment = associate_with_names(self.referenced_identifiers(), TOKEN_ALPHABET)
         return self.format(environment)
 
 
@@ -240,55 +245,44 @@ def from_all_arrangements(
     return Operator('|', all_arrangements)
 
 
-class SetOperation(StrEnum):
-    INTERSECTION = '&'
-    SUBTRACTION = '-'
-
-    @staticmethod
-    def from_query_type(qpt: query.PartType) -> 'SetOperation':
-        return {
-            query.PartType.ADDITIONAL: SetOperation.INTERSECTION,
-            query.PartType.NEGATIVE: SetOperation.SUBTRACTION,
-        }[qpt]
-
-
-@dataclass(frozen=True)
-class ExecutionStep:
-    operation: SetOperation
-    query: Query
-
-
-def from_query(q: query.Query) -> Tuple[Query, Iterable[ExecutionStep]]:
+def from_query(q: query.Query) -> Query:
     """Translate a tree-based query into a CQP query for all different arrangements of tokens."""
 
-    def collect_raised_predicates(tokens: Iterable[query.Token], into: set[query.Predicate]):
-        for token in tokens:  # Raise local predicates to prepare re-ordering.
-            if token.attributes is not None:
-                raised_predicate = token.attributes.raise_from(token.identifier)
-                raised_predicate = raised_predicate.normalize()
-                into.add(raised_predicate)
-
-    identifiers = {t.identifier for t in q.tokens}
-    dependencies = set(q.dependencies)
-    constraints = set(q.constraints)
     predicates = set(pred.normalize() for pred in q.predicates)
-    collect_raised_predicates(q.tokens, into=predicates)
+    for token in q.tokens:  # Raise local predicates to prepare re-ordering.
+        if token.attributes is not None:
+            raised_predicate = token.attributes.raise_from(token.identifier)
+            raised_predicate = raised_predicate.normalize()
+            predicates.add(raised_predicate)
 
-    initial_query = from_all_arrangements(identifiers, dependencies, constraints, predicates)
+    return from_all_arrangements(
+        {token.identifier for token in q.tokens},
+        set(q.dependencies),
+        set(q.constraints),
+        predicates,
+    )
 
-    subsequent_execution_steps = list[ExecutionStep]()
-    for part in q.additional_query_parts:
-        part_identifiers = identifiers | {t.identifier for t in part.tokens}
-        part_dependencies = dependencies | set(part.dependencies)
-        part_constraints = constraints | set(part.constraints)
-        part_predicates = predicates | set(part.predicates)
-        collect_raised_predicates(part.tokens, into=part_predicates)
 
-        part_query = from_all_arrangements(
-            part_identifiers, part_dependencies, part_constraints, part_predicates
-        )
-        subsequent_execution_steps.append(
-            ExecutionStep(SetOperation.from_query_type(part.query_type), part_query)
-        )
+def format_plan(plan: query.QueryPlan) -> Iterator[str]:
+    environment = associate_with_names(plan.identifiers(), QUERY_ALPHABET)
+    parts = plan.as_dict()
 
-    return initial_query, subsequent_execution_steps
+    def rec(goal: query.Identifier, include_assignment: bool = True) -> Iterator[str]:
+        part = parts[goal]
+        if isinstance(part, query.Operation):
+            op, lhs, rhs = (
+                CQP_OPERATIONS[part.operator],
+                environment[part.lhs],
+                environment[part.rhs],
+            )
+            formatted = f'{op} {lhs} {rhs};'
+            yield from rec(part.lhs)
+            yield from rec(part.rhs)
+        else:
+            formatted = str(from_query(part)) + ';'
+
+        if include_assignment:
+            formatted = f'{environment[goal]} = {formatted}'
+        yield formatted
+
+    yield from rec(plan.goal, include_assignment=False)
