@@ -142,7 +142,7 @@ class QueryBuilder:
         if isinstance(clause, GrewParser.NodeClauseContext):
             token = self.environment[clause.label.text]
             features = [
-                translated_predicate
+                translated_predicate.raise_from(token.identifier)
                 for fs in clause.featureStructure()
                 if (translated_predicate := self.to_predicate(fs))
             ]
