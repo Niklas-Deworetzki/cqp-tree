@@ -46,8 +46,8 @@ literal         : String        # UnicodeString
                 | PCREString    # PCRE
                 ;
 
-order           : '<'   # Precedence
-                | '<<'  # ImmediatePrecedence
+order           : '<'   # ImmediatePrecedence
+                | '<<'  # Precedence
                 ;
 
 compare         : '='   # Equality

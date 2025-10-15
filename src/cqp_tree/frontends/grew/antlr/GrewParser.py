@@ -1110,13 +1110,13 @@ class GrewParser ( Parser ):
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [19]:
-                localctx = GrewParser.PrecedenceContext(self, localctx)
+                localctx = GrewParser.ImmediatePrecedenceContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
                 self.state = 151
                 self.match(GrewParser.T__18)
                 pass
             elif token in [20]:
-                localctx = GrewParser.ImmediatePrecedenceContext(self, localctx)
+                localctx = GrewParser.PrecedenceContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
                 self.state = 152
                 self.match(GrewParser.T__19)
