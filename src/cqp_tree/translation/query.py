@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import StrEnum
 from itertools import count
-from typing import Annotated, ClassVar, Collection, Iterable, List, Optional, Self, Set
+from typing import Annotated, ClassVar, Collection, Iterable, List, Optional, Self, Set, TypeAlias
 
 from cqp_tree.translation.errors import NotSupported
 from cqp_tree.utils import flatmap_set
@@ -242,7 +242,7 @@ class Dependency:
         return {self.src, self.dst}
 
 
-Distance = Annotated[int, 'How far should tokens be apart. -1 for arbitrary distance.']
+Distance: TypeAlias = Annotated[int, 'How far should tokens be apart. -1 for arbitrary distance.']
 
 
 @dataclass(frozen=True)
