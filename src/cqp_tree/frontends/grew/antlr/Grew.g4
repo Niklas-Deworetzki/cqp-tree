@@ -58,7 +58,7 @@ compare         : '='   # Equality
 IgnoredWhitespace: [ \t\r\n]+ -> skip;
 IgnoredComments: '%' ~( '\r' | '\n' )* -> skip;
 
-Identifier : [a-zA-Z_] | [A-Za-z_] [A-Za-z0-9_'\-$]* [a-zA-Z0-9_'$] ;
+Identifier : [0-9]+ | [a-zA-Z_] | [A-Za-z_] [A-Za-z0-9_'\-$]* [a-zA-Z0-9_'$] ;
 
 String : '"' (~'"' | '\\.')* '"';
 PCREString : '/' (~'/' | '\\/')* ('/'|'/i')?;
