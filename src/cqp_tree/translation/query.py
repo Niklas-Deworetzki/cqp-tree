@@ -5,6 +5,7 @@ from itertools import count
 from typing import Annotated, ClassVar, Collection, Iterable, List, Optional, Self, Set, TypeAlias
 
 from cqp_tree.translation.errors import NotSupported
+from cqp_tree.translation.regex import escape_regex_string
 from cqp_tree.utils import flatmap_set
 
 
@@ -51,6 +52,11 @@ class Operand(ABC):
 @dataclass(frozen=True)
 class Literal(Operand):
     value: str
+
+    def __init__(self, value: str, represents_regex: bool = False):
+        if not represents_regex:
+            value = escape_regex_string(value)
+        super().__setattr__('value', value)
 
     def referenced_identifiers(self) -> set[Identifier]:
         return set()

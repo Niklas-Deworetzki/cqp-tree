@@ -273,7 +273,7 @@ class QueryBuilder:
         # Regular expression: re"a.*"
         if isinstance(grew, GrewParser.RegexContext):
             text = self.string_of_token(grew.String())
-            return ct.Literal(text)
+            return ct.Literal(text, represents_regex=True)
 
         # PCRE expression: /a.*/i
         if isinstance(grew, GrewParser.PCREContext):
