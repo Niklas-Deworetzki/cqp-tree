@@ -40,10 +40,11 @@ featureValue    : Identifier '.' Identifier     # Attribute
                 ;
 
 // All the ways of specifying values.
-literal         : String        # UnicodeString
-                | Identifier    # SimpleString
-                | 're' String   # Regex
-                | PCREString    # PCRE
+literal         : String                        # UnicodeString
+                | Identifier                    # SimpleString
+                | 're' String                   # Regex
+                | PCREString                    # PCRE
+                | Identifier ':' Identifier     # Subtype
                 ;
 
 order           : '<'   # ImmediatePrecedence
