@@ -21,11 +21,11 @@ authors = [
 
 requires-python = ">=3.12,<4"
 dependencies = [
-    "antlr4-python3-runtime~=4.13",
-    "pyparsing~=3.2",
-    "conllu~=6.0",
+    "antlr4-python3-runtime==4.13.2",
+    "pyparsing==3.2.5",
+    "conllu==6.0.0",
 
-    "Flask~=3.1",
+    "Flask==3.1.2",
 ]
 
 [tool.setuptools.packages.find]
