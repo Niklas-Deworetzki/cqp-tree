@@ -184,7 +184,6 @@ def from_arrangement(
     arrangement: list[query.Identifier],
     dependencies: set[query.Dependency],
     predicates: set[query.Predicate],
-    constraints: set[query.Constraint],
 ) -> Query:
     """Build a Query for a sequence of Identifiers."""
     visited_tokens: set[query.Identifier] = set()
@@ -224,7 +223,7 @@ def from_all_arrangements(
 ) -> Query:
     """Build a query over all sequences of Identifiers."""
     all_arrangements = [
-        from_arrangement(arrangement, dependencies, predicates, constraints)
+        from_arrangement(arrangement, dependencies, predicates)
         for arrangement in arrangements(identifiers, constraints)
     ]
     return Operator('|', all_arrangements)
@@ -232,18 +231,17 @@ def from_all_arrangements(
 
 def from_query(q: query.Query) -> Query:
     """Translate a tree-based query into a CQP query for all different arrangements of tokens."""
-    def distance_to_operand(src: query.Identifier, dst: query.Identifier, distance: query.Distance) -> query.Predicate:
+
+    def distance_to_operand(
+        src: query.Identifier, dst: query.Identifier, distance: query.Distance
+    ) -> query.Predicate:
         dist_function = query.Function(
             'distabs',
             query.Reference(src),
             query.Reference(dst),
         )
-        return query.Comparison(
-            dist_function,
-            '=',
-            query.Literal(str(distance + 1))
-        )
-
+        distance_literal = query.Literal(str(distance + 1))
+        return query.Comparison(dist_function, '=', distance_literal)
 
     predicates = set(pred.normalize() for pred in q.predicates)
     for constraint in q.constraints:

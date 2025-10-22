@@ -99,7 +99,6 @@ class Function(Operand):
         super().__setattr__('name', name)
         super().__setattr__('args', tuple(args))
 
-
     def referenced_identifiers(self) -> set[Identifier]:
         return flatmap_set(self.args, lambda o: o.referenced_identifiers())
 
