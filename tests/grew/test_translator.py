@@ -77,7 +77,7 @@ class TranslationTests(unittest.TestCase):
 
         self.assertEqual(
             result,
-            ct.Literal('"a.*|[abc]+"'),
+            ct.Literal('"a.*|[abc]+"', represents_regex=True),
         )
 
     def test_to_operand_simple_string_literal(self):
@@ -99,6 +99,18 @@ class TranslationTests(unittest.TestCase):
         builder = QueryBuilder()
         with self.assertRaises(ct.NotSupported):
             builder.to_operand(literal)
+
+    def test_to_operand_subtype_relation(self):
+        literal = do_parse(GrewParser.literal, 'super:subtype')
+
+        builder = QueryBuilder()
+        result = builder.to_operand(literal)
+
+        self.assertEqual(
+            result,
+            ct.Literal('"super:subtype"')
+        )
+
 
     def test_to_operand_attribute(self):
         value = do_parse(GrewParser.featureValue, 'a.b')

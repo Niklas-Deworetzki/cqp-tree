@@ -7,47 +7,6 @@ import cqp_tree.translation.query as query
 
 class TranslatorTests(unittest.TestCase):
 
-    def test_distance_between_defaults(self):
-        a = query.Identifier()
-        b = query.Identifier()
-
-        distance = cqp.distance_between([], a, b)
-        self.assertEqual(
-            distance,
-            query.Constraint.ARBITRARY_DISTANCE,
-            'Invocation should default to arbitrary distance.',
-        )
-
-    def test_distance_between_defaults_if_not_found(self):
-        a = query.Identifier()
-        b = query.Identifier()
-        constraints = {
-            query.Constraint(a, query.Identifier()),
-            query.Constraint(query.Identifier(), a),
-            query.Constraint(b, query.Identifier()),
-            query.Constraint(query.Identifier(), b),
-            query.Constraint(query.Identifier(), query.Identifier()),
-        }
-
-        distance = cqp.distance_between(constraints, a, b)
-        self.assertEqual(
-            distance,
-            query.Constraint.ARBITRARY_DISTANCE,
-            'Invocation should default to arbitrary distance.',
-        )
-
-    def test_distance_between_finds(self):
-        a = query.Identifier()
-        b = query.Identifier()
-        constraints = {query.Constraint(a, b, distance=2)}
-        inv_constraints = {query.Constraint(b, a, distance=3)}
-
-        distance = cqp.distance_between(constraints, a, b)
-        self.assertEqual(distance, 2)
-
-        inv_distance = cqp.distance_between(inv_constraints, a, b)
-        self.assertEqual(inv_distance, 3)
-
     def test_arrangements_without_constraints(self):
         identifiers = {query.Identifier() for _ in range(7)}
 

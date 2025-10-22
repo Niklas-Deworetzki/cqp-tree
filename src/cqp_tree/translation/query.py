@@ -5,6 +5,7 @@ from itertools import count
 from typing import Annotated, ClassVar, Collection, Iterable, List, Optional, Self, Set, TypeAlias
 
 from cqp_tree.translation.errors import NotSupported
+from cqp_tree.translation.regex import escape_regex_string
 from cqp_tree.utils import flatmap_set
 
 
@@ -52,6 +53,11 @@ class Operand(ABC):
 class Literal(Operand):
     value: str
 
+    def __init__(self, value: str, represents_regex: bool = False):
+        if not represents_regex:
+            value = escape_regex_string(value)
+        super().__setattr__('value', value)
+
     def referenced_identifiers(self) -> set[Identifier]:
         return set()
 
@@ -60,6 +66,47 @@ class Literal(Operand):
 
     def lower_onto(self, on: Identifier) -> 'Literal':
         return self
+
+
+@dataclass(frozen=True)
+class Reference(Operand):
+    reference: Optional[Identifier]
+
+    def referenced_identifiers(self) -> set[Identifier]:
+        if self.reference is None:
+            return set()
+        return {self.reference}
+
+    def raise_from(self, on: Identifier) -> 'Operand':
+        if not self.reference is None:
+            return Reference(on)
+        return self
+
+    def lower_onto(self, on: Identifier) -> 'Operand':
+        if self.reference == on:
+            return Reference(None)
+        return self
+
+
+@dataclass(frozen=True)
+class Function(Operand):
+    """A Predicate applying a builtin function."""
+
+    name: str
+    args: Iterable[Operand]
+
+    def __init__(self, name: str, *args: Operand):
+        super().__setattr__('name', name)
+        super().__setattr__('args', tuple(args))
+
+    def referenced_identifiers(self) -> set[Identifier]:
+        return flatmap_set(self.args, lambda o: o.referenced_identifiers())
+
+    def raise_from(self, on: Identifier) -> 'Operand':
+        return Function(self.name, *[arg.raise_from(on) for arg in self.args])
+
+    def lower_onto(self, on: Identifier) -> 'Operand':
+        return Function(self.name, *[arg.lower_onto(on) for arg in self.args])
 
 
 @dataclass(frozen=True)

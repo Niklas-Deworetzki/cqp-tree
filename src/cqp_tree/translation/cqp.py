@@ -46,24 +46,18 @@ class Sequence(Query):
 
     lhs: Query
     rhs: Query
-    distance: query.Distance
 
     def referenced_identifiers(self) -> set[query.Identifier]:
         return self.lhs.referenced_identifiers() | self.rhs.referenced_identifiers()
 
     def format(self, environment: Environment) -> str:
-        if self.distance == -1:
-            distance_repr = '[]*'
-        else:
-            distance_repr = ' '.join(['[]'] * self.distance)
-
         def format_subquery(q: Query) -> str:
             res = q.format(environment)
             return f'({res})' if isinstance(q, Operator) else res
 
         lhs_repr = format_subquery(self.lhs)
         rhs_repr = format_subquery(self.rhs)
-        return f'{lhs_repr} {distance_repr} {rhs_repr}'
+        return f'{lhs_repr} []* {rhs_repr}'
 
 
 @dataclass
@@ -130,6 +124,13 @@ def format_operand(operand: query.Operand, environment: Environment) -> str:
         if operand.reference is not None:
             return f'{environment[operand.reference]}.{operand.attribute}'
         return operand.attribute
+    elif isinstance(operand, query.Reference):
+        if operand.reference is not None:
+            return environment[operand.reference]
+        return '_'
+    elif isinstance(operand, query.Function):
+        args = ', '.join(format_operand(arg, environment) for arg in operand.args)
+        return f'{operand.name}({args})'
     assert isinstance(operand, query.Literal), 'Operand must be either Attribute or Literal.'
     return operand.value
 
@@ -151,19 +152,6 @@ def format_predicate(predicate: query.Predicate, environment: Environment) -> st
         }
         predicates = map(lambda p: format_predicate(p, environment), predicate.predicates)
         return to_str(predicates, '(', f' {operators[type(predicate)]} ', ')')
-
-
-def distance_between(
-    constraints: Iterable[query.Constraint],
-    a: query.Identifier,
-    b: query.Identifier,
-) -> query.Distance:
-    for constraint in constraints:
-        if constraint.src == a and constraint.dst == b:
-            return constraint.distance
-        if constraint.src == b and constraint.dst == a:
-            return constraint.distance
-    return query.Constraint.ARBITRARY_DISTANCE
 
 
 def arrangements(
@@ -196,7 +184,6 @@ def from_arrangement(
     arrangement: list[query.Identifier],
     dependencies: set[query.Dependency],
     predicates: set[query.Predicate],
-    constraints: set[query.Constraint],
 ) -> Query:
     """Build a Query for a sequence of Identifiers."""
     visited_tokens: set[query.Identifier] = set()
@@ -224,10 +211,7 @@ def from_arrangement(
     # Build all tokens into a sequence.
     res = converted_tokens[0]
     for index in range(len(arrangement) - 1):
-        dist = distance_between(
-            constraints, converted_tokens[index].identifier, converted_tokens[index + 1].identifier
-        )
-        res = Sequence(res, converted_tokens[index + 1], dist)
+        res = Sequence(res, converted_tokens[index + 1])
     return res
 
 
@@ -239,7 +223,7 @@ def from_all_arrangements(
 ) -> Query:
     """Build a query over all sequences of Identifiers."""
     all_arrangements = [
-        from_arrangement(arrangement, dependencies, predicates, constraints)
+        from_arrangement(arrangement, dependencies, predicates)
         for arrangement in arrangements(identifiers, constraints)
     ]
     return Operator('|', all_arrangements)
@@ -248,7 +232,22 @@ def from_all_arrangements(
 def from_query(q: query.Query) -> Query:
     """Translate a tree-based query into a CQP query for all different arrangements of tokens."""
 
+    def distance_to_operand(
+        src: query.Identifier, dst: query.Identifier, distance: query.Distance
+    ) -> query.Predicate:
+        dist_function = query.Function(
+            'distabs',
+            query.Reference(src),
+            query.Reference(dst),
+        )
+        distance_literal = query.Literal(str(distance + 1))
+        return query.Comparison(dist_function, '=', distance_literal)
+
     predicates = set(pred.normalize() for pred in q.predicates)
+    for constraint in q.constraints:
+        if constraint.distance != query.Constraint.ARBITRARY_DISTANCE:
+            predicates.add(distance_to_operand(constraint.src, constraint.dst, constraint.distance))
+
     for token in q.tokens:  # Raise local predicates to prepare re-ordering.
         if token.attributes is not None:
             raised_predicate = token.attributes.raise_from(token.identifier)

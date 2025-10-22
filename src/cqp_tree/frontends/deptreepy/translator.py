@@ -112,7 +112,7 @@ def operation_constructor_for_field(field) -> Callable[[str], ct.Comparison]:
         return ct.Comparison(
             ct.Attribute(None, field),
             comparison_operator,
-            ct.Literal(f'"{strpatt}"'),
+            ct.Literal(f'"{strpatt}"', represents_regex=True),
         )
 
     return constructor
