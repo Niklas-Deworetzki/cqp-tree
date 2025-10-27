@@ -259,6 +259,12 @@ class QueryBuilder:
             text = self.string_of_token(grew.String())
             return ct.Literal(text)
 
+        # Dependency type with subtype: nsubj:pass
+        if isinstance(grew, GrewParser.SubtypeContext):
+            sup = self.string_of_token(grew.Identifier(0))
+            sub = self.string_of_token(grew.Identifier(1))
+            return ct.Literal(f'"{sup}:{sub}"')
+
         # Identifier used as simple string: Tense
         if isinstance(grew, GrewParser.SimpleStringContext):
             text = self.string_of_token(grew.Identifier())
@@ -267,7 +273,7 @@ class QueryBuilder:
         # Regular expression: re"a.*"
         if isinstance(grew, GrewParser.RegexContext):
             text = self.string_of_token(grew.String())
-            return ct.Literal(text)
+            return ct.Literal(text, represents_regex=True)
 
         # PCRE expression: /a.*/i
         if isinstance(grew, GrewParser.PCREContext):
