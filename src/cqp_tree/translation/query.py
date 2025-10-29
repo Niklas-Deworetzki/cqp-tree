@@ -2,9 +2,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import StrEnum
 from itertools import count
-from typing import Annotated, ClassVar, Collection, Iterable, List, Optional, Self, Set, TypeAlias
+from typing import ClassVar, Collection, Iterable, List, Optional, Self, Set, override
 
-from cqp_tree.translation.errors import NotSupported
 from cqp_tree.translation.regex import escape_regex_string
 from cqp_tree.utils import flatmap_set
 
@@ -22,7 +21,6 @@ class Identifier:
 class Operand(ABC):
     """
     Abstract superclass for values within a Predicate.
-    Is either Literal or Attribute.
     """
 
     @abstractmethod
@@ -51,9 +49,18 @@ class Operand(ABC):
 
 @dataclass(frozen=True)
 class Literal(Operand):
+    """An Operand representing a literal value. It's "value" field is used without modification."""
+
     value: str
 
     def __init__(self, value: str, represents_regex: bool = False):
+        """
+        Construct a new Literal with the given representation.
+
+        :param value: The string used to represent this Literal.
+        :param represents_regex: If true, regular expression characters will be escaped
+        (default False).
+        """
         if not represents_regex:
             value = escape_regex_string(value)
         super().__setattr__('value', value)
@@ -70,6 +77,11 @@ class Literal(Operand):
 
 @dataclass(frozen=True)
 class Reference(Operand):
+    """
+    An Operand representing an Identifier.
+    If constructed using None, it represents the current label.
+    """
+
     reference: Optional[Identifier]
 
     def referenced_identifiers(self) -> set[Identifier]:
@@ -90,12 +102,15 @@ class Reference(Operand):
 
 @dataclass(frozen=True)
 class Function(Operand):
-    """A Predicate applying a builtin function."""
+    """An Operand applying a builtin function."""
 
     name: str
     args: Iterable[Operand]
 
     def __init__(self, name: str, *args: Operand):
+        """
+        Construct a new Function, using the given name and arguments.
+        """
         super().__setattr__('name', name)
         super().__setattr__('args', tuple(args))
 
@@ -111,6 +126,11 @@ class Function(Operand):
 
 @dataclass(frozen=True)
 class Attribute(Operand):
+    """
+    An Operand representing a field on a token.
+    If the token reference is None, a field on the current token is referenced.
+    """
+
     reference: Optional[Identifier]
     attribute: str
 
@@ -129,6 +149,8 @@ class Attribute(Operand):
 
 
 class Predicate(ABC):
+    """Abstract superclass for all Predicates on a token."""
+
     @abstractmethod
     def referenced_identifiers(self) -> set[Identifier]: ...
 
@@ -289,22 +311,110 @@ class Dependency:
         return {self.src, self.dst}
 
 
-Distance: TypeAlias = Annotated[int, 'How far should tokens be apart. -1 for arbitrary distance.']
+class Constraint(ABC):
+    Order: ClassVar[type['Constraint']]
+    Distance: ClassVar[type['Distance']]
+
+    def referenced_identifiers(self) -> set[Identifier]:
+        return set(self)
+
+    @abstractmethod
+    def __iter__(self): ...
+
+    @staticmethod
+    def order(a: Identifier, b: Identifier) -> 'Constraint':
+        """
+        Creates a new constraint stating that the first token must come
+        before the second token in arrangements.
+        :param a: Identifier of the first token.
+        :param b: Identifier of the second token.
+        :return: A new constraint.
+        """
+        return OrderConstraint(a, b)
+
+    @staticmethod
+    def distance(a: Identifier, b: Identifier):
+        """
+        Returns an object to encode distance constraints between two tokens.
+        Distance constraints are created using comparison operators on the returned object.
+
+        # Creates a constraint that the distance between a and b must be less than 3.
+        distance(a, b) < 3
+
+        :param a: Identifier of the first token.
+        :param b: Identifier of the second token.
+        :return: A new object to create distance constraints.
+        """
+
+        def make_constraint(order, dist: int) -> 'Constraint':
+            return DistanceConstraint(a, b, order, dist)
+
+        class Dist:
+            def __eq__(self, other: int) -> 'Constraint':
+                return make_constraint(Compare.EQ, other)
+
+            def __ne__(self, other: int) -> 'Constraint':
+                return make_constraint(Compare.NE, other)
+
+            def __lt__(self, other: int) -> 'Constraint':
+                return make_constraint(Compare.LT, other)
+
+            def __gt__(self, other: int) -> 'Constraint':
+                return make_constraint(Compare.GT, other)
+
+            def __le__(self, other: int) -> 'Constraint':
+                return self < (other + 1)
+
+            def __ge__(self, other: int) -> 'Constraint':
+                return self > (other + 1)
+
+        return Dist()
+
+
+class Compare(StrEnum):
+    EQ = '='
+    NE = '#'
+    LT = '<'
+    GT = '>'
 
 
 @dataclass(frozen=True)
-class Constraint:
-    ARBITRARY_DISTANCE: ClassVar[Distance] = -1
+class DistanceConstraint(Constraint):
+    a: Identifier
+    b: Identifier
+    order: Compare
+    distance: int
 
-    src: Identifier
-    dst: Identifier
+    @override
+    def __iter__(self):
+        yield self.a
+        yield self.b
 
-    enforces_order: bool = False
-    distance: Distance = ARBITRARY_DISTANCE
+
+Constraint.Distance = DistanceConstraint
+
+
+@dataclass(frozen=True)
+class OrderConstraint(Constraint):
+    fst: Identifier
+    snd: Identifier
+
+    @override
+    def __iter__(self):
+        yield self.fst
+        yield self.snd
+
+
+Constraint.Order = OrderConstraint
 
 
 @dataclass(frozen=True)
 class Query:
+    """
+    A combination of tokens, dependencies, predicates and constraints.
+    Optionally assigned an explicit identifier.
+    """
+
     tokens: Collection[Token] = field(default_factory=set)
     dependencies: Collection[Dependency] = field(default_factory=set)
     constraints: Collection[Constraint] = field(default_factory=set)
@@ -318,13 +428,14 @@ class Query:
         # The translation layer should handle unifying multiple references to the same identifier.
 
         for token in self.tokens:
-            if token.identifier in defined_identifiers:
-                # Don't report identifiers here, since they are synthetic and meaningless for users.
-                raise NotSupported('Multiple tokens share the same identifier.')
+            # Don't report identifiers here, since they are synthetic and meaningless for users.
+            assert (
+                token.identifier not in defined_identifiers
+            ), 'Multiple tokens share the same identifier.'
             defined_identifiers.add(token.identifier)
 
         # Collect all identifiers referenced in query.
-        referenced_identifiers = flatmap_set(self.constraints, lambda c: {c.src, c.dst})
+        referenced_identifiers = flatmap_set(self.constraints, lambda c: c.referenced_identifiers())
         referenced_identifiers |= flatmap_set(
             self.dependencies,
             lambda r: r.referenced_identifiers(),
@@ -337,8 +448,9 @@ class Query:
             self.tokens,
             lambda t: t.attributes.referenced_identifiers() if t.attributes else set(),
         )
-        if referenced_identifiers - defined_identifiers:
-            raise NotSupported('Query uses identifiers not defined by tokens.')
+        assert not (
+            referenced_identifiers - defined_identifiers
+        ), 'Query uses identifiers not defined by tokens.'
 
 
 class SetOperator(StrEnum):
@@ -349,6 +461,8 @@ class SetOperator(StrEnum):
 
 @dataclass(frozen=True)
 class Operation:
+    """A set operation performed on the results of two queries (or other operations)."""
+
     lhs: Identifier
     operator: SetOperator
     rhs: Identifier
@@ -356,14 +470,36 @@ class Operation:
 
 
 @dataclass(frozen=True)
-class QueryPlan:
+class Recipe:
+    """
+    The full recipe to execute and combine a combination of Queries.
+    The goal parameter determines what the recipe actually computes.
+
+    Use the static Recipe.of_query(Query) method to construct a recipe of only one query.
+
+    Alternatively, use the Recipe.Builder() class to construct a recipe step-by-step.
+    """
+
     queries: Collection[Query]
     operations: Collection[Operation]
     goal: Identifier
 
+    def __post_init__(self):
+        identifiers: Set[Identifier] = set()
+        for collection in [self.queries, self.operations]:
+            for step in collection:
+                assert (
+                    step.identifier not in identifiers
+                ), 'Multiple steps in recipe share the same identifier.'
+                identifiers.add(step.identifier)
+
+        for operation in self.operations:
+            assert operation.lhs in identifiers, 'Step in recipe uses undefined query identifier.'
+            assert operation.rhs in identifiers, 'Step in recipe uses undefined query identifier.'
+
     @staticmethod
-    def of_query(query: Query) -> 'QueryPlan':
-        return QueryPlan([query], [], query.identifier)
+    def of_query(query: Query) -> 'Recipe':
+        return Recipe([query], [], query.identifier)
 
     def simple_representation(self) -> Optional[Query]:
         simple, *more = self.queries
@@ -405,7 +541,7 @@ class QueryPlan:
         def set_goal(self, identifier: Identifier):
             self.explicit_goal = identifier
 
-        def build(self) -> 'QueryPlan':
+        def build(self) -> 'Recipe':
             if not self.explicit_goal:
                 if len(self.queries) == 1:
                     goal = self.queries[0].identifier
@@ -414,4 +550,4 @@ class QueryPlan:
             else:
                 goal = self.explicit_goal
 
-            return QueryPlan(self.queries, self.operations, goal)
+            return Recipe(self.queries, self.operations, goal)

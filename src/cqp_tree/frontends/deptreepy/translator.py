@@ -31,7 +31,7 @@ def parse(s: str):
 class Result(ABC):
 
     @abstractmethod
-    def as_query(self, builder: ct.QueryPlan.Builder) -> 'Query': ...
+    def as_query(self, builder: ct.Recipe.Builder) -> 'Query': ...
 
     @abstractmethod
     def as_dependency_constraint(self) -> 'DependencyConstraint': ...
@@ -42,7 +42,7 @@ class Query(Result):
     identifier: ct.Identifier
 
     @override
-    def as_query(self, builder: ct.QueryPlan.Builder) -> Self:
+    def as_query(self, builder: ct.Recipe.Builder) -> Self:
         return self
 
     @override
@@ -74,7 +74,7 @@ class DependencyConstraint(Result):
         self.dependencies += constraint.dependencies
 
     @override
-    def as_query(self, builder: ct.QueryPlan.Builder) -> Query:
+    def as_query(self, builder: ct.Recipe.Builder) -> Query:
         query = ct.Query(tokens=self.tokens, dependencies=self.dependencies)
         return Query(builder.add_query(query))
 
@@ -88,7 +88,7 @@ class TokenConstraint(Result):
     predicate: Optional[ct.Predicate]
 
     @override
-    def as_query(self, builder: ct.QueryPlan.Builder) -> Query:
+    def as_query(self, builder: ct.Recipe.Builder) -> Query:
         return self.as_dependency_constraint().as_query(builder)
 
     @override
@@ -119,8 +119,8 @@ def operation_constructor_for_field(field) -> Callable[[str], ct.Comparison]:
 
 
 @ct.translator('deptreepy')
-def translate_deptreepy(deptreepy: str) -> ct.QueryPlan:
-    builder = ct.QueryPlan.Builder()
+def translate_deptreepy(deptreepy: str) -> ct.Recipe:
+    builder = ct.Recipe.Builder()
 
     def combine_operation(
         parts: List[Query | DependencyConstraint | TokenConstraint],

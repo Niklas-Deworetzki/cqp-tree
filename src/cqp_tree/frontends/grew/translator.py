@@ -44,7 +44,7 @@ def new_environment() -> Environment:
 
 
 @ct.translator('grew')
-def translate_grew(grew: str) -> ct.QueryPlan:
+def translate_grew(grew: str) -> ct.Recipe:
     grew_request = parse(grew)
     return QueryBuilder().build(grew_request)
 
@@ -88,8 +88,8 @@ class QueryBuilder:
         }[type(item)]
 
     @staticmethod
-    def build(request: GrewParser.RequestContext) -> ct.QueryPlan:
-        plan = ct.QueryPlan.Builder()
+    def build(request: GrewParser.RequestContext) -> ct.Recipe:
+        plan = ct.Recipe.Builder()
 
         pattern = request.pattern().body()
         root_builder = QueryBuilder().translate_clauses(pattern)
@@ -195,15 +195,12 @@ class QueryBuilder:
             self.predicates.append(predicate)
 
         elif isinstance(clause, GrewParser.OrderClauseContext):
-            if isinstance(clause.order(), GrewParser.ImmediatePrecedenceContext):
-                distance = 0
-            else:
-                distance = ct.Constraint.ARBITRARY_DISTANCE
-
             lhs = self.environment[clause.lhs.text].identifier
             rhs = self.environment[clause.rhs.text].identifier
 
-            self.constraints.append(ct.Constraint(lhs, rhs, enforces_order=True, distance=distance))
+            self.constraints.append(ct.Constraint.order(lhs, rhs))
+            if isinstance(clause.order(), GrewParser.ImmediatePrecedenceContext):
+                self.constraints.append(ct.Constraint.distance(lhs, rhs) == 1)
 
     def to_predicate(
         self,

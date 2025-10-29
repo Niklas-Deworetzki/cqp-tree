@@ -2,9 +2,9 @@ from dataclasses import dataclass
 from typing import Callable, Collection, Optional, Tuple
 
 from cqp_tree.translation.errors import NotSupported, ParsingFailed
-from cqp_tree.translation.query import QueryPlan
+from cqp_tree.translation.query import Recipe
 
-type TranslationFunction = Callable[[str], QueryPlan]
+type TranslationFunction = Callable[[str], Recipe]
 
 known_translators = dict[str, TranslationFunction]()
 
@@ -41,7 +41,7 @@ class UnableToGuessTranslatorError(Exception):
         return f'Cannot guess translator for query: {reason}'
 
 
-def translate_input(inp: str, use_translator: Optional[str] = None) -> QueryPlan:
+def translate_input(inp: str, use_translator: Optional[str] = None) -> Recipe:
     """
     Translates an input using the given translator. If no translator is given,
     the correct translator is guessed by trying all available translators.
@@ -68,7 +68,7 @@ def translate_input(inp: str, use_translator: Optional[str] = None) -> QueryPlan
     return known_translators[use_translator](inp)
 
 
-def guess_correct_translator(inp: str) -> list[Tuple[str, QueryPlan]]:
+def guess_correct_translator(inp: str) -> list[Tuple[str, Recipe]]:
     """
     Tries to find translators applicable for the input string.
     Returns all successfully translated queries and the name of the translation frontend that
@@ -78,7 +78,7 @@ def guess_correct_translator(inp: str) -> list[Tuple[str, QueryPlan]]:
 
     :param inp: The input for which translation is attempted by all frontends.
     """
-    translated_queries = list[Tuple[str, QueryPlan]]()
+    translated_queries = list[Tuple[str, Recipe]]()
     unsupported_queries = list[Tuple[str, NotSupported]]()
 
     for name, function in known_translators.items():

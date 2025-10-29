@@ -26,9 +26,9 @@ class TranslatorTests(unittest.TestCase):
 
         possible_arrangements = [[a, b, c, d], [a, b, d, c], [a, d, b, c]]
         constraints = {
-            query.Constraint(a, b, enforces_order=True),
-            query.Constraint(b, c, enforces_order=True),
-            query.Constraint(a, d, enforces_order=True),
+            query.Constraint.order(a, b),
+            query.Constraint.order(b, c),
+            query.Constraint.order(a, d),
         }
 
         arrangements = list(cqp.arrangements({a, b, c, d}, constraints))

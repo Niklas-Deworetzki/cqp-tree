@@ -161,8 +161,9 @@ def arrangements(
     """Arrange a set of Identifiers into all sequences allowed by the given Constraints"""
     cannot_be_after = {i: set() for i in identifiers}
     for constraint in constraints:
-        if constraint.enforces_order:
-            cannot_be_after[constraint.dst].add(constraint.src)
+        if isinstance(constraint, query.Constraint.Order):
+            fst, snd = constraint
+            cannot_be_after[snd].add(fst)
 
     # Buffer with space for all identifiers.
     arrangement: list[query.Identifier | None] = [None] * len(identifiers)
@@ -229,24 +230,32 @@ def from_all_arrangements(
     return Operator('|', all_arrangements)
 
 
+ORDER_TO_OPERATOR = {
+    query.Compare.EQ: '=',
+    query.Compare.NE: '!=',
+    query.Compare.LT: '<',
+    query.Compare.GT: '>',
+}
+
+
+def distance_to_operand(constraint: query.Constraint.Distance) -> query.Predicate:
+    fst, snd = constraint
+    dist_function = query.Function(
+        'distabs',
+        query.Reference(fst),
+        query.Reference(snd),
+    )
+    distance_literal = query.Literal(str(constraint.distance))
+    return query.Comparison(dist_function, ORDER_TO_OPERATOR[constraint.order], distance_literal)
+
+
 def from_query(q: query.Query) -> Query:
     """Translate a tree-based query into a CQP query for all different arrangements of tokens."""
 
-    def distance_to_operand(
-        src: query.Identifier, dst: query.Identifier, distance: query.Distance
-    ) -> query.Predicate:
-        dist_function = query.Function(
-            'distabs',
-            query.Reference(src),
-            query.Reference(dst),
-        )
-        distance_literal = query.Literal(str(distance + 1))
-        return query.Comparison(dist_function, '=', distance_literal)
-
     predicates = set(pred.normalize() for pred in q.predicates)
     for constraint in q.constraints:
-        if constraint.distance != query.Constraint.ARBITRARY_DISTANCE:
-            predicates.add(distance_to_operand(constraint.src, constraint.dst, constraint.distance))
+        if isinstance(constraint, query.Constraint.Distance):
+            predicates.add(distance_to_operand(constraint))
 
     for token in q.tokens:  # Raise local predicates to prepare re-ordering.
         if token.attributes is not None:
@@ -262,7 +271,7 @@ def from_query(q: query.Query) -> Query:
     )
 
 
-def format_plan(plan: query.QueryPlan) -> Iterator[str]:
+def format_plan(plan: query.Recipe) -> Iterator[str]:
     environment = associate_with_names(plan.identifiers(), QUERY_ALPHABET)
     parts = plan.as_dict()
 

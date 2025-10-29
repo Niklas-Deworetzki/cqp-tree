@@ -20,7 +20,7 @@ import cqp_tree.translation as ct
 
 
 @ct.translator('example')
-def translate(inp: str) -> ct.QueryPlan:
+def translate(inp: str) -> ct.Recipe:
     if not inp.isnumeric():
         syntax_error = ct.InputError(inp, 'Input contained non-numeric characters.')
         raise ct.ParsingFailed(syntax_error)
@@ -31,7 +31,7 @@ def translate(inp: str) -> ct.QueryPlan:
 
     tokens = [ct.Token(ct.Identifier()) for _ in range(how_many_tokens)]
     query = ct.Query(tokens=tokens)
-    return ct.QueryPlan.of_query(query)
+    return ct.Recipe.of_query(query)
 ```
 
 First, notice the decorator `@ct.translator`.

@@ -16,13 +16,13 @@ from cqp_tree.translation.query import (
     Disjunction,
     # Query structure
     Dependency,
-    Distance,
     Constraint,
+    Compare,
     # Multi-part queries
     Query,
     Operation,
     SetOperator,
-    QueryPlan,
+    Recipe,
 )
 from cqp_tree.translation.registry import (
     UnableToGuessTranslatorError,

@@ -3,7 +3,7 @@ from typing import Any
 from flask import Flask, jsonify, request, send_from_directory
 
 import cqp_tree
-from cqp_tree import QueryPlan
+from cqp_tree import Recipe
 from cqp_tree.utils import UPPERCASE_ALPHABET, associate_with_names
 
 server = Flask(__name__)
@@ -70,7 +70,7 @@ def translate():
         return error('This query cannot be parsed: ' + parse_error.message)
 
 
-def is_too_complex(plan: QueryPlan) -> bool:
+def is_too_complex(plan: Recipe) -> bool:
     if len(plan.queries) > 20:
         return True
     if any(len(query.tokens) > 5 for query in plan.queries):
@@ -78,7 +78,7 @@ def is_too_complex(plan: QueryPlan) -> bool:
     return False
 
 
-def to_json(plan: QueryPlan) -> dict:
+def to_json(plan: Recipe) -> dict:
     environment = associate_with_names(plan.identifiers(), UPPERCASE_ALPHABET)
 
     queries = {
