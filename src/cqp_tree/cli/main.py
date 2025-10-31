@@ -88,7 +88,7 @@ def get_input(args: argparse.Namespace) -> Optional[str]:
         if not args.quiet:
             warn('No input file specified. Reading from stdin instead.')
             warn('Press Ctrl+D once you finished typing your query.')
-        return sys.stdin.read()
+        return sys.stdin.read() or None
 
 
 def translate(args: argparse.Namespace, query_str: str) -> cqp_tree.Recipe | None:
