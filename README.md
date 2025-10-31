@@ -9,11 +9,18 @@ A framework to translate tree-style linguistic queries into sequential queries f
 ## Installation
 
 This module requires Python version 3.12 or higher to be installed.
-Installation is possible by cloning this repository and running `pip install`.
+Installation is possible using `pip`.
+
+```shell
+pip install cqp-tree
+```
+
+If you want to run the current development version, you can clone this repository and install the package locally.
 
 ```shell
 git clone https://github.com/Niklas-Deworetzki/cqp-tree.git
-pip install cqp-tree
+cd cqp-tree
+pip install .
 ```
 
 ## Get Started in the Browser
@@ -36,7 +43,7 @@ It can translate different queries into a common CQP representation and offers t
 Currently, the following other query-languages are (partially) supported:
 1. [Grew-match](https://match.grew.fr/)
 2. [deptreepy](https://github.com/aarneranta/deptreepy/tree/main)
-3. [CoNLL-U](https://universaldependencies.org/format.html): this is not commonly intended as a query language, but (partial) trees in CoNLL-U format can be interpreted as queries. For details, see [conll_frontend.md](conll_frontend.md)
+3. [CoNLL-U](https://universaldependencies.org/format.html): this is not commonly intended as a query language, but (partial) trees in CoNLL-U format can be interpreted as queries. For details, see [conll_frontend.md](https://github.com/Niklas-Deworetzki/cqp-tree/blob/main/conll_frontend.md)
 
 In order to translate a query, you can provide it either via the command line, as the contents of a file or by directly typing it out into the program:
 
@@ -54,5 +61,5 @@ Using the `--output` flag you can specify a file to which it should be written t
 ## Contributing
 
 Feel free to add to this project.
-Read [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
+Read [CONTRIBUTING.md](https://github.com/Niklas-Deworetzki/cqp-tree/blob/main/CONTRIBUTING.md) to get started.
 

@@ -1,6 +1,6 @@
 [project]
 name = "cqp-tree"
-version = "0.0.1"
+version = "0.1a1"
 description = "Translate queries from tree-based formats to sequential CQP format used by Corpus Workbench."
 keywords = ["corpus search", "query translation", "corpus workbench", "korp"]
 classifiers = [
@@ -28,8 +28,13 @@ dependencies = [
     "Flask==3.1.2",
 ]
 
+[project.urls]
+Homepage = "https://github.com/Niklas-Deworetzki/cqp-tree"
+Issues = "https://github.com/Niklas-Deworetzki/cqp-tree/issues"
+
 [tool.setuptools.packages.find]
 where = ["src"]
+exclude = ["tests"]
 
 [tool.setuptools.package-data]
 "*" = ["*.html"]
