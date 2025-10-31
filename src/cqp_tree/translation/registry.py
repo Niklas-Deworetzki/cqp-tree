@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Callable, Collection, Optional, Tuple
 
-from cqp_tree.translation.errors import NotSupported, ParsingFailed
+from cqp_tree.translation.errors import NotSupported
 from cqp_tree.translation.query import Recipe
 
 type TranslationFunction = Callable[[str], Recipe]
@@ -85,10 +85,10 @@ def guess_correct_translator(inp: str) -> list[Tuple[str, Recipe]]:
         try:
             parsed = function(inp)
             translated_queries.append((name, parsed))
-        except ParsingFailed:
-            pass
         except NotSupported as not_supported:
             unsupported_queries.append((name, not_supported))
+        except:  # pylint: disable=bare-except
+            pass  # Assume that we cannot translate, independent of exception raised.
 
     if not translated_queries and len(unsupported_queries) == 1:
         trans, raised_exception = unsupported_queries[0]
