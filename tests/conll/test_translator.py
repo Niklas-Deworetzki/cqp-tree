@@ -15,6 +15,9 @@ def n_tokens(conll):
 class TranslationTests(unittest.TestCase):
     dir_path = os.path.dirname(os.path.realpath(__file__))
 
+    def test_empty_conll(self):
+        self.assertRaises(ParsingFailed, translate_conll, "")
+
     def test_invalid_conll(self):
         with open(os.path.join(self.dir_path, "invalid.conllu")) as f:
             conll = f.read()

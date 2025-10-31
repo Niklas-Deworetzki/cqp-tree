@@ -22,6 +22,8 @@ def parse(s: str):
         parsed = conllu.parse(s)
     except conllu.exceptions.ParseException as ex:
         raise ct.ParsingFailed(ct.InputError(None, ex))
+    if len(parsed) == 0:
+        raise ct.ParsingFailed(ct.InputError(None, 'Cannot parse an empty .conllu file.'))
     return parsed[0]  # only first parsed CoNLL-U sentence
 
 
