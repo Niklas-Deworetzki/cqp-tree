@@ -43,6 +43,12 @@ def argument_parser() -> argparse.ArgumentParser:
         metavar='ENC',
         help='Encoding used for reading and writing files.',
     )
+    parser.add_argument(
+        '--span',
+        '-s',
+        metavar='SPAN',
+        help='Span attribute to which a query should be constrained.',
+    )
 
     translator_names = sorted(cqp_tree.known_translators.keys())
     parser.add_argument(
@@ -132,12 +138,8 @@ def main():
             if not plan:
                 return 1
 
-            if plan.has_simple_representation():
-                cqp = cqp_tree.cqp_from_query(plan.simple_representation())
-                output.write(str(cqp) + '\n')
-            else:
-                for line in cqp_tree.format_plan(plan):
-                    output.write(line + '\n')
+            for line in cqp_tree.format_plan(plan, args):
+                output.write(line + '\n')
 
         except cqp_tree.ParsingFailed as parse_failure:
             warn('Query could not be parsed:')

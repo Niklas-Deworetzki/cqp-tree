@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from argparse import Namespace
 from dataclasses import dataclass, field
 from typing import Iterable, Iterator, Optional
 
@@ -271,7 +272,11 @@ def from_query(q: query.Query) -> Query:
     )
 
 
-def format_plan(plan: query.Recipe) -> Iterator[str]:
+def format_plan(plan: query.Recipe, args: Namespace | None) -> Iterator[str]:
+    span = ''
+    if args is not None and args.span is not None:
+        span = f' within <{args.span}>'
+
     environment = associate_with_names(plan.identifiers(), QUERY_ALPHABET)
     parts = plan.as_dict()
 
@@ -287,7 +292,7 @@ def format_plan(plan: query.Recipe) -> Iterator[str]:
             yield from rec(part.lhs)
             yield from rec(part.rhs)
         else:
-            formatted = str(from_query(part)) + ';'
+            formatted = str(from_query(part)) + span + ';'
 
         if include_assignment:
             formatted = f'{environment[goal]} = {formatted}'
