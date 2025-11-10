@@ -1,52 +1,52 @@
 [project]
-name = "cqp-tree"
-version = "0.1a1"
-description = "Translate queries from tree-based formats to sequential CQP format used by Corpus Workbench."
-keywords = ["corpus search", "query translation", "corpus workbench", "korp"]
+name = 'cqp-tree'
+version = '0.1a1'
+description = 'Translate queries from tree-based formats to sequential CQP format used by Corpus Workbench.'
+keywords = ['corpus search', 'query translation', 'corpus workbench', 'korp']
 classifiers = [
-    "Development Status :: 3 - Alpha",
-    "Intended Audience :: Developers",
-    "Intended Audience :: Science/Research",
-    "Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator",
-    "Topic :: Text Processing :: Linguistic",
-    "Typing :: Typed"
+    'Development Status :: 3 - Alpha',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Science/Research',
+    'Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator',
+    'Topic :: Text Processing :: Linguistic',
+    'Typing :: Typed'
 ]
 
-license = "MPL-2.0"
-readme = { file = "README.md", content-type = "text/markdown" }
+license = 'MPL-2.0'
+readme = { file = 'README.md', content-type = 'text/markdown' }
 authors = [
-    { name = "Niklas Deworetzki" },
-    { name = "Arianna Masciolini" },
+    { name = 'Niklas Deworetzki' },
+    { name = 'Arianna Masciolini' },
 ]
 
-requires-python = ">=3.12,<4"
+requires-python = '>=3.12,<4'
 dependencies = [
-    "antlr4-python3-runtime==4.13.2",
-    "pyparsing==3.2.5",
-    "conllu==6.0.0",
+    'antlr4-python3-runtime==4.13.2',
+    'pyparsing==3.2.5',
+    'conllu==6.0.0',
 
-    "Flask==3.1.2",
+    'Flask==3.1.2',
 ]
 
 [project.urls]
-Homepage = "https://github.com/Niklas-Deworetzki/cqp-tree"
-Issues = "https://github.com/Niklas-Deworetzki/cqp-tree/issues"
+Homepage = 'https://github.com/Niklas-Deworetzki/cqp-tree'
+Issues = 'https://github.com/Niklas-Deworetzki/cqp-tree/issues'
 
 [tool.setuptools.packages.find]
-where = ["src"]
-exclude = ["tests"]
+where = ['src']
+exclude = ['tests']
 
 [tool.setuptools.package-data]
-"*" = ["*.html"]
+'*' = ['*.html']
 
 [project.scripts]
-cqp-tree = "cqp_tree.cli:main"
-cqp-tree-web = "cqp_tree.web:main"
+cqp-tree = 'cqp_tree.cli:main'
+cqp-tree-web = 'cqp_tree.web:main'
 
 [tool.black]
 line-length = 100
 skip-string-normalization = true
-extend-exclude = "antlr"
+extend-exclude = 'antlr'
 
 [tool.pylint]
 max-line-length = 100

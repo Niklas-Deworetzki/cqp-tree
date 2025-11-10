@@ -1,7 +1,7 @@
-FROM python:3.12
+FROM python:3.13
 
-RUN pip install cqp-tree gunicorn
+RUN pip install gunicorn cqp-tree==0.1a1
 
-ENTRYPOINT ["gunicorn", "cqp_tree.web.app:app", "--bind", "0.0.0.0:8000"]
+ENTRYPOINT ["gunicorn", "cqp_tree.web.server:server", "--bind", "0.0.0.0:8000"]
 
 EXPOSE 8000
