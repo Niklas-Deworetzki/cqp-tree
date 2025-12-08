@@ -285,6 +285,18 @@ class GenericJunction(Predicate, ABC):
             return normalized_predicates[0]
         return self._construct_instance(normalized_predicates)
 
+    @classmethod
+    def of(cls, operands: Iterable[Predicate]) -> Predicate:
+        """
+        Create new instance with the given Predicates.
+        If only one Predicate is given, it is returned instead.
+        """
+        assert operands, 'Cannot create empty ' + cls.__name__
+        operands = list(operands)
+        if len(operands) == 1:
+            return operands[0]
+        return cls(operands)
+
 
 @dataclass(frozen=True)
 class Conjunction(GenericJunction):
