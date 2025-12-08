@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import StrEnum
 from itertools import count
-from typing import ClassVar, Collection, Iterable, List, Optional, Self, Set, override
+from typing import Callable, ClassVar, Collection, Iterable, List, Optional, Self, Set, override
 
 from cqp_tree.translation.regex import escape_regex_string
 from cqp_tree.utils import flatmap_set
@@ -333,7 +333,7 @@ class Constraint(ABC):
         return OrderConstraint(a, b)
 
     @staticmethod
-    def distance(a: Identifier, b: Identifier):
+    def distance(a: Identifier, b: Identifier) -> 'Dist':
         """
         Returns an object to encode distance constraints between two tokens.
         Distance constraints are created using comparison operators on the returned object.
@@ -349,26 +349,7 @@ class Constraint(ABC):
         def make_constraint(order, dist: int) -> 'Constraint':
             return DistanceConstraint(a, b, order, dist)
 
-        class Dist:
-            def __eq__(self, other: int) -> 'Constraint':
-                return make_constraint(Compare.EQ, other)
-
-            def __ne__(self, other: int) -> 'Constraint':
-                return make_constraint(Compare.NE, other)
-
-            def __lt__(self, other: int) -> 'Constraint':
-                return make_constraint(Compare.LT, other)
-
-            def __gt__(self, other: int) -> 'Constraint':
-                return make_constraint(Compare.GT, other)
-
-            def __le__(self, other: int) -> 'Constraint':
-                return self < (other + 1)
-
-            def __ge__(self, other: int) -> 'Constraint':
-                return self > (other + 1)
-
-        return Dist()
+        return Dist(make_constraint)
 
 
 class Compare(StrEnum):
@@ -376,6 +357,29 @@ class Compare(StrEnum):
     NE = '#'
     LT = '<'
     GT = '>'
+
+
+@dataclass(frozen=True)
+class Dist:
+    make_constraint: Callable[[Compare, int], Constraint]
+
+    def __eq__(self, other: int) -> Constraint:
+        return self.make_constraint(Compare.EQ, other)
+
+    def __ne__(self, other: int) -> Constraint:
+        return self.make_constraint(Compare.NE, other)
+
+    def __lt__(self, other: int) -> Constraint:
+        return self.make_constraint(Compare.LT, other)
+
+    def __gt__(self, other: int) -> Constraint:
+        return self.make_constraint(Compare.GT, other)
+
+    def __le__(self, other: int) -> Constraint:
+        return self < (other + 1)
+
+    def __ge__(self, other: int) -> Constraint:
+        return self > (other + 1)
 
 
 @dataclass(frozen=True)

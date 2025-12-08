@@ -30,3 +30,4 @@ from cqp_tree.translation.registry import (
     translate_input,
     translator,
 )
+from cqp_tree.translation.regex import escape_regex_string
