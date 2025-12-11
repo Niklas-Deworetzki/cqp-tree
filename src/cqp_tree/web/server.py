@@ -37,16 +37,20 @@ def translate():
         translator = translation_request.get('translator')
         if translator and translator not in cqp_tree.known_translators:
             raise ValueError('Unknown value for field "translator"')
-        return text, translator
+
+        configuration = cqp_tree.Configuration(
+            translator=translator,
+        )
+        return text, configuration
 
     try:
-        text, translator = extract_request_data()
-        plan = cqp_tree.translate_input(text, translator)
+        text, configuration = extract_request_data()
+        plan = cqp_tree.translate_input(text, configuration.translator)
 
         if is_too_complex(plan):
             raise ValueError('Your query is too complex! Try using fewer tokens.')
 
-        return jsonify(to_json(plan))
+        return jsonify(to_json(plan, configuration))
 
     except ValueError as validation_error:
         return error(str(validation_error), 422)
@@ -78,11 +82,12 @@ def is_too_complex(plan: Recipe) -> bool:
     return False
 
 
-def to_json(plan: Recipe) -> dict:
+def to_json(plan: Recipe, configuration: cqp_tree.Configuration) -> dict:
     environment = associate_with_names(plan.identifiers(), UPPERCASE_ALPHABET)
 
     queries = {
-        environment[query.identifier]: str(cqp_tree.cqp_from_query(query)) for query in plan.queries
+        environment[query.identifier]: str(cqp_tree.cqp_from_query(query, configuration))
+        for query in plan.queries
     }
     operations = {
         environment[operation.identifier]: {
@@ -102,5 +107,6 @@ def to_json(plan: Recipe) -> dict:
     }
     if plan.has_simple_representation():
         result['single_query'] = str(cqp_tree.cqp_from_query(plan.simple_representation()))
-
+    if configuration.span:
+        result['span'] = configuration.span
     return result

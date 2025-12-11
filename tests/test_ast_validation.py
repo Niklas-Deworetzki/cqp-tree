@@ -93,3 +93,51 @@ class ValidationTests(unittest.TestCase):
                 query.Token(duplicate, None),
             ]
             query.Query(tokens=tokens)
+
+    def test_anchor_conflict(self):
+        with self.assertRaises(AssertionError):
+            duplicate = query.Identifier()
+
+            tokens = [
+                query.Token(duplicate, None),
+                query.Token(query.Identifier(), None),
+            ]
+            constraints = [
+                query.Constraint.anchor(duplicate, is_first=True),
+                query.Constraint.anchor(duplicate, is_last=True),
+            ]
+            query.Query(tokens=tokens, constraints=constraints)
+
+    def test_anchor_conflict_does_not_apply_with_only_one_token(self):
+        duplicate = query.Identifier()
+
+        tokens = [query.Token(duplicate, None)]
+        constraints = [
+            query.Constraint.anchor(duplicate, is_first=True),
+            query.Constraint.anchor(duplicate, is_last=True),
+        ]
+        query.Query(tokens=tokens, constraints=constraints)
+
+    def test_multiple_anchors(self):
+        for position in query.Position:
+            with self.assertRaises(AssertionError):
+                a = query.Identifier()
+                b = query.Identifier()
+
+                tokens = [
+                    query.Token(a, None),
+                    query.Token(b, None),
+                ]
+                constraints = [
+                    query.Constraint.anchor(
+                        a,
+                        is_first=position == query.Position.FIRST,
+                        is_last=position == query.Position.LAST,
+                    ),
+                    query.Constraint.anchor(
+                        b,
+                        is_first=position == query.Position.FIRST,
+                        is_last=position == query.Position.LAST,
+                    ),
+                ]
+                query.Query(tokens=tokens, constraints=constraints)

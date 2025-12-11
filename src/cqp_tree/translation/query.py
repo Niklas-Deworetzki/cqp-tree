@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from dataclasses import dataclass, field
-from enum import StrEnum
+from enum import StrEnum, auto
 from itertools import count
 from typing import Callable, ClassVar, Collection, Iterable, List, Optional, Self, Set, override
 
@@ -16,6 +17,11 @@ class Identifier:
 
     def __repr__(self):
         return f'Identifier({self.id})'
+
+
+####################################
+# Abstract Syntax
+####################################
 
 
 class Operand(ABC):
@@ -323,9 +329,17 @@ class Dependency:
         return {self.src, self.dst}
 
 
+####################################
+# Constraints
+####################################
+
+
 class Constraint(ABC):
-    Order: ClassVar[type['Constraint']]
-    Distance: ClassVar[type['Distance']]
+    """Abstract class holding references to all supported constraints."""
+
+    Order: ClassVar[type['OrderConstraint']]
+    Distance: ClassVar[type['DistanceConstraint']]
+    Anchor: ClassVar[type['AnchorConstraint']]
 
     def referenced_identifiers(self) -> set[Identifier]:
         return set(self)
@@ -362,6 +376,24 @@ class Constraint(ABC):
             return DistanceConstraint(a, b, order, dist)
 
         return Dist(make_constraint)
+
+    @staticmethod
+    def anchor(a: Identifier, is_first: bool = False, is_last: bool = False) -> 'Constraint':
+        """
+        Creates a new constraint on a token, which must be the first or last token in a region.
+        This also implies a certain token order, as the first token must appear before all others.
+        And the last token must appear after all others.
+
+        Note: Exactly one of is_first or is_last must be True. Otherwise, an exception is raised.
+
+        :param a: Identifier of the token.
+        :param is_first: True, if the token is the first in a region.
+        :param is_last: True, if the token is the last in a region.
+        :return: A new constraint.
+        """
+
+        assert is_first ^ is_last, 'Anchor must be fixed as first or last token.'
+        return AnchorConstraint(a, Position.FIRST if is_first else Position.LAST)
 
 
 class Compare(StrEnum):
@@ -407,6 +439,7 @@ class DistanceConstraint(Constraint):
         yield self.b
 
 
+# Distance constraint is now defined.
 Constraint.Distance = DistanceConstraint
 
 
@@ -421,7 +454,32 @@ class OrderConstraint(Constraint):
         yield self.snd
 
 
+# Order constraint is now defined.
 Constraint.Order = OrderConstraint
+
+
+class Position(StrEnum):
+    FIRST = auto()
+    LAST = auto()
+
+
+@dataclass(frozen=True)
+class AnchorConstraint(Constraint):
+    id: Identifier
+    position: Position
+
+    def __iter__(self):
+        yield self.id
+
+    def is_first(self) -> bool:
+        return self.position == Position.FIRST
+
+    def is_last(self) -> bool:
+        return self.position == Position.LAST
+
+
+# Anchor constraint is now defined.
+Constraint.Anchor = AnchorConstraint
 
 
 @dataclass(frozen=True)
@@ -467,6 +525,16 @@ class Query:
         assert not (
             referenced_identifiers - defined_identifiers
         ), 'Query uses identifiers not defined by tokens.'
+
+        anchors = defaultdict(list)
+        for constraint in self.constraints:
+            if isinstance(constraint, Constraint.Anchor):
+                anchors[constraint.position].extend(constraint)
+        assert len(anchors[Position.FIRST]) < 2, 'Multiple anchors to beginning of span defined.'
+        assert len(anchors[Position.LAST]) < 2, 'Multiple anchors to end of span defined.'
+        if len(self.tokens) > 1:
+            tokens_anchor_both = set(anchors[Position.FIRST]) & set(anchors[Position.LAST])
+            assert not tokens_anchor_both, 'Token is anchor for both begin and end of span.'
 
 
 class SetOperator(StrEnum):
