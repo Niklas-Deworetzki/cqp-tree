@@ -34,6 +34,7 @@ EXAMPLE_QUERIES_FROM_PAPER = [
     'first . second',
     'cat <lin_2:3 NOUN',
     'cat <lin_2:3@R NOUN',
+    'cat <lin_2:3@L NOUN',
     '(_ <nsubj _) -> (Person=3 <nsubj _)',
     '(dog <nsubj _) + cat',
 ]
@@ -91,9 +92,11 @@ EXAMPLE_QUERIES_FROM_DOCUMENTATION = [
 class ParserTests(unittest.TestCase):
 
     def test_parser(self):
-        for query in EXAMPLE_QUERIES_FROM_PAPER + EXAMPLE_QUERIES_FROM_DOCUMENTATION:
-            try:
-                parsed = parse(query)
-                self.assertIsInstance(parsed, DepsearchParser.QueryContext)
-            except Exception as e:
-                raise ValueError('Cannot parse input: ' + query) from e
+        all_test_cases = EXAMPLE_QUERIES_FROM_PAPER + EXAMPLE_QUERIES_FROM_DOCUMENTATION
+        for i, query in enumerate(all_test_cases, start=1):
+            with self.subTest(msg=f'Parse example #{i}'):
+                try:
+                    parsed = parse(query)
+                    self.assertIsInstance(parsed, DepsearchParser.QueryContext)
+                except Exception as e:
+                    raise ValueError('Cannot parse input: ' + query)
