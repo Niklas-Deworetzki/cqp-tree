@@ -4,39 +4,43 @@ grammar Depsearch;
 query : allQuantified? tokenExpression ('+' tokenExpression)* EOF ;
 
 allQuantified
-    : simpleToken '->'
+    : atomicToken '->'
     ;
 
 tokenExpression
-    : lhs=tokenExpression '&' rhs=tokenExpression                       # Conjunction
-    | lhs=tokenExpression '|' rhs=tokenExpression                       # Disjunction
-    | lhs=simpleToken '.' rhs=simpleToken                               # Sequence
-    | lhs=simpleToken LinearDistance directionModifier? rhs=simpleToken # Distance
-    | src=simpleToken (dependency)*                                     # Dependencies
+    : lhs=tokenExpression '&' rhs=tokenExpression                       # ConjunctionToken
+    | lhs=tokenExpression '|' rhs=tokenExpression                       # DisjunctionToken
+    | lhs=atomicToken '.' rhs=atomicToken                               # SequenceToken
+    | lhs=atomicToken LinearDistance directionModifier? rhs=atomicToken # DistanceToken
+    // t1 > t2 > t3 means t2 and t3 are dependents of t1
+    // t1 > (t2 > t3) searches for chains instead.
+    | src=negatedToken (dependencyDescription)+                         # DependenciesToken
+    | negatedToken                                                      # PossiblyNegatedToken
     ;
 
-dependency          : edge dst=simpleToken
-                    ;
+negatedToken : Neg exp=atomicToken  # NegationToken
+             | atomicToken          # JustAToken
+             ;
 
-simpleToken : '(' exp=tokenExpression ')'   # ParenthesizedToken
-            | Neg exp=simpleToken           # Negation
-            | '_'                           # Arbitrary
-            | Value '=' Value               # Attribute
-            | Value                         # WordOrTag
-            | String                        # Wordform
+atomicToken : '(' exp=tokenExpression ')'   # ParenthesizedToken
+            | '_'                           # ArbitraryToken
+            | Value '=' Value               # AttributeToken
+            | Value                         # WordOrTagToken
+            | String                        # WordformToken
             ;
 
+dependencyDescription : dependencyExpression dst=negatedToken
+                      ;
 
-edge : edgeDescription ('|' edgeDescription)*
-     ;
+// one can use OR operator to query dependency relations
+dependencyExpression : lhs=dependencyExpression '|' rhs=dependencyExpression # DisjunctionDependency
+                     | Neg atomicDependency                                  # NegationDependency
+                     | atomicDependency                                      # JustADependency
+                     ;
 
-edgeDescription
-    :   absent=Neg?
-        dependencyOperator
-        negatedType=Neg?
-        Value?
-        directionModifier?
-    ;
+atomicDependency  : '(' dependencyExpression ')'                                    # ParenthesizedDependency
+                  | dependencyOperator (negatedType=Neg? Value)? directionModifier? # Dependency
+                  ;
 
 
 
