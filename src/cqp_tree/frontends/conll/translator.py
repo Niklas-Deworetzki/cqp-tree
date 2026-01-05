@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from enum import StrEnum
 from types import NoneType
 from typing import Any, Callable, Iterable, Tuple
@@ -7,16 +8,14 @@ from conllu.exceptions import ParseException
 
 import cqp_tree.translation as ct
 
-"""
-This module is used to parse CoNLL-U (and potentially CoNLL-U Plus). Most of 
-the format parsing is done by the `conllu` package. Look here for the format 
-specification: https://universaldependencies.org/format.html
+# This module is used to parse CoNLL-U (and potentially CoNLL-U Plus). Most of
+# the format parsing is done by the `conllu` package. Look here for the format
+# specification: https://universaldependencies.org/format.html
 
-A CoNLL-U file has different *columns* (id, form, lemma, upos, xpos, feats, 
-head, deprel, deps, misc). Some *annotations* live directly in a column
-(form, lemma, upos, xpos). Others are encoded as *features* within a column.
-In those cases, they are encoded as `Key=Value`.
-"""
+# A CoNLL-U file has different *columns* (id, form, lemma, upos, xpos, feats,
+# head, deprel, deps, misc). Some *annotations* live directly in a column
+# (form, lemma, upos, xpos). Others are encoded as *features* within a column.
+# In those cases, they are encoded as `Key=Value`.
 
 type Reference = Any
 
@@ -83,14 +82,25 @@ def has_annotation(token: conllu.Token, annotation: ReservedAnnotation) -> bool:
     return False
 
 
+@dataclass
+class Configuration:
+    mapped_annotation_columns: dict[str, str] = field(
+        default_factory=lambda: SPRAAKBANKEN_MAPPED_ANNOTATION_COLUMNS
+    )
+    mapped_feature_columns: dict[str, str] = field(
+        default_factory=lambda: SPRAAKBANKEN_MAPPED_FEATURE_COLUMNS
+    )
+    expanded_feature_columns: Iterable[str] = field(
+        default_factory=lambda: SPRAAKBANKEN_EXPANDED_FEATURE_COLUMNS
+    )
+
+
 class Translation:
     """
     Translation state and configuration.
     """
 
-    mapped_annotation_columns: dict[str, str]
-    mapped_feature_columns: dict[str, str]
-    expanded_feature_columns: Iterable[str]
+    configuration: Configuration
 
     conllu_tokens: list[conllu.Token]
 
@@ -103,10 +113,7 @@ class Translation:
 
     def __init__(self, tokens: Iterable[conllu.Token]):
         self.conllu_tokens = list(tokens)
-
-        self.mapped_annotation_columns = SPRAAKBANKEN_MAPPED_ANNOTATION_COLUMNS
-        self.mapped_feature_columns = SPRAAKBANKEN_MAPPED_FEATURE_COLUMNS
-        self.expanded_feature_columns = SPRAAKBANKEN_EXPANDED_FEATURE_COLUMNS
+        self.configuration = Configuration()
 
         self.tokens = [ct.Token() for _ in self.conllu_tokens]
         # Allocate space for the other structures
@@ -136,7 +143,8 @@ class Translation:
     def parse(s: str) -> 'Translation':
         def is_valid_token(token: conllu.Token) -> bool:
             """
-            Used to filter out MWE and empty nodes. Also skips all tokens that don't have an ID field.
+            Used to filter out MWE and empty nodes.
+            Also skips all tokens that don't have an ID field.
             """
             return isinstance(token['id'], int)
 
@@ -161,7 +169,7 @@ class Translation:
 
 
 def _map_annotation_columns(translation: Translation, token: conllu.Token, id: ct.Identifier):
-    for column, mapping in translation.mapped_annotation_columns.items():
+    for column, mapping in translation.configuration.mapped_annotation_columns.items():
         value = token[column]
 
         if value == UNSPECIFIED_VALUE or value is None:
@@ -175,7 +183,7 @@ def _map_annotation_columns(translation: Translation, token: conllu.Token, id: c
 
 
 def _map_feature_columns(translation: Translation, token: conllu.Token, id: ct.Identifier):
-    for column, mapping in translation.mapped_feature_columns.items():
+    for column, mapping in translation.configuration.mapped_feature_columns.items():
         features = token[column]
         if isinstance(features, dict):
             extracted_attributes = [
@@ -189,7 +197,7 @@ def _map_feature_columns(translation: Translation, token: conllu.Token, id: ct.I
 
 
 def _expand_feature_columns(translation: Translation, token: conllu.Token, id: ct.Identifier):
-    for column in translation.expanded_feature_columns:
+    for column in translation.configuration.expanded_feature_columns:
         features = token[column]
         if isinstance(features, dict):
             extracted_attributes = [
@@ -242,7 +250,7 @@ def _extract_subsequent_tokens(translation: Translation):
     for i in range(1, len(translation)):
         sub_rt, sub_tok = translation[i]
         if has_annotation(sub_rt, ReservedAnnotation.SUBSEQUENT):
-            pre_rt, pre_tok = translation[i - 1]
+            _, pre_tok = translation[i - 1]
 
             constraints = [
                 ct.Constraint.distance(pre_tok.identifier, sub_tok.identifier) == 1,
