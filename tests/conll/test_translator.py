@@ -69,7 +69,6 @@ _	This	this	PRON	DT	Number=Sing|PronType=Dem	4	nsubj	_	TokenRange=0:4
         token_count = len(translation.tokens)
         self.assertEqual(token_count, 10, f'Expected {token_count} tokens.')
 
-
     def test_ignored_nodes(self):
         text = '''
 # text = She can't come but John will.
@@ -85,13 +84,12 @@ _	This	this	PRON	DT	Number=Sing|PronType=Dem	4	nsubj	_	TokenRange=0:4
 8	.	.	PUNCT	_	_	4	punct	_	_
         '''
 
-        translation = translate_conll(text).simple_representation()
+        res = translate_conll(text).simple_representation()
 
-        token_count = len(translation.tokens)
+        token_count = len(res.tokens)
         self.assertEqual(token_count, 8, f'Expected {token_count} tokens.')
 
-
-    def test_dephead_cannot_be_unspecified(self):
+    def test_dephead_cannot_be_underspecified(self):
         text = '''
 # text = Hope this helps
 1	Hope	hope	VERB	VBP	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	0	root	_	_
@@ -133,7 +131,7 @@ _	This	this	PRON	DT	Number=Sing|PronType=Dem	4	nsubj	_	TokenRange=0:4
 1	Hope	hope	VERB	VBP	_	0	root	_	_
         '''
 
-        token, *_ = translate_conll(text).simple_representation().tokens
+        res = translate_conll(text).simple_representation()
         expected_attributes = {
             'word': 'Hope',
             'lemma': 'hope',
@@ -142,15 +140,15 @@ _	This	this	PRON	DT	Number=Sing|PronType=Dem	4	nsubj	_	TokenRange=0:4
             'deprel': 'root',
         }
 
-        self.assertIsInstance(token.attributes, ct.Conjunction)
+        token, *_ = res.tokens
         for key, value in expected_attributes.items():
             self.assertIn(
                 ct.Comparison(
-                    ct.Attribute(None, key),
+                    ct.Attribute(token.identifier, key),
                     '=',
                     ct.Literal(f'"{value}"', represents_regex=False),
                 ),
-                token.attributes.predicates,
+                res.predicates,
             )
 
     def test_feats_are_translated(self):
@@ -158,7 +156,7 @@ _	This	this	PRON	DT	Number=Sing|PronType=Dem	4	nsubj	_	TokenRange=0:4
 1	_	_	_	_	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	0	_	_	_
         '''
 
-        token, *_ = translate_conll(text).simple_representation().tokens
+        res = translate_conll(text).simple_representation()
         expected_attributes = {
             'Mood': 'Ind',
             'Number': 'Sing',
@@ -167,15 +165,15 @@ _	This	this	PRON	DT	Number=Sing|PronType=Dem	4	nsubj	_	TokenRange=0:4
             'VerbForm': 'Fin',
         }
 
-        self.assertIsInstance(token.attributes, ct.Conjunction)
+        token, *_ = res.tokens
         for key, value in expected_attributes.items():
             self.assertIn(
                 ct.Comparison(
-                    ct.Attribute(None, 'ufeats'),
+                    ct.Attribute(token.identifier, 'ufeats'),
                     'contains',
                     ct.Literal(f'"{key}={value}"', represents_regex=False),
                 ),
-                token.attributes.predicates,
+                res.predicates,
             )
 
     def test_misc_are_extracted(self):
@@ -183,19 +181,81 @@ _	This	this	PRON	DT	Number=Sing|PronType=Dem	4	nsubj	_	TokenRange=0:4
 1	_	_	_	_	_	0	root	_	TokenRange=0:4|SpaceAfter=Yes
         '''
 
-        token, *_ = translate_conll(text).simple_representation().tokens
+        res = translate_conll(text).simple_representation()
         expected_attributes = {
             'TokenRange': '0:4',
             'SpaceAfter': 'Yes',
         }
 
-        self.assertIsInstance(token.attributes, ct.Conjunction)
+        token, *_ = res.tokens
         for key, value in expected_attributes.items():
             self.assertIn(
                 ct.Comparison(
-                    ct.Attribute(None, key),
+                    ct.Attribute(token.identifier, key),
                     '=',
                     ct.Literal(f'"{value}"', represents_regex=False),
                 ),
-                token.attributes.predicates,
+                res.predicates,
             )
+
+
+class ExtensionTests(unittest.TestCase):
+
+    def test_anchor_on_first_token(self):
+        text = '''
+        1	_	_	_	_	_	_	_	_	anchored=Yes
+        2	_	_	_	_	_	_	_	_	_
+        '''
+
+        res = translate_conll(text).simple_representation()
+        tok = list(res.tokens)[0]
+
+        self.assertIn(
+            ct.Constraint.anchor(tok.identifier, is_first=True),
+            res.constraints,
+        )
+
+
+    def test_anchor_on_last_token(self):
+        text = '''
+        1	_	_	_	_	_	_	_	_	_
+        2	_	_	_	_	_	_	_	_	anchored=Yes
+        '''
+
+        res = translate_conll(text).simple_representation()
+        tok = list(res.tokens)[-1]
+
+        self.assertIn(
+            ct.Constraint.anchor(tok.identifier, is_last=True),
+            res.constraints,
+        )
+
+
+    def test_subsequent_tokens(self):
+        text = '''
+        1	_	_	_	_	_	_	_	_	_
+        2	_	_	_	_	_	_	_	_	subsequent=Yes
+        '''
+
+        res = translate_conll(text).simple_representation()
+        pre, sub, *_ = res.tokens
+
+        self.assertIn(
+            ct.Constraint.distance(pre.identifier, sub.identifier) == 1,
+            res.constraints,
+        )
+
+
+    def test_ordered_tokens(self):
+        text = '''
+        1	_	_	_	_	_	_	_	_	ordered=Yes
+        2	_	_	_	_	_	_	_	_	ordered=Yes
+        '''
+
+        res = translate_conll(text).simple_representation()
+        pre, sub, *_ = res.tokens
+
+        self.assertIn(
+            ct.Constraint.order(pre.identifier, sub.identifier),
+            res.constraints,
+        )
