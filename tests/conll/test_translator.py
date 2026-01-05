@@ -57,10 +57,10 @@ _	This	this	PRON	DT	Number=Sing|PronType=Dem	4	nsubj	_	TokenRange=0:4
 4	a	a	DET	_	_	5	det	_	_
 5	book	book	NOUN	_	_	2	obj	_	_
 6	and	and	CCONJ	_	_	2	cc	_	_
-7	Peter	Peter	PROPN	_	_	7.1	nsubj	_	_
-7.1	_	give	VERB	_	_	2	conj	_	SpaceAfter=No
+7	Peter	Peter	PROPN	_	_	2	nsubj	_	_
+7.1	_	give	VERB	_	_	_	conj	_	SpaceAfter=No
 8	a	a	DET	_	_	9	det	_	_
-9	pen	pen	NOUN	_	_	7.1	obj	_	_
+9	pen	pen	NOUN	_	_	2	obj	_	_
 10	.	.	PUNCT	_	_	2	punct	_	_
         '''
 
@@ -78,9 +78,9 @@ _	This	this	PRON	DT	Number=Sing|PronType=Dem	4	nsubj	_	TokenRange=0:4
 3	n't	not	PART	_	_	4	advmod	_	_
 4	come	come	VERB	_	_	0	root	_	_
 5	but	but	CCONJ	_	_	4	cc	_	_
-6	John	John	PROPN	_	_	7.1	nsubj	_	_
-7	will	will	AUX	_	_	7.1	aux	_	_
-7.1	_	come	VERB	_	_	4	conj	_	_
+6	John	John	PROPN	_	_	4	nsubj	_	_
+7	will	will	AUX	_	_	4	aux	_	_
+7.1	_	come	VERB	_	_	_	conj	_	_
 8	.	.	PUNCT	_	_	4	punct	_	_
         '''
 

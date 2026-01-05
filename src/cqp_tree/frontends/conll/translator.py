@@ -140,9 +140,10 @@ class Translation:
             """
             return isinstance(token['id'], int)
 
-        # TODO: Parse header to auto-detect translated fields.
         try:
             parsed = conllu.parse(s)
+            # parsed.metadata  TODO: Parse header to auto-detect translated fields.
+
         except ParseException as ex:
             raise ct.ParsingFailed(ct.InputError(None, str(ex)))
         if len(parsed) == 0:
