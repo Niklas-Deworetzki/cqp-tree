@@ -1,6 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import List, Self, Type, override
+from typing import List, Self, override
 
 from antlr4 import CommonTokenStream, InputStream, TerminalNode
 from antlr4.error.ErrorListener import ErrorListener
@@ -130,14 +130,6 @@ class QueryBuilder:
 
         assert False, f'Unknown operator: {type(grew)}'
 
-    @staticmethod
-    def wrap(
-        predicates: List[ct.Predicate], ctor: Type[ct.Conjunction | ct.Disjunction]
-    ) -> ct.Predicate:
-        if len(predicates) > 1:
-            return ctor(predicates)
-        return predicates[0]
-
     def translate_clause(self, clause: GrewParser.ClauseContext):
         if isinstance(clause, GrewParser.NodeClauseContext):
             token = self.environment[clause.label.text]
@@ -149,7 +141,7 @@ class QueryBuilder:
 
             # Only add predicate if features are present.
             if features:
-                predicate = self.wrap(features, ct.Disjunction)
+                predicate = ct.Disjunction.of(features)
                 predicate.raise_from(token.identifier)
                 self.predicates.append(predicate)
 
@@ -167,15 +159,13 @@ class QueryBuilder:
             deprel = ct.Attribute(dst, 'deprel')
             deptypes = [self.to_operand(dt) for dt in arrow.edgeTypes().literal()]
             if isinstance(arrow, GrewParser.PositiveArrowContext):
-                dependency_constraint = self.wrap(
-                    [ct.Comparison(deprel, '=', deptype) for deptype in deptypes],
-                    ct.Disjunction,
+                dependency_constraint = ct.Disjunction.of(
+                    ct.Comparison(deprel, '=', deptype) for deptype in deptypes
                 )
 
             elif isinstance(arrow, GrewParser.NegatedArrowContext):
-                dependency_constraint = self.wrap(
-                    [ct.Comparison(deprel, '!=', deptype) for deptype in deptypes],
-                    ct.Conjunction,
+                dependency_constraint = ct.Conjunction.of(
+                    ct.Comparison(deprel, '!=', deptype) for deptype in deptypes
                 )
 
             else:
@@ -224,15 +214,11 @@ class QueryBuilder:
             alternatives = [self.to_operand(feature) for feature in grew.featureValue()]
             comparison = grew.compare()
             if isinstance(comparison, GrewParser.EqualityContext):
-                return self.wrap(
-                    [ct.Comparison(attribute, '=', alt) for alt in alternatives],
-                    ct.Disjunction,
-                )
+                return ct.Disjunction.of(ct.Comparison(attribute, '=', alt) for alt in alternatives)
 
             if isinstance(comparison, GrewParser.InequalityContext):
-                return self.wrap(
-                    [ct.Comparison(attribute, '!=', alt) for alt in alternatives],
-                    ct.Conjunction,
+                return ct.Conjunction.of(
+                    ct.Comparison(attribute, '!=', alt) for alt in alternatives
                 )
 
             raise ct.NotSupported(f'Unknown comparison type: {type(comparison)}')
@@ -243,7 +229,7 @@ class QueryBuilder:
                 return None
 
             features = [self.to_predicate(feature) for feature in grew.feature()]
-            return self.wrap(features, ct.Conjunction)
+            return ct.Conjunction.of(features)
 
         assert False, f'Unknown predicate: {type(grew)}'
 

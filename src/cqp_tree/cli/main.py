@@ -4,6 +4,7 @@ from contextlib import ExitStack
 from typing import Any, Optional
 
 import cqp_tree
+from cqp_tree import Configuration
 from cqp_tree.utils import format_human_readable
 
 
@@ -97,9 +98,9 @@ def get_input(args: argparse.Namespace) -> Optional[str]:
         return sys.stdin.read() or None
 
 
-def translate(args: argparse.Namespace, query_str: str) -> cqp_tree.Recipe | None:
+def translate(query_str: str, configuration: Configuration) -> cqp_tree.Recipe | None:
     try:
-        return cqp_tree.translate_input(query_str, args.translator or None)
+        return cqp_tree.translate_input(query_str, configuration.translator)
     except cqp_tree.UnableToGuessTranslatorError as translation_error:
         if translation_error.no_translator_matches():
             warn('Unable to determine translator: No translator accepts the query.')
@@ -111,12 +112,21 @@ def translate(args: argparse.Namespace, query_str: str) -> cqp_tree.Recipe | Non
     return None
 
 
+def get_configuration(args: argparse.Namespace) -> cqp_tree.Configuration:
+    return cqp_tree.Configuration(
+        translator=args.translator if args.translator else None,
+        span=args.span if args.span else None,
+    )
+
+
 def main():
     parser = argument_parser()
     args = parser.parse_args()
     if args.help:
         parser.print_help()
         return 0
+
+    configuration = get_configuration(args)
 
     with ExitStack() as managed_resources:
         output = sys.stdout
@@ -134,11 +144,11 @@ def main():
             return 1
 
         try:
-            plan = translate(args, query_str)
+            plan = translate(query_str, configuration)
             if not plan:
                 return 1
 
-            for line in cqp_tree.format_plan(plan, args):
+            for line in cqp_tree.format_plan(plan, configuration):
                 output.write(line + '\n')
 
         except cqp_tree.ParsingFailed as parse_failure:

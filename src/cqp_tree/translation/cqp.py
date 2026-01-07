@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
-from argparse import Namespace
 from dataclasses import dataclass, field
-from typing import Iterable, Iterator, Optional
+from typing import Iterable, Iterator, Optional, override
 
+from cqp_tree.translation.configuration import Configuration
 from cqp_tree.translation import query
 from cqp_tree.utils import (
     LOWERCASE_ALPHABET,
@@ -47,10 +47,13 @@ class Sequence(Query):
 
     lhs: Query
     rhs: Query
+    tokens_between: bool = True
 
+    @override
     def referenced_identifiers(self) -> set[query.Identifier]:
         return self.lhs.referenced_identifiers() | self.rhs.referenced_identifiers()
 
+    @override
     def format(self, environment: Environment) -> str:
         def format_subquery(q: Query) -> str:
             res = q.format(environment)
@@ -58,7 +61,10 @@ class Sequence(Query):
 
         lhs_repr = format_subquery(self.lhs)
         rhs_repr = format_subquery(self.rhs)
-        return f'{lhs_repr} []* {rhs_repr}'
+        if self.tokens_between:
+            return f'{lhs_repr} []* {rhs_repr}'
+        else:
+            return f'{lhs_repr} {rhs_repr}'
 
 
 @dataclass
@@ -68,9 +74,11 @@ class Operator(Query):
     operator: str
     queries: list[Query]
 
+    @override
     def referenced_identifiers(self) -> set[query.Identifier]:
         return flatmap_set(self.queries, lambda q: q.referenced_identifiers())
 
+    @override
     def format(self, environment: Environment) -> str:
         parts = []
         for q in self.queries:
@@ -90,6 +98,7 @@ class Token(Query):
     associated_predicates: set[query.Predicate] = field(default_factory=set)
     associated_dependencies: set[query.Dependency] = field(default_factory=set)
 
+    @override
     def referenced_identifiers(self) -> set[query.Identifier]:
         identifiers = flatmap_set(
             self.associated_dependencies, lambda r: r.referenced_identifiers()
@@ -98,6 +107,7 @@ class Token(Query):
         identifiers -= {self.identifier}
         return identifiers
 
+    @override
     def format(self, environment: Environment) -> str:
         prefix = environment[self.identifier] + ':' if self.identifier in environment else ''
         predicates = []
@@ -118,6 +128,22 @@ class Token(Query):
 
         predicate = ' & '.join(predicates)
         return f'{prefix}[{predicate}]'
+
+
+@dataclass
+class Span(Query):
+    """Class representing begin or end of a text span in the corpus."""
+
+    span: str
+    position: query.Position
+
+    @override
+    def referenced_identifiers(self) -> set[query.Identifier]:
+        return set()
+
+    @override
+    def format(self, environment: Environment) -> str:
+        return f'<{self.span}>' if self.position == query.Position.FIRST else f'</{self.span}>'
 
 
 def format_operand(operand: query.Operand, environment: Environment) -> str:
@@ -165,6 +191,14 @@ def arrangements(
         if isinstance(constraint, query.Constraint.Order):
             fst, snd = constraint
             cannot_be_after[snd].add(fst)
+        elif isinstance(constraint, query.Constraint.Anchor):
+            (id,) = constraint
+            other_identifiers = identifiers - set(id)
+            if constraint.is_first():  # id cannot be after any of the others
+                cannot_be_after[id].update(other_identifiers)
+            if constraint.is_last():  # No other cannot be after id.
+                for other in other_identifiers:
+                    cannot_be_after[other].add(id)
 
     # Buffer with space for all identifiers.
     arrangement: list[query.Identifier | None] = [None] * len(identifiers)
@@ -250,13 +284,27 @@ def distance_to_operand(constraint: query.Constraint.Distance) -> query.Predicat
     return query.Comparison(dist_function, ORDER_TO_OPERATOR[constraint.order], distance_literal)
 
 
-def from_query(q: query.Query) -> Query:
+def add_anchors(q: Query, anchors: list[query.Constraint.Anchor], span: str) -> Query:
+    has_last = any(anchor.is_last() for anchor in anchors)
+    if has_last:
+        q = Sequence(q, Span(span, query.Position.LAST), tokens_between=False)
+
+    has_first = any(anchor.is_first() for anchor in anchors)
+    if has_first:
+        q = Sequence(Span(span, query.Position.FIRST), q, tokens_between=False)
+    return q
+
+
+def from_query(q: query.Query, configuration: Configuration = Configuration()) -> Query:
     """Translate a tree-based query into a CQP query for all different arrangements of tokens."""
 
     predicates = set(pred.normalize() for pred in q.predicates)
+    anchors: list[query.Constraint.Anchor] = []
     for constraint in q.constraints:
         if isinstance(constraint, query.Constraint.Distance):
             predicates.add(distance_to_operand(constraint))
+        elif isinstance(constraint, query.Constraint.Anchor):
+            anchors.append(constraint)
 
     for token in q.tokens:  # Raise local predicates to prepare re-ordering.
         if token.attributes is not None:
@@ -264,18 +312,25 @@ def from_query(q: query.Query) -> Query:
             raised_predicate = raised_predicate.normalize()
             predicates.add(raised_predicate)
 
-    return from_all_arrangements(
+    result = from_all_arrangements(
         {token.identifier for token in q.tokens},
         set(q.dependencies),
         set(q.constraints),
         predicates,
     )
 
+    # Add anchors if requested and possible
+    if anchors and configuration.span:
+        result = add_anchors(result, anchors, configuration.span)
+    return result
 
-def format_plan(plan: query.Recipe, args: Namespace | None) -> Iterator[str]:
-    span = ''
-    if args is not None and args.span is not None:
-        span = f' within <{args.span}>'
+
+def format_plan(
+    plan: query.Recipe, configuration: Configuration = Configuration()
+) -> Iterator[str]:
+    within_span_restriction = ''
+    if configuration.span:
+        within_span_restriction = f' within {configuration.span}'
 
     environment = associate_with_names(plan.identifiers(), QUERY_ALPHABET)
     parts = plan.as_dict()
@@ -292,7 +347,7 @@ def format_plan(plan: query.Recipe, args: Namespace | None) -> Iterator[str]:
             yield from rec(part.lhs)
             yield from rec(part.rhs)
         else:
-            formatted = str(from_query(part)) + span + ';'
+            formatted = str(from_query(part)) + within_span_restriction + ';'
 
         if include_assignment:
             formatted = f'{environment[goal]} = {formatted}'

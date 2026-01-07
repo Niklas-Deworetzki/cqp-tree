@@ -1,4 +1,5 @@
 from cqp_tree.translation.cqp import format_plan, from_query as cqp_from_query
+from cqp_tree.translation.configuration import Configuration
 from cqp_tree.translation.errors import InputError, ParsingFailed, NotSupported
 from cqp_tree.translation.query import (
     Identifier,
@@ -18,6 +19,7 @@ from cqp_tree.translation.query import (
     Dependency,
     Constraint,
     Compare,
+    Position,
     # Multi-part queries
     Query,
     Operation,
@@ -30,3 +32,4 @@ from cqp_tree.translation.registry import (
     translate_input,
     translator,
 )
+from cqp_tree.translation.regex import escape_regex_string
