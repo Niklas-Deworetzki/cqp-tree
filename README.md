@@ -4,7 +4,7 @@
 ![GitHub Tag](https://img.shields.io/github/v/tag/Niklas-Deworetzki/cqp-tree)
 ![GitHub License](https://img.shields.io/github/license/Niklas-Deworetzki/cqp-tree)
 
-A framework to translate tree-style linguistic queries into sequential queries for use in [Sketch Engine](https://www.sketchengine.eu/), [Corpus Workbench](https://cwb.sourceforge.io/) or [Korp](https://spraakbanken.gu.se/korp).
+A framework to translate tree-style linguistic queries into sequential queries for use in [Corpus Workbench](https://cwb.sourceforge.io/) or [Korp](https://spraakbanken.gu.se/korp), with plans to soon support [Sketch Engine](https://www.sketchengine.eu/).
 
 ## Installation
 
