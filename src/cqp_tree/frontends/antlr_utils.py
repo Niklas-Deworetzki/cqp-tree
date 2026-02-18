@@ -41,7 +41,7 @@ def make_parse[L: Lexer, P: Parser, R](
             antlr.removeErrorListeners()
             antlr.addErrorListener(listener)
 
-        result = func(parser)
+        result = func(antlr_parser)
         if listener.errors:
             raise ct.ParsingFailed(*listener.errors)
 
