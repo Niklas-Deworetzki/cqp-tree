@@ -55,14 +55,18 @@ max-locals = 20
 max-positional-arguments = 7
 max-args = 10
 max-branches = 15
+max-returns = 10
 ignore-paths = [
-    'src/cqp_tree/frontends/grew/antlr/'
+    'src/cqp_tree/frontends/grew/antlr/',
+    'src/cqp_tree/frontends/depsearch/antlr/',
 ]
 allowed-redefined-builtins = [
     'id'
 ]
 disable = [
     'W0511',
+    # Positional arguments appear to be out of order?
+    'W1114',
 
     # Control flow should be readable, not dictated by a tool.
     'R1705',
