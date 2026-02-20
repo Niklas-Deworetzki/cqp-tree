@@ -1,11 +1,13 @@
 from dataclasses import dataclass, field
 from typing import Callable, List, override
 
-from antlr4 import CommonTokenStream, InputStream, Parser
+from antlr4 import CommonTokenStream, InputStream, Parser, TerminalNode
 from antlr4.Lexer import Lexer
+from antlr4.Token import Token
 from antlr4.error.ErrorListener import ErrorListener
 
 import cqp_tree.translation as ct
+
 
 @dataclass
 class ParseErrorListener(ErrorListener):
@@ -48,3 +50,9 @@ def make_parse[L: Lexer, P: Parser, R](
         return result
 
     return parse
+
+
+def string_of_token(token: TerminalNode | Token) -> str:
+    if isinstance(token, Token):
+        return token.text
+    return token.symbol.text

@@ -289,6 +289,7 @@ class DepsearchParser ( Parser ):
 
         def __init__(self, parser, ctx:ParserRuleContext): # actually a DepsearchParser.TokenExpressionContext
             super().__init__(parser)
+            self.exp = None # NegatedTokenContext
             self.copyFrom(ctx)
 
         def negatedToken(self):
@@ -409,7 +410,7 @@ class DepsearchParser ( Parser ):
                 self._ctx = localctx
                 _prevctx = localctx
                 self.state = 54
-                self.negatedToken()
+                localctx.exp = self.negatedToken()
                 pass
 
 
@@ -502,6 +503,7 @@ class DepsearchParser ( Parser ):
 
         def __init__(self, parser, ctx:ParserRuleContext): # actually a DepsearchParser.NegatedTokenContext
             super().__init__(parser)
+            self.exp = None # AtomicTokenContext
             self.copyFrom(ctx)
 
         def atomicToken(self):
@@ -530,7 +532,7 @@ class DepsearchParser ( Parser ):
                 localctx = DepsearchParser.JustATokenContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
                 self.state = 70
-                self.atomicToken()
+                localctx.exp = self.atomicToken()
                 pass
             else:
                 raise NoViableAltException(self)
@@ -595,6 +597,8 @@ class DepsearchParser ( Parser ):
 
         def __init__(self, parser, ctx:ParserRuleContext): # actually a DepsearchParser.AtomicTokenContext
             super().__init__(parser)
+            self.key = None # Token
+            self.value = None # Token
             self.copyFrom(ctx)
 
         def Value(self, i:int=None):
@@ -645,11 +649,11 @@ class DepsearchParser ( Parser ):
                 localctx = DepsearchParser.AttributeTokenContext(self, localctx)
                 self.enterOuterAlt(localctx, 3)
                 self.state = 78
-                self.match(DepsearchParser.Value)
+                localctx.key = self.match(DepsearchParser.Value)
                 self.state = 79
                 self.match(DepsearchParser.T__8)
                 self.state = 80
-                self.match(DepsearchParser.Value)
+                localctx.value = self.match(DepsearchParser.Value)
                 pass
 
             elif la_ == 4:
@@ -750,6 +754,7 @@ class DepsearchParser ( Parser ):
 
         def __init__(self, parser, ctx:ParserRuleContext): # actually a DepsearchParser.DependencyExpressionContext
             super().__init__(parser)
+            self.exp = None # AtomicDependencyContext
             self.copyFrom(ctx)
 
         def atomicDependency(self):
@@ -801,7 +806,7 @@ class DepsearchParser ( Parser ):
                 self._ctx = localctx
                 _prevctx = localctx
                 self.state = 91
-                self.atomicDependency()
+                localctx.exp = self.atomicDependency()
                 pass
             else:
                 raise NoViableAltException(self)
@@ -860,6 +865,7 @@ class DepsearchParser ( Parser ):
 
         def __init__(self, parser, ctx:ParserRuleContext): # actually a DepsearchParser.AtomicDependencyContext
             super().__init__(parser)
+            self.exp = None # DependencyExpressionContext
             self.copyFrom(ctx)
 
         def dependencyExpression(self):
@@ -902,7 +908,7 @@ class DepsearchParser ( Parser ):
                 self.state = 102
                 self.match(DepsearchParser.T__5)
                 self.state = 103
-                self.dependencyExpression(0)
+                localctx.exp = self.dependencyExpression(0)
                 self.state = 104
                 self.match(DepsearchParser.T__6)
                 pass

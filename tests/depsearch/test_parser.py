@@ -98,5 +98,5 @@ class ParserTests(unittest.TestCase):
                 try:
                     parsed = parse(query)
                     self.assertIsInstance(parsed, DepsearchParser.QueryContext)
-                except Exception as e:
+                except Exception:
                     raise ValueError('Cannot parse input: ' + query)
