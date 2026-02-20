@@ -62,7 +62,6 @@ Neg    : '!' ;
 
 WhiteSpace  : [ \t\n\r\f]+ -> skip;
 
-// TODO: How do we do regex here?
 Value  : ~[\t\n\r\f !|&@=<>(){}"]+
        ;
 
