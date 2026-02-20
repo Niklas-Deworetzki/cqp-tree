@@ -215,11 +215,9 @@ class QueryBuilder:
     def translate_direction(
         self, a: ct.Identifier, b: ct.Identifier, direction: Depsearch.DirectionModifierContext
     ):
-        if isinstance(direction, Depsearch.LeftOfContext):
-            order = ct.Constraint.order(a, b)
-        else:
-            order = ct.Constraint.order(b, a)
-        self.constraints.append(order)
+        if isinstance(direction, Depsearch.RightOfContext):
+            a, b = b, a
+        self.constraints.append(ct.Constraint.order(a, b))
 
     def translate_dependencies(
         self, src: ct.Identifier, dst: ct.Identifier, exp: DepsearchDependencyContext
