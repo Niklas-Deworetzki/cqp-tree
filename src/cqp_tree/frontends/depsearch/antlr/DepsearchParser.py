@@ -10,48 +10,50 @@ else:
 
 def serializedATN():
     return [
-        4,1,18,127,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
+        4,1,18,130,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
         6,2,7,7,7,2,8,7,8,2,9,7,9,1,0,3,0,22,8,0,1,0,1,0,1,0,5,0,27,8,0,
         10,0,12,0,30,9,0,1,0,1,0,1,1,1,1,1,1,1,2,1,2,1,2,1,2,1,2,1,2,1,2,
         1,2,3,2,45,8,2,1,2,1,2,1,2,1,2,4,2,51,8,2,11,2,12,2,52,1,2,3,2,56,
         8,2,1,2,1,2,1,2,1,2,1,2,1,2,5,2,64,8,2,10,2,12,2,67,9,2,1,3,1,3,
-        1,3,3,3,72,8,3,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,3,4,84,8,
-        4,1,5,1,5,1,5,1,6,1,6,1,6,1,6,3,6,93,8,6,1,6,1,6,1,6,5,6,98,8,6,
-        10,6,12,6,101,9,6,1,7,1,7,1,7,1,7,1,7,1,7,3,7,109,8,7,1,7,3,7,112,
-        8,7,1,7,3,7,115,8,7,3,7,117,8,7,1,8,1,8,3,8,121,8,8,1,9,1,9,3,9,
-        125,8,9,1,9,0,2,4,12,10,0,2,4,6,8,10,12,14,16,18,0,0,138,0,21,1,
-        0,0,0,2,33,1,0,0,0,4,55,1,0,0,0,6,71,1,0,0,0,8,83,1,0,0,0,10,85,
-        1,0,0,0,12,92,1,0,0,0,14,116,1,0,0,0,16,120,1,0,0,0,18,124,1,0,0,
-        0,20,22,3,2,1,0,21,20,1,0,0,0,21,22,1,0,0,0,22,23,1,0,0,0,23,28,
-        3,4,2,0,24,25,5,1,0,0,25,27,3,4,2,0,26,24,1,0,0,0,27,30,1,0,0,0,
-        28,26,1,0,0,0,28,29,1,0,0,0,29,31,1,0,0,0,30,28,1,0,0,0,31,32,5,
-        0,0,1,32,1,1,0,0,0,33,34,3,8,4,0,34,35,5,2,0,0,35,3,1,0,0,0,36,37,
-        6,2,-1,0,37,38,3,8,4,0,38,39,5,5,0,0,39,40,3,8,4,0,40,56,1,0,0,0,
-        41,42,3,8,4,0,42,44,5,14,0,0,43,45,3,18,9,0,44,43,1,0,0,0,44,45,
-        1,0,0,0,45,46,1,0,0,0,46,47,3,8,4,0,47,56,1,0,0,0,48,50,3,6,3,0,
-        49,51,3,10,5,0,50,49,1,0,0,0,51,52,1,0,0,0,52,50,1,0,0,0,52,53,1,
-        0,0,0,53,56,1,0,0,0,54,56,3,6,3,0,55,36,1,0,0,0,55,41,1,0,0,0,55,
-        48,1,0,0,0,55,54,1,0,0,0,56,65,1,0,0,0,57,58,10,6,0,0,58,59,5,3,
-        0,0,59,64,3,4,2,7,60,61,10,5,0,0,61,62,5,4,0,0,62,64,3,4,2,6,63,
-        57,1,0,0,0,63,60,1,0,0,0,64,67,1,0,0,0,65,63,1,0,0,0,65,66,1,0,0,
-        0,66,5,1,0,0,0,67,65,1,0,0,0,68,69,5,15,0,0,69,72,3,8,4,0,70,72,
-        3,8,4,0,71,68,1,0,0,0,71,70,1,0,0,0,72,7,1,0,0,0,73,74,5,6,0,0,74,
-        75,3,4,2,0,75,76,5,7,0,0,76,84,1,0,0,0,77,84,5,8,0,0,78,79,5,17,
-        0,0,79,80,5,9,0,0,80,84,5,17,0,0,81,84,5,17,0,0,82,84,5,18,0,0,83,
-        73,1,0,0,0,83,77,1,0,0,0,83,78,1,0,0,0,83,81,1,0,0,0,83,82,1,0,0,
-        0,84,9,1,0,0,0,85,86,3,12,6,0,86,87,3,6,3,0,87,11,1,0,0,0,88,89,
-        6,6,-1,0,89,90,5,15,0,0,90,93,3,14,7,0,91,93,3,14,7,0,92,88,1,0,
-        0,0,92,91,1,0,0,0,93,99,1,0,0,0,94,95,10,3,0,0,95,96,5,4,0,0,96,
-        98,3,12,6,4,97,94,1,0,0,0,98,101,1,0,0,0,99,97,1,0,0,0,99,100,1,
-        0,0,0,100,13,1,0,0,0,101,99,1,0,0,0,102,103,5,6,0,0,103,104,3,12,
-        6,0,104,105,5,7,0,0,105,117,1,0,0,0,106,111,3,16,8,0,107,109,5,15,
-        0,0,108,107,1,0,0,0,108,109,1,0,0,0,109,110,1,0,0,0,110,112,5,17,
-        0,0,111,108,1,0,0,0,111,112,1,0,0,0,112,114,1,0,0,0,113,115,3,18,
-        9,0,114,113,1,0,0,0,114,115,1,0,0,0,115,117,1,0,0,0,116,102,1,0,
-        0,0,116,106,1,0,0,0,117,15,1,0,0,0,118,121,5,10,0,0,119,121,5,11,
-        0,0,120,118,1,0,0,0,120,119,1,0,0,0,121,17,1,0,0,0,122,125,5,12,
-        0,0,123,125,5,13,0,0,124,122,1,0,0,0,124,123,1,0,0,0,125,19,1,0,
-        0,0,17,21,28,44,52,55,63,65,71,83,92,99,108,111,114,116,120,124
+        1,3,3,3,72,8,3,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,3,4,85,
+        8,4,3,4,87,8,4,1,5,1,5,1,5,1,6,1,6,1,6,1,6,3,6,96,8,6,1,6,1,6,1,
+        6,5,6,101,8,6,10,6,12,6,104,9,6,1,7,1,7,1,7,1,7,1,7,1,7,3,7,112,
+        8,7,1,7,3,7,115,8,7,1,7,3,7,118,8,7,3,7,120,8,7,1,8,1,8,3,8,124,
+        8,8,1,9,1,9,3,9,128,8,9,1,9,0,2,4,12,10,0,2,4,6,8,10,12,14,16,18,
+        0,0,142,0,21,1,0,0,0,2,33,1,0,0,0,4,55,1,0,0,0,6,71,1,0,0,0,8,86,
+        1,0,0,0,10,88,1,0,0,0,12,95,1,0,0,0,14,119,1,0,0,0,16,123,1,0,0,
+        0,18,127,1,0,0,0,20,22,3,2,1,0,21,20,1,0,0,0,21,22,1,0,0,0,22,23,
+        1,0,0,0,23,28,3,4,2,0,24,25,5,1,0,0,25,27,3,4,2,0,26,24,1,0,0,0,
+        27,30,1,0,0,0,28,26,1,0,0,0,28,29,1,0,0,0,29,31,1,0,0,0,30,28,1,
+        0,0,0,31,32,5,0,0,1,32,1,1,0,0,0,33,34,3,8,4,0,34,35,5,2,0,0,35,
+        3,1,0,0,0,36,37,6,2,-1,0,37,38,3,8,4,0,38,39,5,5,0,0,39,40,3,8,4,
+        0,40,56,1,0,0,0,41,42,3,8,4,0,42,44,5,14,0,0,43,45,3,18,9,0,44,43,
+        1,0,0,0,44,45,1,0,0,0,45,46,1,0,0,0,46,47,3,8,4,0,47,56,1,0,0,0,
+        48,50,3,6,3,0,49,51,3,10,5,0,50,49,1,0,0,0,51,52,1,0,0,0,52,50,1,
+        0,0,0,52,53,1,0,0,0,53,56,1,0,0,0,54,56,3,6,3,0,55,36,1,0,0,0,55,
+        41,1,0,0,0,55,48,1,0,0,0,55,54,1,0,0,0,56,65,1,0,0,0,57,58,10,6,
+        0,0,58,59,5,3,0,0,59,64,3,4,2,7,60,61,10,5,0,0,61,62,5,4,0,0,62,
+        64,3,4,2,6,63,57,1,0,0,0,63,60,1,0,0,0,64,67,1,0,0,0,65,63,1,0,0,
+        0,65,66,1,0,0,0,66,5,1,0,0,0,67,65,1,0,0,0,68,69,5,15,0,0,69,72,
+        3,8,4,0,70,72,3,8,4,0,71,68,1,0,0,0,71,70,1,0,0,0,72,7,1,0,0,0,73,
+        74,5,6,0,0,74,75,3,4,2,0,75,76,5,7,0,0,76,87,1,0,0,0,77,87,5,8,0,
+        0,78,87,5,17,0,0,79,87,5,18,0,0,80,81,5,17,0,0,81,84,5,9,0,0,82,
+        85,5,17,0,0,83,85,5,18,0,0,84,82,1,0,0,0,84,83,1,0,0,0,85,87,1,0,
+        0,0,86,73,1,0,0,0,86,77,1,0,0,0,86,78,1,0,0,0,86,79,1,0,0,0,86,80,
+        1,0,0,0,87,9,1,0,0,0,88,89,3,12,6,0,89,90,3,6,3,0,90,11,1,0,0,0,
+        91,92,6,6,-1,0,92,93,5,15,0,0,93,96,3,14,7,0,94,96,3,14,7,0,95,91,
+        1,0,0,0,95,94,1,0,0,0,96,102,1,0,0,0,97,98,10,3,0,0,98,99,5,4,0,
+        0,99,101,3,12,6,4,100,97,1,0,0,0,101,104,1,0,0,0,102,100,1,0,0,0,
+        102,103,1,0,0,0,103,13,1,0,0,0,104,102,1,0,0,0,105,106,5,6,0,0,106,
+        107,3,12,6,0,107,108,5,7,0,0,108,120,1,0,0,0,109,114,3,16,8,0,110,
+        112,5,15,0,0,111,110,1,0,0,0,111,112,1,0,0,0,112,113,1,0,0,0,113,
+        115,5,17,0,0,114,111,1,0,0,0,114,115,1,0,0,0,115,117,1,0,0,0,116,
+        118,3,18,9,0,117,116,1,0,0,0,117,118,1,0,0,0,118,120,1,0,0,0,119,
+        105,1,0,0,0,119,109,1,0,0,0,120,15,1,0,0,0,121,124,5,10,0,0,122,
+        124,5,11,0,0,123,121,1,0,0,0,123,122,1,0,0,0,124,17,1,0,0,0,125,
+        128,5,12,0,0,126,128,5,13,0,0,127,125,1,0,0,0,127,126,1,0,0,0,128,
+        19,1,0,0,0,18,21,28,44,52,55,63,65,71,84,86,95,102,111,114,117,119,
+        123,127
     ]
 
 class DepsearchParser ( Parser ):
@@ -65,7 +67,7 @@ class DepsearchParser ( Parser ):
     sharedContextCache = PredictionContextCache()
 
     literalNames = [ "<INVALID>", "'+'", "'->'", "'&'", "'|'", "'.'", "'('", 
-                     "')'", "'_'", "'='", "'<'", "'>'", "'@L'", "'@R'", 
+                     "')'", "'_'", "'='", "'>'", "'<'", "'@L'", "'@R'", 
                      "<INVALID>", "'!'" ]
 
     symbolicNames = [ "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
@@ -599,6 +601,7 @@ class DepsearchParser ( Parser ):
             super().__init__(parser)
             self.key = None # Token
             self.value = None # Token
+            self.regex = None # Token
             self.copyFrom(ctx)
 
         def Value(self, i:int=None):
@@ -606,6 +609,8 @@ class DepsearchParser ( Parser ):
                 return self.getTokens(DepsearchParser.Value)
             else:
                 return self.getToken(DepsearchParser.Value, i)
+        def String(self):
+            return self.getToken(DepsearchParser.String, 0)
 
 
     class WordformTokenContext(AtomicTokenContext):
@@ -624,9 +629,9 @@ class DepsearchParser ( Parser ):
         localctx = DepsearchParser.AtomicTokenContext(self, self._ctx, self.state)
         self.enterRule(localctx, 8, self.RULE_atomicToken)
         try:
-            self.state = 83
+            self.state = 86
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,8,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,9,self._ctx)
             if la_ == 1:
                 localctx = DepsearchParser.ParenthesizedTokenContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
@@ -646,28 +651,40 @@ class DepsearchParser ( Parser ):
                 pass
 
             elif la_ == 3:
-                localctx = DepsearchParser.AttributeTokenContext(self, localctx)
+                localctx = DepsearchParser.WordOrTagTokenContext(self, localctx)
                 self.enterOuterAlt(localctx, 3)
                 self.state = 78
-                localctx.key = self.match(DepsearchParser.Value)
-                self.state = 79
-                self.match(DepsearchParser.T__8)
-                self.state = 80
-                localctx.value = self.match(DepsearchParser.Value)
-                pass
-
-            elif la_ == 4:
-                localctx = DepsearchParser.WordOrTagTokenContext(self, localctx)
-                self.enterOuterAlt(localctx, 4)
-                self.state = 81
                 self.match(DepsearchParser.Value)
                 pass
 
-            elif la_ == 5:
+            elif la_ == 4:
                 localctx = DepsearchParser.WordformTokenContext(self, localctx)
-                self.enterOuterAlt(localctx, 5)
-                self.state = 82
+                self.enterOuterAlt(localctx, 4)
+                self.state = 79
                 self.match(DepsearchParser.String)
+                pass
+
+            elif la_ == 5:
+                localctx = DepsearchParser.AttributeTokenContext(self, localctx)
+                self.enterOuterAlt(localctx, 5)
+                self.state = 80
+                localctx.key = self.match(DepsearchParser.Value)
+                self.state = 81
+                self.match(DepsearchParser.T__8)
+                self.state = 84
+                self._errHandler.sync(self)
+                token = self._input.LA(1)
+                if token in [17]:
+                    self.state = 82
+                    localctx.value = self.match(DepsearchParser.Value)
+                    pass
+                elif token in [18]:
+                    self.state = 83
+                    localctx.regex = self.match(DepsearchParser.String)
+                    pass
+                else:
+                    raise NoViableAltException(self)
+
                 pass
 
 
@@ -708,9 +725,9 @@ class DepsearchParser ( Parser ):
         self.enterRule(localctx, 10, self.RULE_dependencyDescription)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 85
+            self.state = 88
             self.dependencyExpression(0)
-            self.state = 86
+            self.state = 89
             localctx.dst = self.negatedToken()
         except RecognitionException as re:
             localctx.exception = re
@@ -788,7 +805,7 @@ class DepsearchParser ( Parser ):
         self.enterRecursionRule(localctx, 12, self.RULE_dependencyExpression, _p)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 92
+            self.state = 95
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [15]:
@@ -796,25 +813,25 @@ class DepsearchParser ( Parser ):
                 self._ctx = localctx
                 _prevctx = localctx
 
-                self.state = 89
+                self.state = 92
                 self.match(DepsearchParser.Neg)
-                self.state = 90
+                self.state = 93
                 self.atomicDependency()
                 pass
             elif token in [6, 10, 11]:
                 localctx = DepsearchParser.JustADependencyContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
-                self.state = 91
+                self.state = 94
                 localctx.exp = self.atomicDependency()
                 pass
             else:
                 raise NoViableAltException(self)
 
             self._ctx.stop = self._input.LT(-1)
-            self.state = 99
+            self.state = 102
             self._errHandler.sync(self)
-            _alt = self._interp.adaptivePredict(self._input,10,self._ctx)
+            _alt = self._interp.adaptivePredict(self._input,11,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt==1:
                     if self._parseListeners is not None:
@@ -823,17 +840,17 @@ class DepsearchParser ( Parser ):
                     localctx = DepsearchParser.DisjunctionDependencyContext(self, DepsearchParser.DependencyExpressionContext(self, _parentctx, _parentState))
                     localctx.lhs = _prevctx
                     self.pushNewRecursionContext(localctx, _startState, self.RULE_dependencyExpression)
-                    self.state = 94
+                    self.state = 97
                     if not self.precpred(self._ctx, 3):
                         from antlr4.error.Errors import FailedPredicateException
                         raise FailedPredicateException(self, "self.precpred(self._ctx, 3)")
-                    self.state = 95
+                    self.state = 98
                     self.match(DepsearchParser.T__3)
-                    self.state = 96
+                    self.state = 99
                     localctx.rhs = self.dependencyExpression(4) 
-                self.state = 101
+                self.state = 104
                 self._errHandler.sync(self)
-                _alt = self._interp.adaptivePredict(self._input,10,self._ctx)
+                _alt = self._interp.adaptivePredict(self._input,11,self._ctx)
 
         except RecognitionException as re:
             localctx.exception = re
@@ -899,45 +916,45 @@ class DepsearchParser ( Parser ):
         self.enterRule(localctx, 14, self.RULE_atomicDependency)
         self._la = 0 # Token type
         try:
-            self.state = 116
+            self.state = 119
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [6]:
                 localctx = DepsearchParser.ParenthesizedDependencyContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
-                self.state = 102
+                self.state = 105
                 self.match(DepsearchParser.T__5)
-                self.state = 103
+                self.state = 106
                 localctx.exp = self.dependencyExpression(0)
-                self.state = 104
+                self.state = 107
                 self.match(DepsearchParser.T__6)
                 pass
             elif token in [10, 11]:
                 localctx = DepsearchParser.DependencyContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
-                self.state = 106
+                self.state = 109
                 self.dependencyOperator()
-                self.state = 111
-                self._errHandler.sync(self)
-                la_ = self._interp.adaptivePredict(self._input,12,self._ctx)
-                if la_ == 1:
-                    self.state = 108
-                    self._errHandler.sync(self)
-                    _la = self._input.LA(1)
-                    if _la==15:
-                        self.state = 107
-                        localctx.negatedType = self.match(DepsearchParser.Neg)
-
-
-                    self.state = 110
-                    self.match(DepsearchParser.Value)
-
-
                 self.state = 114
                 self._errHandler.sync(self)
                 la_ = self._interp.adaptivePredict(self._input,13,self._ctx)
                 if la_ == 1:
+                    self.state = 111
+                    self._errHandler.sync(self)
+                    _la = self._input.LA(1)
+                    if _la==15:
+                        self.state = 110
+                        localctx.negatedType = self.match(DepsearchParser.Neg)
+
+
                     self.state = 113
+                    self.match(DepsearchParser.Value)
+
+
+                self.state = 117
+                self._errHandler.sync(self)
+                la_ = self._interp.adaptivePredict(self._input,14,self._ctx)
+                if la_ == 1:
+                    self.state = 116
                     self.directionModifier()
 
 
@@ -993,19 +1010,19 @@ class DepsearchParser ( Parser ):
         localctx = DepsearchParser.DependencyOperatorContext(self, self._ctx, self.state)
         self.enterRule(localctx, 16, self.RULE_dependencyOperator)
         try:
-            self.state = 120
+            self.state = 123
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [10]:
                 localctx = DepsearchParser.GovernsContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
-                self.state = 118
+                self.state = 121
                 self.match(DepsearchParser.T__9)
                 pass
             elif token in [11]:
                 localctx = DepsearchParser.GovernedByContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
-                self.state = 119
+                self.state = 122
                 self.match(DepsearchParser.T__10)
                 pass
             else:
@@ -1059,19 +1076,19 @@ class DepsearchParser ( Parser ):
         localctx = DepsearchParser.DirectionModifierContext(self, self._ctx, self.state)
         self.enterRule(localctx, 18, self.RULE_directionModifier)
         try:
-            self.state = 124
+            self.state = 127
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [12]:
                 localctx = DepsearchParser.LeftOfContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
-                self.state = 122
+                self.state = 125
                 self.match(DepsearchParser.T__11)
                 pass
             elif token in [13]:
                 localctx = DepsearchParser.RightOfContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
-                self.state = 123
+                self.state = 126
                 self.match(DepsearchParser.T__12)
                 pass
             else:
