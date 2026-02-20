@@ -127,9 +127,17 @@ class QueryBuilder:
 
         elif isinstance(exp, Depsearch.AttributeTokenContext):
             # TODO: Special case for L=cat (lemma = cat)
-            key, value = string_of_token(exp.key), string_of_token(exp.value)
+            key = string_of_token(exp.key)
             key_attribute = ct.Attribute(None, key)
-            value_literal = ct.Literal(f'"{value}"', represents_regex=False)
+
+            if exp.value is not None:
+                value = string_of_token(exp.value)
+                value_literal = ct.Literal(f'"{value}"', represents_regex=False)
+            else:
+                # This is a non-standard extension we added to support regular expressions.
+                regex = string_of_token(exp.regex)
+                value_literal = ct.Literal(regex, represents_regex=True)
+
             return ct.Comparison(key_attribute, '=', value_literal)
 
         elif isinstance(exp, Depsearch.WordOrTagTokenContext):

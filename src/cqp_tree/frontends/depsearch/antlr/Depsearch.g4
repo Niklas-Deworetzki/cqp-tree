@@ -25,9 +25,9 @@ negatedToken : Neg exp=atomicToken  # NegationToken
 
 atomicToken : '(' exp=tokenExpression ')'   # ParenthesizedToken
             | '_'                           # ArbitraryToken
-            | key=Value '=' value=Value     # AttributeToken
             | Value                         # WordOrTagToken
             | String                        # WordformToken
+            | key=Value '=' (value=Value | regex=String)    # AttributeToken
             ;
 
 dependencyDescription : dependencyExpression dst=negatedToken
@@ -63,7 +63,7 @@ Neg    : '!' ;
 WhiteSpace  : [ \t\n\r\f]+ -> skip;
 
 // TODO: How do we do regex here?
-Value  : ~[\t\n\r\f !|&@=<>(){}]+
+Value  : ~[\t\n\r\f !|&@=<>(){}"]+
        ;
 
 String : '"' (~[\\"] | '\\' .)* '"';
