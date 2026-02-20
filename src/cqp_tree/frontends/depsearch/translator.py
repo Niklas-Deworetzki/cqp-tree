@@ -143,7 +143,7 @@ class QueryBuilder:
         elif isinstance(exp, Depsearch.WordOrTagTokenContext):
             # TODO: Detect whether exp.Value() is a part of speech tag (or wordform otherwise)
             value = string_of_token(exp.Value())
-            value_literal = ct.Literal(value, represents_regex=False)
+            value_literal = ct.Literal(f'"{value}"', represents_regex=False)
             return ct.Comparison(WORDFORM_ATTRIBUTE, '=', value_literal)
 
         elif isinstance(exp, Depsearch.WordformTokenContext):
