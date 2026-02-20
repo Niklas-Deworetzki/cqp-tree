@@ -46,8 +46,8 @@ atomicDependency  : '(' exp=dependencyExpression ')'                            
 
 
 
-dependencyOperator  : '<'   # Governs
-                    | '>'   # GovernedBy
+dependencyOperator  : '>'   # Governs
+                    | '<'   # GovernedBy
                     ;
 
 
