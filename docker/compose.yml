@@ -1,0 +1,8 @@
+version: "3.8"
+services:
+  cqp-tree-web:
+    build: .
+    image: sbx/cqp-tree-web
+    command: ["cqp-tree-web"]
+    ports:
+     - "3000:3000"
