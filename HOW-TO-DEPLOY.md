@@ -1,6 +1,4 @@
-# Deploy on SBX's demo server
-
-After moving into this folder and checking out the `demo` branch:
+To deploy on SBX's demo server:
 
 1. `cd docker`
 2. `podman compose build`
