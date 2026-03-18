@@ -52,6 +52,9 @@ SUPPORTED_QUERIES = [
     '_ <case@R _',
     'ADJ&Tra <xcomp _',
     'VerbForm=Part <acl _ >nsubj _',
+    'cat >amod|>nmod _',
+    '_ <nsubj|<nsubj:cop _',
+    'NOUN >amod (_ >amod|>acl _)',
 ]
 
 UNSUPPORTED_QUERIES = {
@@ -70,11 +73,6 @@ UNSUPPORTED_QUERIES = {
         '_ <advcl _ !>mark _',
         '_ <nmod _ !>case _',
         '_ >nsubj:cop _ !>cop _',
-    ],
-    'disjunction of dependency relations': [
-        'cat >amod|>nmod _',
-        '_ <nsubj|<nsubj:cop _',
-        'NOUN >amod (_ >amod|>acl _)',
     ],
     'complex dependency expression': [
         '_ <nsubj _ !(>amod|>acl) _',
@@ -191,4 +189,24 @@ class TranslatorTests(unittest.TestCase):
             map(l_order.index, map(lambda x: x.identifier, res_l.tokens)),
             map(r_order.index, map(lambda x: x.identifier, res_r.tokens)),
             '@L and @R constraint should modify token order.',
+        )
+
+    def test_advanced_dependencies(self):
+        res_l = translate_depsearch('_ <a|<b|<!z _').simple_representation()
+        res_r = translate_depsearch('_ >a|>b|>!z _').simple_representation()
+
+        [l_dep] = res_l.dependencies
+        [r_dep] = res_r.dependencies
+        l_idents = list(map(lambda x: x.identifier, res_l.tokens))
+        r_idents = list(map(lambda x: x.identifier, res_r.tokens))
+
+        self.assertEqual(
+            l_idents.index(l_dep.src),
+            r_idents.index(r_dep.dst),
+            'Dependency head should be swapped with inverse dependency operator.',
+        )
+        self.assertEqual(
+            l_idents.index(l_dep.dst),
+            r_idents.index(r_dep.src),
+            'Dependency head should be swapped with inverse dependency operator.',
         )

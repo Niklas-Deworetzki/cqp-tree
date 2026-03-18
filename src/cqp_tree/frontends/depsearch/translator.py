@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass, field
-from typing import Callable, Union
+from typing import Callable, Generator, Union
 
 from antlr4.tree.Tree import TerminalNode
 
@@ -202,52 +202,83 @@ class QueryBuilder:
 
         elif isinstance(exp, Depsearch.DependenciesTokenContext):
             src = self.translate_token(exp.src)
-            for dependency in exp.dependencyDescription():
-                dst = self.translate_token(dependency.dst)
-                self.translate_dependencies(
-                    src.identifier, dst.identifier, dependency.dependencyExpression()
-                )
+            for description in exp.dependencyDescription():
+                dst = self.translate_token(description.dst)
+                dependencies = list(self.collect_dependencies(description.dependencyExpression()))
+                self.translate_dependencies(src.identifier, dst.identifier, dependencies)
             return src
 
         else:
             raise ct.NotSupported('This query cannot be translated.')
 
-    def translate_direction(
-        self, a: ct.Identifier, b: ct.Identifier, direction: Depsearch.DirectionModifierContext
+    def translate_order(
+        self, a: ct.Identifier, b: ct.Identifier, order: Depsearch.OrderModifierContext
     ):
-        if isinstance(direction, Depsearch.RightOfContext):
+        if isinstance(order, Depsearch.RightOfContext):
             a, b = b, a
         self.constraints.append(ct.Constraint.order(a, b))
 
-    def translate_dependencies(
-        self, src: ct.Identifier, dst: ct.Identifier, exp: DepsearchDependencyContext
-    ):
-        if isinstance(
+    def collect_dependencies(
+        self, exp: DepsearchDependencyContext
+    ) -> Generator[Depsearch.DependencyContext]:
+        if isinstance(exp, Depsearch.DependencyContext):
+            yield exp
+        elif isinstance(
             exp, Depsearch.JustADependencyContext | Depsearch.ParenthesizedDependencyContext
         ):
-            self.translate_dependencies(src, dst, exp.exp)
+            yield from self.collect_dependencies(exp.exp)
+        elif isinstance(exp, Depsearch.DisjunctionDependencyContext):
+            yield from self.collect_dependencies(exp.lhs)
+            yield from self.collect_dependencies(exp.rhs)
+        else:
+            raise ct.NotSupported('Negated dependencies cannot be translated yet.')
 
-        elif isinstance(exp, Depsearch.DependencyContext):
-            if direction := exp.directionModifier():
-                self.translate_direction(src, dst, direction)
+    def translate_dependencies(
+        self,
+        src: ct.Identifier,
+        dst: ct.Identifier,
+        dependencies: list[Depsearch.DependencyContext],
+    ):
+        governs = False
+        governed_by = False
+        deprel_types = []
 
-            if isinstance(exp.dependencyOperator(), Depsearch.GovernedByContext):
-                src, dst = dst, src
+        for dep in dependencies:
+            # Each dependency can have an order constraint, make sure to include that.
+            if order := dep.orderModifier():
+                self.translate_order(src, dst, order)
 
-            if dependency_type := exp.Value():
-                is_negated = bool(exp.negatedType)
+            # Check the direction of the dependency, this determines where deprel is stored.
+            deprel_bearer = dst
+            if isinstance(dep.dependencyOperator(), Depsearch.GovernedByContext):
+                deprel_bearer = src
+
+                governed_by = True
+            else:
+                governs = True
+
+            if dependency_type := dep.Value():
+                is_negated = bool(dep.negatedType)
 
                 deptype_text = string_of_token(dependency_type)
-                deptype_literal = ct.Literal(deptype_text, represents_regex=False)
+                deptype_literal = ct.Literal(f'"{deptype_text}"', represents_regex=False)
                 deptype_predicate = ct.Comparison(
                     DEPREL_ATTRIBUTE,
                     '!=' if is_negated else '=',
                     deptype_literal,
                 )
-                self.predicates.append(deptype_predicate.raise_from(dst))
+                # Collect predicate for dependency type
+                deprel_types.append(deptype_predicate.raise_from(deprel_bearer))
 
+        if deprel_types:
+            # Build disjunction over all collected dependency types, if present.
+            self.predicates.append(ct.Disjunction.of(deprel_types))
+
+        if governs and governed_by:
+            raise ct.NotSupported(
+                'Cannot translate a dependency relation that has either side as its head.'
+            )
+        elif governs:
             self.dependencies.append(ct.Dependency(src, dst))
-
-        else:
-            # TODO: Optimize cases like cat >amod|>nmod _ into disjunction over dependency types.
-            raise ct.NotSupported('Cannot translate complex dependency expressions yet.')
+        elif governed_by:
+            self.dependencies.append(ct.Dependency(dst, src))
