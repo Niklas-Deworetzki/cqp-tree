@@ -195,8 +195,8 @@ class QueryBuilder:
                 ct.Constraint.distance(fst.identifier, snd.identifier) <= max_dist
             )
 
-            if direction := exp.directionModifier():
-                self.translate_direction(fst.identifier, snd.identifier, direction)
+            if order := exp.orderModifier():
+                self.translate_order(fst.identifier, snd.identifier, order)
 
             return fst
 

@@ -85,11 +85,11 @@ class DepsearchParser ( Parser ):
     RULE_dependencyExpression = 6
     RULE_atomicDependency = 7
     RULE_dependencyOperator = 8
-    RULE_directionModifier = 9
+    RULE_orderModifier = 9
 
     ruleNames =  [ "query", "allQuantified", "tokenExpression", "negatedToken", 
                    "atomicToken", "dependencyDescription", "dependencyExpression", 
-                   "atomicDependency", "dependencyOperator", "directionModifier" ]
+                   "atomicDependency", "dependencyOperator", "orderModifier" ]
 
     EOF = Token.EOF
     T__0=1
@@ -315,8 +315,8 @@ class DepsearchParser ( Parser ):
             else:
                 return self.getTypedRuleContext(DepsearchParser.AtomicTokenContext,i)
 
-        def directionModifier(self):
-            return self.getTypedRuleContext(DepsearchParser.DirectionModifierContext,0)
+        def orderModifier(self):
+            return self.getTypedRuleContext(DepsearchParser.OrderModifierContext,0)
 
 
 
@@ -378,7 +378,7 @@ class DepsearchParser ( Parser ):
                 _la = self._input.LA(1)
                 if _la==12 or _la==13:
                     self.state = 43
-                    self.directionModifier()
+                    self.orderModifier()
 
 
                 self.state = 46
@@ -902,8 +902,8 @@ class DepsearchParser ( Parser ):
 
         def Value(self):
             return self.getToken(DepsearchParser.Value, 0)
-        def directionModifier(self):
-            return self.getTypedRuleContext(DepsearchParser.DirectionModifierContext,0)
+        def orderModifier(self):
+            return self.getTypedRuleContext(DepsearchParser.OrderModifierContext,0)
 
         def Neg(self):
             return self.getToken(DepsearchParser.Neg, 0)
@@ -955,7 +955,7 @@ class DepsearchParser ( Parser ):
                 la_ = self._interp.adaptivePredict(self._input,14,self._ctx)
                 if la_ == 1:
                     self.state = 116
-                    self.directionModifier()
+                    self.orderModifier()
 
 
                 pass
@@ -1037,7 +1037,7 @@ class DepsearchParser ( Parser ):
         return localctx
 
 
-    class DirectionModifierContext(ParserRuleContext):
+    class OrderModifierContext(ParserRuleContext):
         __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -1046,7 +1046,7 @@ class DepsearchParser ( Parser ):
 
 
         def getRuleIndex(self):
-            return DepsearchParser.RULE_directionModifier
+            return DepsearchParser.RULE_orderModifier
 
      
         def copyFrom(self, ctx:ParserRuleContext):
@@ -1054,27 +1054,27 @@ class DepsearchParser ( Parser ):
 
 
 
-    class LeftOfContext(DirectionModifierContext):
+    class LeftOfContext(OrderModifierContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a DepsearchParser.DirectionModifierContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a DepsearchParser.OrderModifierContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
 
 
-    class RightOfContext(DirectionModifierContext):
+    class RightOfContext(OrderModifierContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a DepsearchParser.DirectionModifierContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a DepsearchParser.OrderModifierContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
 
 
 
-    def directionModifier(self):
+    def orderModifier(self):
 
-        localctx = DepsearchParser.DirectionModifierContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 18, self.RULE_directionModifier)
+        localctx = DepsearchParser.OrderModifierContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 18, self.RULE_orderModifier)
         try:
             self.state = 127
             self._errHandler.sync(self)
