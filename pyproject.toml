@@ -70,6 +70,7 @@ disable = [
 
     # Control flow should be readable, not dictated by a tool.
     'R1705',
+    'R1720',
 
     # Not everything needs a docstring (for now).
     'C0114',
