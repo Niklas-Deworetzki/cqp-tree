@@ -58,7 +58,7 @@ SUPPORTED_QUERIES = [
 ]
 
 UNSUPPORTED_QUERIES = {
-    'all-quantified query': [
+    'universal-quantified query': [
         '(_ <nsubj _) -> (Person=3 <nsubj _)',
         '_ -> NOUN',
         'NOUN -> NOUN <acl:relcl _',
