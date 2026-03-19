@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass, field
-from typing import Callable, Generator, Union
+from typing import Callable, Iterator, Union
 
 from antlr4.tree.Tree import TerminalNode
 
@@ -220,7 +220,7 @@ class QueryBuilder:
 
     def collect_dependencies(
         self, exp: DepsearchDependencyContext
-    ) -> Generator[Depsearch.DependencyContext]:
+    ) -> Iterator[Depsearch.DependencyContext]:
         if isinstance(exp, Depsearch.DependencyContext):
             yield exp
         elif isinstance(
