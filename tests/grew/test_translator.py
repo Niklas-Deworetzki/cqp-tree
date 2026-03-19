@@ -2,28 +2,13 @@ import unittest
 from typing import Callable
 
 import cqp_tree.translation as ct
-from antlr4 import InputStream, CommonTokenStream
-
+from cqp_tree.frontends.antlr_utils import make_parse
 from cqp_tree.frontends.grew.antlr import GrewLexer, GrewParser
-from cqp_tree.frontends.grew.translator import ParseErrorListener, QueryBuilder, new_environment
+from cqp_tree.frontends.grew.translator import QueryBuilder, new_environment
 
 
 def do_parse[T](construct: Callable, text: str) -> T:
-    lexer = GrewLexer(InputStream(text))
-    stream = CommonTokenStream(lexer)
-    parser = GrewParser(stream)
-
-    listener = ParseErrorListener()
-    parser.removeErrorListeners()
-    parser.addErrorListener(listener)
-
-    result = construct(parser)
-    if listener.errors:
-        for error in listener.errors:
-            print(error.message)
-        raise ct.ParsingFailed(*listener.errors)
-
-    return result
+    return make_parse(GrewLexer, GrewParser, construct)(text)
 
 
 class TranslationTests(unittest.TestCase):
@@ -106,11 +91,7 @@ class TranslationTests(unittest.TestCase):
         builder = QueryBuilder()
         result = builder.to_operand(literal)
 
-        self.assertEqual(
-            result,
-            ct.Literal('"super:subtype"')
-        )
-
+        self.assertEqual(result, ct.Literal('"super:subtype"'))
 
     def test_to_operand_attribute(self):
         value = do_parse(GrewParser.featureValue, 'a.b')
