@@ -1,5 +1,13 @@
 import argparse
+import errno
+import sys
+
+from waitress import serve
+
 from cqp_tree.web.server import server
+
+DEFAULT_HOST = 'localhost'
+DEFAULT_PORT = 31495
 
 
 def argument_parser() -> argparse.ArgumentParser:
@@ -40,12 +48,28 @@ def main():
     args = parser.parse_args()
     if args.help:
         parser.print_help()
+        return
+
+    host = args.host or DEFAULT_HOST
+    port = args.port or DEFAULT_PORT
+
+    if args.debug:
+        server.run(host=host, port=port, debug=True)
     else:
-        server.run(
-            host=args.host or 'localhost',
-            port=args.port or 31495,
-            debug=args.debug,
-        )
+        try:
+            print(f'Starting local server on http://{host}:{port}')
+            print('Press CTRL+C to quit.')
+            serve(server, host=host, port=port, _quiet=False)
+        except OSError as e:
+            if e.errno == errno.EADDRINUSE:
+                print(
+                    'Starting the server failed. '
+                    'Attempt using the --port option to try a different port.',
+                    file=sys.stderr,
+                )
+            else:
+                print(f'Starting the server failed: {e}', file=sys.stderr)
+            sys.exit(1)
 
 
 if __name__ == '__main__':
