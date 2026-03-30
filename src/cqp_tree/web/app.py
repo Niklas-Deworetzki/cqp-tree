@@ -43,7 +43,7 @@ def main():
     else:
         server.run(
             host=args.host or 'localhost',
-            port=args.port or 5000,
+            port=args.port or 31495,
             debug=args.debug,
         )
 

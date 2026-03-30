@@ -33,7 +33,7 @@ cqp-tree-web
 ```
 
 Running this command will start the server locally.
-Once it's started, click on the link displayed in your terminal or manually enter  http://localhost:5000 to start translating queries.
+Once it's started, click on the link displayed in your terminal or manually enter  http://localhost:31495 to start translating queries.
 To stop the server again, press Ctrl and C in your terminal window.
 
 ## Translating Queries
