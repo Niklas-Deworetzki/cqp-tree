@@ -1,36 +1,47 @@
 from argparse import Namespace
 from collections import defaultdict
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 from typing import Any, ClassVar, Optional
 
 type Configuration = Namespace
 
 
-@dataclass(frozen=True, kw_only=True)
+@dataclass(kw_only=True, unsafe_hash=True)
 class DeclaredConfig[V]:
     key: str
     readable_name: str
     readable_description: str
 
     default_value: Optional[V] = None
-    validation_type: type = None
-    validation_options: list[str] = None
+    validation_type: Optional[type] = None
+    validation_options: Optional[list[str]] = None
 
-    SUPPORTED_TYPE_VALIDATORS: ClassVar[set[type]] = {bool, int, float, Enum, str}
+    SUPPORTED_TYPE_VALIDATORS: ClassVar[set[type]] = {bool, int, float, str}
 
     def __post_init__(self):
-        if self.validation_type and self.validation_type not in self.SUPPORTED_TYPE_VALIDATORS:
+        if self.validation_type:
             allowed_type_names = sorted([t.__name__ for t in self.SUPPORTED_TYPE_VALIDATORS])
-            raise ValueError(
+            error_message = (
                 f'Cannot validate type {self.validation_type.__name__}. '
-                f'Must be one of: {', '.join(allowed_type_names)}'
+                f'Must be a subclass of {StrEnum.__name__} or '
+                f'one of ' + ', '.join(allowed_type_names)
             )
-        elif self.validation_options is not None and len(self.validation_options) == 0:
-            raise ValueError('Cannot create configuration accepting no valid value.')
+
+            if self.validation_type not in self.SUPPORTED_TYPE_VALIDATORS and not issubclass(
+                self.validation_type, StrEnum
+            ):
+                raise ValueError(error_message)
+
+        elif self.validation_options is not None:
+            if len(self.validation_options) == 0:
+                raise ValueError('Cannot create configuration accepting no valid value.')
+            setattr(self, 'validation_options', tuple(self.validation_options))
 
     def parse_value(self, value: str) -> V:
-        if self.validation_type:
+        if self.validation_type == bool:
+            return value.lower() == 'true'
+        elif self.validation_type:
             return self.validation_type(value)
         elif self.validation_options:
             if value not in self.validation_options:
@@ -79,11 +90,17 @@ def get_global_config() -> Configuration:
     return ns
 
 
-def get_frontend_configuration(frontend: str, inherited_config: Configuration) -> Configuration:
+def get_frontend_configuration(
+    frontend: str,
+    inherited_config: Optional[Configuration] = None,
+) -> Configuration:
     """
     Gets all configuration values for a given translation frontend.
     Inherits values from the given (global) config.
     """
+
+    if inherited_config is None:
+        inherited_config = get_global_config()
 
     ns = Namespace()
     for k, v in vars(inherited_config).items():
