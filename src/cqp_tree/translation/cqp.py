@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Iterable, Iterator, Optional, override
 
-from cqp_tree.translation.configuration import Configuration
+from cqp_tree.configuration import Configuration
 from cqp_tree.translation import query
 from cqp_tree.utils import (
     LOWERCASE_ALPHABET,
@@ -295,7 +295,7 @@ def add_anchors(q: Query, anchors: list[query.Constraint.Anchor], span: str) -> 
     return q
 
 
-def from_query(q: query.Query, configuration: Configuration = Configuration()) -> Query:
+def from_query(q: query.Query, configuration: Configuration) -> Query:
     """Translate a tree-based query into a CQP query for all different arrangements of tokens."""
 
     predicates = set(pred.normalize() for pred in q.predicates)
@@ -325,9 +325,7 @@ def from_query(q: query.Query, configuration: Configuration = Configuration()) -
     return result
 
 
-def format_plan(
-    plan: query.Recipe, configuration: Configuration = Configuration()
-) -> Iterator[str]:
+def format_plan(plan: query.Recipe, configuration: Configuration) -> Iterator[str]:
     within_span_restriction = ''
     if configuration.span:
         within_span_restriction = f' within {configuration.span}'
@@ -347,7 +345,7 @@ def format_plan(
             yield from rec(part.lhs)
             yield from rec(part.rhs)
         else:
-            formatted = str(from_query(part)) + within_span_restriction + ';'
+            formatted = str(from_query(part, configuration)) + within_span_restriction + ';'
 
         if include_assignment:
             formatted = f'{environment[goal]} = {formatted}'

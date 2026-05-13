@@ -25,7 +25,7 @@ def translate():
     def error(message: str, status: int = 400):
         return jsonify({'error': message}), status
 
-    def extract_request_data():
+    def extract_request_data() -> tuple[str, cqp_tree.Configuration]:
         translation_request = request.get_json()
         if translation_request is None or not isinstance(translation_request, dict):
             raise ValueError('Malformed request')
@@ -38,9 +38,8 @@ def translate():
         if translator and translator not in cqp_tree.known_translators:
             raise ValueError('Unknown value for field "translator"')
 
-        configuration = cqp_tree.Configuration(
-            translator=translator,
-        )
+        configuration = cqp_tree.get_global_config()
+        configuration.translator = translator
         return text, configuration
 
     try:
@@ -106,7 +105,9 @@ def to_json(plan: Recipe, configuration: cqp_tree.Configuration) -> dict:
         }
     }
     if plan.has_simple_representation():
-        result['single_query'] = str(cqp_tree.cqp_from_query(plan.simple_representation()))
+        result['single_query'] = str(
+            cqp_tree.cqp_from_query(plan.simple_representation(), configuration)
+        )
     if configuration.span:
         result['span'] = configuration.span
     return result

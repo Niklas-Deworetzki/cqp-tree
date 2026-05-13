@@ -98,9 +98,9 @@ def get_input(args: argparse.Namespace) -> Optional[str]:
         return sys.stdin.read() or None
 
 
-def translate(query_str: str, configuration: Configuration) -> cqp_tree.Recipe | None:
+def translate(query_str: str, config: Configuration) -> cqp_tree.Recipe | None:
     try:
-        return cqp_tree.translate_input(query_str, configuration.translator)
+        return cqp_tree.translate_input(query_str, config)
     except cqp_tree.UnableToGuessTranslatorError as translation_error:
         if translation_error.no_translator_matches():
             warn('Unable to determine translator: No translator accepts the query.')
@@ -112,11 +112,11 @@ def translate(query_str: str, configuration: Configuration) -> cqp_tree.Recipe |
     return None
 
 
-def get_configuration(args: argparse.Namespace) -> cqp_tree.Configuration:
-    return cqp_tree.Configuration(
-        translator=args.translator if args.translator else None,
-        span=args.span if args.span else None,
-    )
+def get_configuration(args: argparse.Namespace) -> Configuration:
+    cfg = cqp_tree.get_global_config()
+    cfg.translator = args.translator if args.translator else None
+    cfg.span = args.span if args.span else None
+    return cfg
 
 
 def main():
@@ -144,7 +144,7 @@ def main():
             return 1
 
         try:
-            plan = translate(query_str, configuration)
+            plan = translate(query_str, configuration.translator)
             if not plan:
                 return 1
 
