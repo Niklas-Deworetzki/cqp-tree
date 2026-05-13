@@ -1,6 +1,7 @@
 from argparse import Namespace
 from collections import defaultdict
 from dataclasses import dataclass
+from enum import Enum
 from typing import Any, ClassVar, Optional
 
 type Configuration = Namespace
@@ -16,7 +17,7 @@ class DeclaredConfig[V]:
     validation_type: type = None
     validation_options: list[str] = None
 
-    SUPPORTED_TYPE_VALIDATORS: ClassVar[set[type]] = {bool, int, float, str}
+    SUPPORTED_TYPE_VALIDATORS: ClassVar[set[type]] = {bool, int, float, Enum, str}
 
     def __post_init__(self):
         if self.validation_type and self.validation_type not in self.SUPPORTED_TYPE_VALIDATORS:
@@ -29,12 +30,8 @@ class DeclaredConfig[V]:
             raise ValueError('Cannot create configuration accepting no valid value.')
 
     def parse_value(self, value: str) -> V:
-        if self.validation_type == bool:
-            return bool(value)
-        elif self.validation_type == int:
-            return int(value)
-        elif self.validation_type == float:
-            return float(value)
+        if self.validation_type:
+            return self.validation_type(value)
         elif self.validation_options:
             if value not in self.validation_options:
                 allowed_values = ', '.join(self.validation_options)
