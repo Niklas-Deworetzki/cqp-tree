@@ -15,6 +15,35 @@ DEFAULT_CONFIGURATIONS = [
         'Affects precision of translation.',
         validation_type=str,
     ),
+    DeclaredConfig(
+        key='word',
+        readable_name='Wordform annotation',
+        readable_description='Name of the annotation layer encoding word forms.',
+        validation_type=str,
+        default_value='word',
+    ),
+    DeclaredConfig(
+        key='deprel',
+        readable_name='Dependency type annotation',
+        readable_description='Name of the annotation layer encoding dependency relation types.',
+        validation_type=str,
+        default_value='deprel',
+    ),
+    DeclaredConfig(
+        key='dephead',
+        readable_name='Dependency head annotation',
+        readable_description='Name of the annotation layer encoding '
+        'the dependency head of a token.',
+        validation_type=str,
+        default_value='dephead',
+    ),
+    DeclaredConfig(
+        key='token_id',
+        readable_name='Dependency identifier annotation',
+        readable_description='Name of the annotation layer encoding encoding the id '
+        'of a token that is matched by other token\'s dependency heads',
+        default_value='ref',
+    ),
 ]
 
 for cfg in DEFAULT_CONFIGURATIONS:

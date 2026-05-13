@@ -84,10 +84,10 @@ def is_too_complex(plan: Recipe) -> bool:
 def to_json(plan: Recipe, configuration: cqp_tree.Configuration) -> dict:
     environment = associate_with_names(plan.identifiers(), UPPERCASE_ALPHABET)
 
-    queries = {
-        environment[query.identifier]: str(cqp_tree.cqp_from_query(query, configuration))
-        for query in plan.queries
-    }
+    def convert(query: cqp_tree.Query) -> str:
+        return cqp_tree.cqp_from_query(query, configuration).to_string(configuration)
+
+    queries = {environment[query.identifier]: convert(query) for query in plan.queries}
     operations = {
         environment[operation.identifier]: {
             'lhs': environment[operation.lhs],
@@ -105,9 +105,7 @@ def to_json(plan: Recipe, configuration: cqp_tree.Configuration) -> dict:
         }
     }
     if plan.has_simple_representation():
-        result['single_query'] = str(
-            cqp_tree.cqp_from_query(plan.simple_representation(), configuration)
-        )
+        result['single_query'] = convert(plan.simple_representation())
     if configuration.span:
         result['span'] = configuration.span
     return result
