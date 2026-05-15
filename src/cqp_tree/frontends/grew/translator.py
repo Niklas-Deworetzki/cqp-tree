@@ -24,11 +24,7 @@ def translate_grew(grew: str, cfg: Configuration) -> ct.Recipe:
 
 class QueryBuilder:
 
-    def __init__(
-            self,
-            config: Configuration = None,
-            inherited: QueryBuilder = None
-    ):
+    def __init__(self, config: Configuration = None, inherited: QueryBuilder = None):
         assert config or inherited, 'config or inherited must be provided.'
         self.dependencies = list[ct.Dependency]()
         self.constraints = list[ct.Constraint]()
@@ -135,8 +131,7 @@ class QueryBuilder:
             deptypes = [self.to_operand(dt) for dt in arrow.edgeTypes().literal()]
             if isinstance(arrow, GrewParser.PositiveArrowContext):
                 dependency_constraint = ct.Disjunction.of(
-                    ct.dependency_type_equals(dst, deptype, self.config)
-                    for deptype in deptypes
+                    ct.dependency_type_equals(dst, deptype, self.config) for deptype in deptypes
                 )
 
             elif isinstance(arrow, GrewParser.NegatedArrowContext):
