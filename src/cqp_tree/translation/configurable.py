@@ -1,27 +1,25 @@
 from cqp_tree.configuration import Configuration
-from cqp_tree.translation.query import Attribute, Comparison, Literal, Predicate, Token
+from cqp_tree.translation.query import Attribute, Comparison, Identifier, Operand, Predicate, Token
 
 
 def wordform_equals(
-    token: Token,
-    value: str,
-    is_regex: bool,
+    token: Identifier | Token,
+    value: Operand,
     cfg: Configuration,
 ) -> Predicate:
     """
     Creates a predicate to compare a tokens word form with a given value.
     """
     return Comparison(
-        Attribute(token.identifier, cfg.word),
+        Attribute(_to_identifier(token), cfg.word),
         '=',
-        Literal(value, is_regex),
+        value,
     )
 
 
 def dependency_type_equals(
-    dependant: Token,
-    value: str,
-    is_regex: bool,
+    dependant: Identifier | Token,
+    value: Operand,
     cfg: Configuration,
 ) -> Predicate:
     """
@@ -29,7 +27,13 @@ def dependency_type_equals(
     Assumes that the dependency type information is stored on the dependant.
     """
     return Comparison(
-        Attribute(dependant.identifier, cfg.dependency),
+        Attribute(_to_identifier(dependant), cfg.dependency),
         '=',
-        Literal(value, is_regex),
+        value,
     )
+
+
+def _to_identifier(token_or_identifier: Token | Identifier) -> Identifier:
+    if isinstance(token_or_identifier, Token):
+        return token_or_identifier.identifier
+    return token_or_identifier
