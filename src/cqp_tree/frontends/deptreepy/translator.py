@@ -5,6 +5,7 @@ from typing import Callable, List, Optional, Self, Type, override
 from pyparsing import ParseException, nestedExpr
 
 import cqp_tree.translation as ct
+from cqp_tree import Configuration
 
 
 def parse(s: str):
@@ -118,8 +119,9 @@ def operation_constructor_for_field(field) -> Callable[[str], ct.Comparison]:
     return constructor
 
 
+# pylint: disable=unused-argument
 @ct.translator('deptreepy')
-def translate_deptreepy(deptreepy: str) -> ct.Recipe:
+def translate_deptreepy(deptreepy: str, config: Configuration) -> ct.Recipe:
     builder = ct.Recipe.Builder()
 
     def combine_operation(
