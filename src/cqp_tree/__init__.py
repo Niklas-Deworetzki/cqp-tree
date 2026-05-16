@@ -23,6 +23,13 @@ DEFAULT_CONFIGURATIONS = [
         default_value='word',
     ),
     DeclaredConfig(
+        key='lemma',
+        readable_name='Lemma annotation',
+        readable_description='Name of the annotation layer encoding word lemmas.',
+        validation_type=str,
+        default_value='lemma',
+    ),
+    DeclaredConfig(
         key='deprel',
         readable_name='Dependency type annotation',
         readable_description='Name of the annotation layer encoding dependency relation types.',
