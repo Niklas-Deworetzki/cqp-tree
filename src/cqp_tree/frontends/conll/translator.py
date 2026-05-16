@@ -1,4 +1,3 @@
-from dataclasses import dataclass, field
 from enum import StrEnum
 from types import NoneType
 from typing import Any, Callable, Iterable, Tuple
@@ -7,6 +6,7 @@ import conllu
 from conllu.exceptions import ParseException
 
 import cqp_tree.translation as ct
+from cqp_tree import Configuration, DeclaredConfig
 
 # This module is used to parse CoNLL-U (and potentially CoNLL-U Plus). Most of
 # the format parsing is done by the `conllu` package. Look here for the format
@@ -52,6 +52,31 @@ SPRAAKBANKEN_MAPPED_FEATURE_COLUMNS = {
 #           [Tense = "Pres" & Pers = "3"]
 SPRAAKBANKEN_EXPANDED_FEATURE_COLUMNS = {'misc'}
 
+# Declare field behavior as configuration options.
+DECLARED_CONFIGURATION: list[DeclaredConfig] = []
+DECLARED_CONFIGURATION.extend(
+    DeclaredConfig(
+        key=f'{ud_field}_mapped_field',
+        readable_name=f'Annotation layer for {ud_field}',
+        readable_description=f'Annotation layer in corpus representing the UD {ud_field} column.',
+        default_value=spraakbanken_field,
+        validation_type=str,
+    )
+    for ud_field, spraakbanken_field in SPRAAKBANKEN_MAPPED_ANNOTATION_COLUMNS.items()
+)
+DECLARED_CONFIGURATION.extend(
+    DeclaredConfig(
+        key=f'{ud_field}_mapped_field',
+        readable_name=f'Annotation layer for {ud_field}',
+        readable_description=f'Annotation layer in corpus representing the UD {ud_field} column. '
+        'A feature like "Tense=Pres" is translated into [feats contains "Tense=Pres"] for '
+        'the given column name.',
+        default_value=spraakbanken_field,
+        validation_type=str,
+    )
+    for ud_field, spraakbanken_field in SPRAAKBANKEN_MAPPED_FEATURE_COLUMNS.items()
+)
+
 
 class ReservedAnnotation(StrEnum):
     """
@@ -82,17 +107,21 @@ def has_annotation(token: conllu.Token, annotation: ReservedAnnotation) -> bool:
     return False
 
 
-@dataclass
-class Configuration:
-    mapped_annotation_columns: dict[str, str] = field(
-        default_factory=lambda: SPRAAKBANKEN_MAPPED_ANNOTATION_COLUMNS
-    )
-    mapped_feature_columns: dict[str, str] = field(
-        default_factory=lambda: SPRAAKBANKEN_MAPPED_FEATURE_COLUMNS
-    )
-    expanded_feature_columns: Iterable[str] = field(
-        default_factory=lambda: SPRAAKBANKEN_EXPANDED_FEATURE_COLUMNS
-    )
+class ColumnConfiguration:
+    mapped_annotation_columns: dict[str, str]
+    mapped_feature_columns: dict[str, str]
+    expanded_feature_columns: Iterable[str]
+
+    def __init__(self, config: Configuration):
+        self.mapped_annotation_columns = {
+            ud_column: getattr(config, f'{ud_column}_mapped_field')
+            for ud_column in SPRAAKBANKEN_MAPPED_ANNOTATION_COLUMNS
+        }
+        self.mapped_feature_columns = {
+            ud_column: getattr(config, f'{ud_column}_mapped_field')
+            for ud_column in SPRAAKBANKEN_MAPPED_FEATURE_COLUMNS
+        }
+        self.expanded_feature_columns = set(SPRAAKBANKEN_EXPANDED_FEATURE_COLUMNS)
 
 
 class Translation:
@@ -100,7 +129,7 @@ class Translation:
     Translation state and configuration.
     """
 
-    configuration: Configuration
+    configuration: ColumnConfiguration
 
     conllu_tokens: list[conllu.Token]
 
@@ -111,9 +140,9 @@ class Translation:
 
     _identifier_lookup_table: dict[Reference, ct.Identifier]
 
-    def __init__(self, tokens: Iterable[conllu.Token]):
+    def __init__(self, tokens: Iterable[conllu.Token], config: Configuration):
         self.conllu_tokens = list(tokens)
-        self.configuration = Configuration()
+        self.configuration = ColumnConfiguration(config)
 
         self.tokens = [ct.Token() for _ in self.conllu_tokens]
         # Allocate space for the other structures
@@ -140,7 +169,7 @@ class Translation:
         raise ct.NotSupported(f'Dependency head "{reference}" is not specified as part of file.')
 
     @staticmethod
-    def parse(s: str) -> 'Translation':
+    def parse(s: str, config: Configuration) -> 'Translation':
         def is_valid_token(token: conllu.Token) -> bool:
             """
             Used to filter out MWE and empty nodes.
@@ -162,7 +191,7 @@ class Translation:
         if len(tokens) == 0:
             raise ct.ParsingFailed(ct.InputError(None, 'No tokens were found in the .conllu file.'))
 
-        return Translation(tokens)
+        return Translation(tokens, config)
 
 
 # Here we have the different functions to do the actual translation parts.
@@ -259,9 +288,9 @@ def _extract_subsequent_tokens(translation: Translation):
             translation.constraints.extend(constraints)
 
 
-@ct.translator('conll')
-def translate_conll(conll: str) -> ct.Recipe:
-    translation = Translation.parse(conll)
+@ct.translator('conll', *DECLARED_CONFIGURATION)
+def translate_conll(conll: str, config: Configuration) -> ct.Recipe:
+    translation = Translation.parse(conll, config)
 
     def lift(
         f: Callable[[Translation, conllu.Token, ct.Identifier], NoneType],

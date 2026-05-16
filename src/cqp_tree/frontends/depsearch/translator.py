@@ -5,6 +5,7 @@ from typing import Callable, Iterator, Union
 from antlr4.tree.Tree import TerminalNode
 
 import cqp_tree.translation as ct
+from cqp_tree import Configuration, DeclaredConfig
 from cqp_tree.frontends.antlr_utils import make_parse, string_of_token
 from cqp_tree.frontends.depsearch.antlr import DepsearchLexer, DepsearchParser as Depsearch
 
@@ -12,10 +13,6 @@ parse: Callable[[str], Depsearch.QueryContext] = make_parse(
     DepsearchLexer, Depsearch, Depsearch.query
 )
 
-WORDFORM_ATTRIBUTE = ct.Attribute(None, 'word')
-POS_ATTRIBUTE = ct.Attribute(None, 'pos')
-LEMMA_ATTRIBUTE = ct.Attribute(None, 'lemma')
-DEPREL_ATTRIBUTE = ct.Attribute(None, 'deprel')
 
 LINEAR_DISTANCE_PATTERN = re.compile(r'<lin_-?([0-9]+):-?([0-9]+)')
 
@@ -40,10 +37,19 @@ def extract_bounds_from_distance(distance: TerminalNode) -> tuple[int, int]:
         raise ct.ParsingFailed(ct.InputError(distance.getSourceInterval(), str(e) + ' in ' + text))
 
 
-@ct.translator('depsearch')
-def translate_depsearch(depsearch: str) -> ct.Recipe:
+@ct.translator(
+    'depsearch',
+    DeclaredConfig(
+        key='pos',
+        readable_name='Part-Of-Speech annotation',
+        readable_description='Name of the annotation layer encoding part-of-speech tags.',
+        validation_type=str,
+        default_value='pos',
+    ),
+)
+def translate_depsearch(depsearch: str, config: Configuration) -> ct.Recipe:
     parsed = parse(depsearch)
-    return QueryBuilder.translate_query(parsed)
+    return QueryBuilder.translate_query(parsed, config)
 
 
 # All abstract antlr types that represent a token.
@@ -81,13 +87,14 @@ SUPPORTED_PREDICATE_TYPES = (
 
 @dataclass(frozen=True)
 class QueryBuilder:
+    configuration: Configuration
     tokens: list[ct.Token] = field(default_factory=list)
     dependencies: list[ct.Dependency] = field(default_factory=list)
     constraints: list[ct.Constraint] = field(default_factory=list)
     predicates: list[ct.Predicate] = field(default_factory=list)
 
     @staticmethod
-    def translate_query(query: Depsearch.QueryContext):
+    def translate_query(query: Depsearch.QueryContext, config: Configuration):
         if query.allQuantified() is not None:
             raise ct.NotSupported(
                 'Cannot translate universally-quantified queries using the -> operator.'
@@ -97,7 +104,7 @@ class QueryBuilder:
         if additional_expressions:
             raise ct.NotSupported('Cannot translate queries using the + operator yet.')
 
-        builder = QueryBuilder()
+        builder = QueryBuilder(config)
         builder.translate_token(expression)
         query = ct.Query(
             tokens=builder.tokens,
@@ -106,6 +113,18 @@ class QueryBuilder:
             predicates=builder.predicates,
         )
         return ct.Recipe.of_query(query)
+
+    def wordform_attribute(self) -> ct.Attribute:
+        return ct.Attribute(None, self.configuration.word)
+
+    def deprel_attribute(self) -> ct.Attribute:
+        return ct.Attribute(None, self.configuration.deprel)
+
+    def lemma_attribute(self) -> ct.Attribute:
+        return ct.Attribute(None, self.configuration.lemma)
+
+    def pos_attribute(self) -> ct.Attribute:
+        return ct.Attribute(None, self.configuration.pos)
 
     def translate_predicate(self, exp: DepsearchTokenContext) -> ct.Predicate:
         if isinstance(exp, WRAPPER_TYPES):
@@ -144,12 +163,12 @@ class QueryBuilder:
             # TODO: Detect whether exp.Value() is a part of speech tag (or wordform otherwise)
             value = string_of_token(exp.Value())
             value_literal = ct.Literal(f'"{value}"', represents_regex=False)
-            return ct.Comparison(WORDFORM_ATTRIBUTE, '=', value_literal)
+            return ct.Comparison(self.wordform_attribute(), '=', value_literal)
 
         elif isinstance(exp, Depsearch.WordformTokenContext):
             value = string_of_token(exp.String())
             value_literal = ct.Literal(value, represents_regex=False)
-            return ct.Comparison(WORDFORM_ATTRIBUTE, '=', value_literal)
+            return ct.Comparison(self.wordform_attribute(), '=', value_literal)
 
         else:
             # Should only be called with these types.
@@ -263,7 +282,7 @@ class QueryBuilder:
                 deptype_text = string_of_token(dependency_type)
                 deptype_literal = ct.Literal(f'"{deptype_text}"', represents_regex=False)
                 deptype_predicate = ct.Comparison(
-                    DEPREL_ATTRIBUTE,
+                    self.deprel_attribute(),
                     '!=' if is_negated else '=',
                     deptype_literal,
                 )
