@@ -2,7 +2,7 @@ from argparse import Namespace
 from collections import defaultdict
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Any, ClassVar, Optional
+from typing import Any, ClassVar, Iterable, Optional
 
 type Configuration = Namespace
 
@@ -18,6 +18,14 @@ class DeclaredConfig[V]:
     validation_options: Optional[list[str]] = None
 
     SUPPORTED_TYPE_VALIDATORS: ClassVar[set[type]] = {bool, int, float, str}
+
+    def metavar(self) -> str:
+        if self.validation_type == bool:
+            return 'BOOL'
+        elif self.validation_type in {int, float}:
+            return 'NUM'
+        else:
+            return 'VAL'
 
     def __post_init__(self):
         if self.validation_type:
@@ -51,25 +59,38 @@ class DeclaredConfig[V]:
                 )
         return value
 
+    def get(self) -> V:
+        return CONFIGURATION_VALUES.get(self, self.default_value)
 
-GLOBAL_CONFIGURATION: str = ''
+    def put(self, value):
+        if value is str:
+            value = self.parse_value(value)
+        CONFIGURATION_VALUES[self] = value
+
+
+type ConfigurationSection = Optional[str]
+
+GLOBAL_CONFIGURATION_SECTION: ConfigurationSection = None
 CONFIGURATION_VALUES: dict[DeclaredConfig, Any] = {}
-CONFIGURATION_ENTRIES: dict[str, list[DeclaredConfig]] = defaultdict(list)
+CONFIGURATION_ENTRIES: dict[ConfigurationSection, list[DeclaredConfig]] = defaultdict(list)
+# Explicitly assign GLOBAL_CONFIGURATION to make sure this is always first.
+CONFIGURATION_ENTRIES[GLOBAL_CONFIGURATION_SECTION] = []
 
 
-def declare_configuration(entry: DeclaredConfig, frontend: Optional[str] = None):
+def declare_configuration(
+    entry: DeclaredConfig,
+    section: ConfigurationSection = GLOBAL_CONFIGURATION_SECTION,
+):
     """
     Declares a configuration key.
 
     :raises ValueError: If the same configuration key for
     the same frontend already has been declared.
     """
-    conflicting_entries = {
-        cfg.key for cfg in CONFIGURATION_ENTRIES[frontend or GLOBAL_CONFIGURATION]
-    }
+    conflicting_entries = {cfg.key for cfg in CONFIGURATION_ENTRIES[section]}
     if entry.key in conflicting_entries:
         raise ValueError(f'Configuration {entry.key} already declared.')
-    CONFIGURATION_ENTRIES[frontend or GLOBAL_CONFIGURATION].append(entry)
+    CONFIGURATION_ENTRIES[section].append(entry)
 
 
 def _add_config_value_to_namespace(cf: DeclaredConfig, ns: Namespace):
@@ -85,7 +106,7 @@ def get_global_config() -> Configuration:
     Gets all global configuration values.
     """
     ns = Namespace()
-    for cf in CONFIGURATION_ENTRIES[GLOBAL_CONFIGURATION]:
+    for cf in CONFIGURATION_ENTRIES[GLOBAL_CONFIGURATION_SECTION]:
         _add_config_value_to_namespace(cf, ns)
     return ns
 
@@ -110,17 +131,30 @@ def get_frontend_configuration(
     return ns
 
 
-def set_config_value(key: str, value: Any, frontend: Optional[str] = None):
+def set_config_value(
+    key: str,
+    value: Any,
+    section: ConfigurationSection = GLOBAL_CONFIGURATION_SECTION,
+):
     """
     Set the value for a declared configuration.
 
     :raises KeyError: If configuration key is not declared.
     :raises ValueError: If the value is not accepted by the configuration key.
     """
-    for cfg in CONFIGURATION_ENTRIES[frontend or GLOBAL_CONFIGURATION]:
+    for cfg in CONFIGURATION_ENTRIES[section or GLOBAL_CONFIGURATION_SECTION]:
         if cfg.key == key:
-            CONFIGURATION_VALUES[cfg] = cfg.parse_value(value)
+            cfg.put(value)
             return
 
-    formatted_key = f'{frontend}.{key}' if frontend else key
+    formatted_key = f'{section}.{key}' if section else key
     raise KeyError(f'Cannot set value for undeclared configuration: {formatted_key}')
+
+
+def iterate_declared_configuration() -> Iterable[tuple[ConfigurationSection, DeclaredConfig]]:
+    """Iterates over all declared configurations by their associated frontends."""
+    names = {name for name in CONFIGURATION_ENTRIES.keys() if name is not None}
+
+    for frontend in [None] + sorted(names):
+        for declared_config in sorted(CONFIGURATION_ENTRIES[frontend], key=lambda cfg: cfg.key):
+            yield frontend, declared_config
