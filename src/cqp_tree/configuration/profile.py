@@ -1,7 +1,6 @@
 from pathlib import Path
 from typing import TextIO
-
-from isort.settings import tomllib
+import tomllib
 
 from cqp_tree.configuration.configuration import CONFIGURATION_ENTRIES, set_config_value
 
