@@ -1,15 +1,27 @@
 import argparse
 import sys
 from contextlib import ExitStack
-from typing import Any, Optional
+from pathlib import Path
+from typing import Any, Iterable, Optional
 
 import cqp_tree
-from cqp_tree import Configuration
 from cqp_tree.utils import format_human_readable
 
 
 def warn(msg: Any):
     print(msg, file=sys.stderr)
+
+
+CONFIG_KEYS_WITH_EXPLICIT_CLI_FLAG = {'span', 'translator', 'profile'}
+
+
+def _iterate_configurable_flags() -> Iterable[tuple[str, cqp_tree.DeclaredConfig]]:
+    for section, cfg in cqp_tree.iterate_declared_configuration():
+        if not (
+            section == cqp_tree.GLOBAL_CONFIGURATION_SECTION
+            and cfg.key in CONFIG_KEYS_WITH_EXPLICIT_CLI_FLAG
+        ):
+            yield f'{section or 'config'}.{cfg.key}', cfg
 
 
 def argument_parser() -> argparse.ArgumentParser:
@@ -50,13 +62,39 @@ def argument_parser() -> argparse.ArgumentParser:
         metavar='SPAN',
         help='Span attribute to which a query should be constrained.',
     )
+    parser.add_argument(
+        '--profile',
+        metavar='PROFILE',
+        help='Configuration profile to use when determining configuration defaults.',
+    )
+    parser.add_argument(
+        '--list-profiles',
+        action='store_true',
+        help='List available profiles to choose from.',
+    )
+    parser.add_argument(
+        '--config',
+        '-c',
+        metavar='FILE',
+        help='Configuration file used to set configuration values. '
+        'Values set via command line flags have priority over those from the configuration file.',
+    )
+    parser.add_argument(
+        '--print-config',
+        metavar='FILE',
+        nargs="?",
+        default=None,
+        const=sys.stdout,
+        help='Print a configuration value with the current configuration prefilled to the given file. '
+        'Prints to stdout if no file is given.',
+    )
 
     translator_names = sorted(cqp_tree.known_translators.keys())
     parser.add_argument(
         'translator',
         metavar='TRANSLATOR',
         help='The translator to choose. '
-        'If not provided, a translator is determined automatically for each query. '
+        'If not provided, a translator is determined automatically for each query.\n'
         'Supported options are: ' + ', '.join(translator_names),
         nargs='?',
         choices=translator_names,
@@ -76,6 +114,19 @@ def argument_parser() -> argparse.ArgumentParser:
         help='A query to translate.',
     )
 
+    configuration_group = parser.add_argument_group(
+        title='Configuration options',
+        description='List of available configuration options for this application. '
+        'Configuration keys are of the form SECTION.KEY, where the SECTION describes on of the '
+        'different parts or frontends of the application. Some configurations only apply to one '
+        'of the frontends. Active configuration values are displayed after the configuration key.',
+    )
+    for key, cfg in _iterate_configurable_flags():
+        configuration_group.add_argument(
+            f'--{key}',
+            help=cfg.readable_description,
+            metavar=cfg.get() or cfg.metavar(),
+        )
     return parser
 
 
@@ -98,7 +149,7 @@ def get_input(args: argparse.Namespace) -> Optional[str]:
         return sys.stdin.read() or None
 
 
-def translate(query_str: str, config: Configuration) -> cqp_tree.Recipe | None:
+def translate(query_str: str, config: cqp_tree.Configuration) -> cqp_tree.Recipe | None:
     try:
         return cqp_tree.translate_input(query_str, config)
     except cqp_tree.UnableToGuessTranslatorError as translation_error:
@@ -112,7 +163,17 @@ def translate(query_str: str, config: Configuration) -> cqp_tree.Recipe | None:
     return None
 
 
-def get_configuration(args: argparse.Namespace) -> Configuration:
+def get_configuration(args: argparse.Namespace) -> cqp_tree.Configuration:
+    if args.profile:
+        cqp_tree.load_builtin_profile(args.profile)
+    if args.config:
+        cqp_tree.load_profile(Path(args.config))
+
+    for key, cfg in _iterate_configurable_flags():
+        value = getattr(args, key)
+        if value is not None:
+            cfg.put(value)
+
     cfg = cqp_tree.get_global_config()
     cfg.translator = args.translator if args.translator else None
     cfg.span = args.span if args.span else None
@@ -126,7 +187,24 @@ def main():
         parser.print_help()
         return 0
 
-    configuration = get_configuration(args)
+    try:
+        configuration = get_configuration(args)
+    except ValueError as e:
+        warn(f'Could not load configuration: {e}')
+        return 1
+
+    if args.list_profiles:
+        for profile in cqp_tree.discover_builtin_profiles():
+            print(profile)
+        return 0
+
+    if args.print_config:
+        if isinstance(args.print_config, str):
+            dst = open(args.print_config, 'w')
+        else:
+            dst = args.print_config
+        cqp_tree.print_profile_template(dst)
+        return 0
 
     with ExitStack() as managed_resources:
         output = sys.stdout
