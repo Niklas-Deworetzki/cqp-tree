@@ -1,0 +1,20 @@
+# CQP/Tree profile configuration for Korpsearch
+
+[general]
+span = "s"
+word = "word"
+lemma = "lemma"
+deprel = "deprel"
+dephead = "dephead"
+token_id = "ref"
+
+[depsearch]
+pos = "pos"
+
+[conll]
+form_mapped_field = "word"
+lemma_mapped_field = "lemma"
+upos_mapped_field = "pos"
+xpos_mapped_field = "msd"
+deprel_mapped_field = "deprel"
+feats_mapped_field = "ufeats"
