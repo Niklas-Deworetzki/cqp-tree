@@ -63,7 +63,7 @@ class DeclaredConfig[V]:
         return CONFIGURATION_VALUES.get(self, self.default_value)
 
     def put(self, value):
-        if value is str:
+        if isinstance(value, str):
             value = self.parse_value(value)
         CONFIGURATION_VALUES[self] = value
 

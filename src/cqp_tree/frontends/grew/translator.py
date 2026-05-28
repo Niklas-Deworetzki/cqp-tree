@@ -19,12 +19,12 @@ def new_environment() -> Environment:
 @ct.translator('grew')
 def translate_grew(grew: str, cfg: Configuration) -> ct.Recipe:
     grew_request = parse(grew)
-    return QueryBuilder(config=cfg).build(grew_request)
+    return QueryBuilder.build(grew_request, cfg)
 
 
 class QueryBuilder:
 
-    def __init__(self, config: Configuration = None, inherited: QueryBuilder = None):
+    def __init__(self, config: Configuration = None, inherited: 'QueryBuilder' = None):
         assert config or inherited, 'config or inherited must be provided.'
         self.dependencies = list[ct.Dependency]()
         self.constraints = list[ct.Constraint]()
@@ -63,11 +63,11 @@ class QueryBuilder:
         }[type(item)]
 
     @staticmethod
-    def build(request: GrewParser.RequestContext) -> ct.Recipe:
+    def build(request: GrewParser.RequestContext, cfg: Configuration) -> ct.Recipe:
         plan = ct.Recipe.Builder()
 
         pattern = request.pattern().body()
-        root_builder = QueryBuilder().translate_clauses(pattern)
+        root_builder = QueryBuilder(config=cfg).translate_clauses(pattern)
         if root_builder.is_empty():
             # If pattern is empty, match an arbitrary token.
             query = ct.Query(tokens=[ct.Token()])

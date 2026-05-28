@@ -1,6 +1,7 @@
 import unittest
 from typing import Callable
 
+import cqp_tree
 import cqp_tree.translation as ct
 from cqp_tree.frontends.antlr_utils import make_parse
 from cqp_tree.frontends.grew.antlr import GrewLexer, GrewParser
@@ -10,6 +11,10 @@ from cqp_tree.frontends.grew.translator import QueryBuilder, new_environment
 def do_parse[T](construct: Callable, text: str) -> T:
     return make_parse(GrewLexer, GrewParser, construct)(text)
 
+CONFIG = cqp_tree.get_frontend_configuration('grew')
+
+def get_builder() -> QueryBuilder:
+    return QueryBuilder(CONFIG)
 
 class TranslationTests(unittest.TestCase):
 
@@ -34,7 +39,7 @@ class TranslationTests(unittest.TestCase):
         equality = do_parse(GrewParser.compare, '=')
         inequality = do_parse(GrewParser.compare, '<>')
 
-        builder = QueryBuilder()
+        builder = get_builder()
         equality_operator = builder.to_cqp_operator(equality)
         inequality_operator = builder.to_cqp_operator(inequality)
 
@@ -45,7 +50,7 @@ class TranslationTests(unittest.TestCase):
         literal = do_parse(GrewParser.literal, '"aßσþ"')
         self.assertIsInstance(literal, GrewParser.UnicodeStringContext)
 
-        builder = QueryBuilder()
+        builder = get_builder()
         result = builder.to_operand(literal)
 
         self.assertEqual(
@@ -57,7 +62,7 @@ class TranslationTests(unittest.TestCase):
         literal = do_parse(GrewParser.literal, 're"a.*|[abc]+"')
         self.assertIsInstance(literal, GrewParser.RegexContext)
 
-        builder = QueryBuilder()
+        builder = get_builder()
         result = builder.to_operand(literal)
 
         self.assertEqual(
@@ -69,7 +74,7 @@ class TranslationTests(unittest.TestCase):
         literal = do_parse(GrewParser.literal, 'Tense')
         self.assertIsInstance(literal, GrewParser.SimpleStringContext)
 
-        builder = QueryBuilder()
+        builder = get_builder()
         result = builder.to_operand(literal)
 
         self.assertEqual(
@@ -81,14 +86,14 @@ class TranslationTests(unittest.TestCase):
         literal = do_parse(GrewParser.literal, '/a.*|[abc]+/i')
         self.assertIsInstance(literal, GrewParser.PCREContext)
 
-        builder = QueryBuilder()
+        builder = get_builder()
         with self.assertRaises(ct.NotSupported):
             builder.to_operand(literal)
 
     def test_to_operand_subtype_relation(self):
         literal = do_parse(GrewParser.literal, 'super:subtype')
 
-        builder = QueryBuilder()
+        builder = get_builder()
         result = builder.to_operand(literal)
 
         self.assertEqual(result, ct.Literal('"super:subtype"'))
@@ -98,7 +103,7 @@ class TranslationTests(unittest.TestCase):
         self.assertIsInstance(value, GrewParser.AttributeContext)
 
         a = ct.Identifier()
-        builder = QueryBuilder()
+        builder = get_builder()
         builder.environment['a'] = ct.Token(a)
         result = builder.to_operand(value)
 
@@ -111,7 +116,7 @@ class TranslationTests(unittest.TestCase):
         parsed = do_parse(GrewParser.feature, 'Number')
         self.assertIsInstance(parsed, GrewParser.PresenceContext)
 
-        builder = QueryBuilder()
+        builder = get_builder()
         result = builder.to_predicate(parsed)
 
         self.assertEqual(
@@ -123,7 +128,7 @@ class TranslationTests(unittest.TestCase):
         parsed = do_parse(GrewParser.feature, '!Tense')
         self.assertIsInstance(parsed, GrewParser.AbsenceContext)
 
-        builder = QueryBuilder()
+        builder = get_builder()
         result = builder.to_predicate(parsed)
 
         self.assertEqual(
@@ -135,7 +140,7 @@ class TranslationTests(unittest.TestCase):
         parsed = do_parse(GrewParser.feature, 'lemma = dog|cat')
         self.assertIsInstance(parsed, GrewParser.RequiresContext)
 
-        builder = QueryBuilder()
+        builder = get_builder()
         result = builder.to_predicate(parsed)
 
         self.assertEqual(
@@ -160,7 +165,7 @@ class TranslationTests(unittest.TestCase):
         parsed = do_parse(GrewParser.feature, 'lemma <> dog|cat')
         self.assertIsInstance(parsed, GrewParser.RequiresContext)
 
-        builder = QueryBuilder()
+        builder = get_builder()
         result = builder.to_predicate(parsed)
 
         self.assertEqual(
@@ -185,7 +190,7 @@ class TranslationTests(unittest.TestCase):
         parsed = do_parse(GrewParser.featureStructure, '[Tense, !Number, lemma = A|B]')
         self.assertIsInstance(parsed, GrewParser.FeatureStructureContext)
 
-        builder = QueryBuilder()
+        builder = get_builder()
         result = builder.to_predicate(parsed)
 
         self.assertEqual(
@@ -214,7 +219,7 @@ class TranslationTests(unittest.TestCase):
 
     def test_translate_empty_request(self):
         parsed = do_parse(GrewParser.request, 'pattern {}')
-        query, *others = QueryBuilder.build(parsed).queries
+        query, *others = QueryBuilder.build(parsed, CONFIG).queries
 
         self.assertFalse(others, 'Empty query should not produce multiple queries.')
         self.assertTrue(query.tokens, 'Empty query should match token.')
@@ -235,7 +240,7 @@ class TranslationTests(unittest.TestCase):
         """,
         )
 
-        result = QueryBuilder.build(parsed)
+        result = QueryBuilder.build(parsed, CONFIG)
         self.assertEqual(len(result.queries), 3, 'Query should have 3 query parts.')
 
     def test_translate_combined_token(self):
@@ -251,7 +256,7 @@ class TranslationTests(unittest.TestCase):
         """,
         )
 
-        query1, query2 = QueryBuilder.build(parsed).queries
+        query1, query2 = QueryBuilder.build(parsed, CONFIG).queries
         self.assertEqual(
             len(query1.tokens),
             1,

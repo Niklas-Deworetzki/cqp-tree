@@ -1,28 +1,31 @@
 import os
 import unittest
+
+import cqp_tree
 import cqp_tree as ct
 
 from cqp_tree import NotSupported, ParsingFailed
 from cqp_tree.frontends.conll import translate_conll
 
+CONFIG = cqp_tree.get_frontend_configuration('conll')
 
 class TranslationTests(unittest.TestCase):
     dir_path = os.path.dirname(os.path.realpath(__file__))
 
     def test_empty(self):
         with self.assertRaises(ParsingFailed):
-            translate_conll('')
+            translate_conll('', CONFIG)
 
     def test_syntax_error(self):
         with self.assertRaises(ParsingFailed):
-            translate_conll('abc')
+            translate_conll('abc', CONFIG)
 
     def test_id_cannot_be_unspecified(self):
         text = '''
 *	This	this	PRON	DT	Number=Sing|PronType=Dem	4	nsubj	_	TokenRange=0:4
 '''
         with self.assertRaises((ParsingFailed, NotSupported)):
-            translate_conll(text)
+            translate_conll(text, CONFIG)
 
     def test_id_cannot_be_no_value(self):
         text = '''
@@ -30,7 +33,7 @@ _	This	this	PRON	DT	Number=Sing|PronType=Dem	4	nsubj	_	TokenRange=0:4
 '''
 
         with self.assertRaises((ParsingFailed, NotSupported)):
-            translate_conll(text)
+            translate_conll(text, CONFIG)
 
     def test_mwe_are_ignored(self):
         text = '''
@@ -43,7 +46,7 @@ _	This	this	PRON	DT	Number=Sing|PronType=Dem	4	nsubj	_	TokenRange=0:4
 6	.	.	PUNCT	FS	_	1	punct	_	SpaceAfter=No|TokenRange=26:27
         '''
 
-        translation = translate_conll(text).simple_representation()
+        translation = translate_conll(text, CONFIG).simple_representation()
 
         token_count = len(translation.tokens)
         self.assertEqual(token_count, 6, f'Expected {token_count} tokens.')
@@ -64,7 +67,7 @@ _	This	this	PRON	DT	Number=Sing|PronType=Dem	4	nsubj	_	TokenRange=0:4
 10	.	.	PUNCT	_	_	2	punct	_	_
         '''
 
-        translation = translate_conll(text).simple_representation()
+        translation = translate_conll(text, CONFIG).simple_representation()
 
         token_count = len(translation.tokens)
         self.assertEqual(token_count, 10, f'Expected {token_count} tokens.')
@@ -84,7 +87,7 @@ _	This	this	PRON	DT	Number=Sing|PronType=Dem	4	nsubj	_	TokenRange=0:4
 8	.	.	PUNCT	_	_	4	punct	_	_
         '''
 
-        res = translate_conll(text).simple_representation()
+        res = translate_conll(text, CONFIG).simple_representation()
 
         token_count = len(res.tokens)
         self.assertEqual(token_count, 8, f'Expected {token_count} tokens.')
@@ -99,7 +102,7 @@ _	This	this	PRON	DT	Number=Sing|PronType=Dem	4	nsubj	_	TokenRange=0:4
         #                                                      This * causes an error   ^
 
         with self.assertRaises(ParsingFailed):
-            translate_conll(text)
+            translate_conll(text, CONFIG)
 
     def test_dephead_unknown(self):
         text = '''
@@ -111,7 +114,7 @@ _	This	this	PRON	DT	Number=Sing|PronType=Dem	4	nsubj	_	TokenRange=0:4
         #                                                     This 131 causes an error   ^
 
         with self.assertRaises(NotSupported):
-            translate_conll(text)
+            translate_conll(text, CONFIG)
 
     def test_dephead_without_value_does_not_create_dependency(self):
         text = '''
@@ -121,7 +124,7 @@ _	This	this	PRON	DT	Number=Sing|PronType=Dem	4	nsubj	_	TokenRange=0:4
 3	helps	help	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	_	ccomp	_	_
         '''
 
-        translated = translate_conll(text).simple_representation()
+        translated = translate_conll(text, CONFIG).simple_representation()
 
         dependencies = translated.dependencies
         self.assertCountEqual(dependencies, {}, 'Query should have no dependencies.')
@@ -131,7 +134,7 @@ _	This	this	PRON	DT	Number=Sing|PronType=Dem	4	nsubj	_	TokenRange=0:4
 1	Hope	hope	VERB	VBP	_	0	root	_	_
         '''
 
-        res = translate_conll(text).simple_representation()
+        res = translate_conll(text, CONFIG).simple_representation()
         expected_attributes = {
             'word': 'Hope',
             'lemma': 'hope',
@@ -156,7 +159,7 @@ _	This	this	PRON	DT	Number=Sing|PronType=Dem	4	nsubj	_	TokenRange=0:4
 1	_	_	_	_	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	0	_	_	_
         '''
 
-        res = translate_conll(text).simple_representation()
+        res = translate_conll(text, CONFIG).simple_representation()
         expected_attributes = {
             'Mood': 'Ind',
             'Number': 'Sing',
@@ -181,7 +184,7 @@ _	This	this	PRON	DT	Number=Sing|PronType=Dem	4	nsubj	_	TokenRange=0:4
 1	_	_	_	_	_	0	root	_	TokenRange=0:4|SpaceAfter=Yes
         '''
 
-        res = translate_conll(text).simple_representation()
+        res = translate_conll(text, CONFIG).simple_representation()
         expected_attributes = {
             'TokenRange': '0:4',
             'SpaceAfter': 'Yes',
@@ -207,7 +210,7 @@ class ExtensionTests(unittest.TestCase):
         2	_	_	_	_	_	_	_	_	_
         '''
 
-        res = translate_conll(text).simple_representation()
+        res = translate_conll(text, CONFIG).simple_representation()
         tok = list(res.tokens)[0]
 
         self.assertIn(
@@ -222,7 +225,7 @@ class ExtensionTests(unittest.TestCase):
         2	_	_	_	_	_	_	_	_	anchored=Yes
         '''
 
-        res = translate_conll(text).simple_representation()
+        res = translate_conll(text, CONFIG).simple_representation()
         tok = list(res.tokens)[-1]
 
         self.assertIn(
@@ -237,7 +240,7 @@ class ExtensionTests(unittest.TestCase):
         2	_	_	_	_	_	_	_	_	subsequent=Yes
         '''
 
-        res = translate_conll(text).simple_representation()
+        res = translate_conll(text, CONFIG).simple_representation()
         pre, sub, *_ = res.tokens
 
         self.assertIn(
@@ -252,7 +255,7 @@ class ExtensionTests(unittest.TestCase):
         2	_	_	_	_	_	_	_	_	ordered=Yes
         '''
 
-        res = translate_conll(text).simple_representation()
+        res = translate_conll(text, CONFIG).simple_representation()
         pre, sub, *_ = res.tokens
 
         self.assertIn(
