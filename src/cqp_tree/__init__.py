@@ -16,6 +16,11 @@ DEFAULT_CONFIGURATIONS = [
         validation_type=str,
     ),
     DeclaredConfig(
+        key='profile',
+        readable_name='Active profile',
+        readable_description='Active profile to which matched results are expanded.',
+    ),
+    DeclaredConfig(
         key='word',
         readable_name='Wordform annotation',
         readable_description='Name of the annotation layer encoding word forms.',
