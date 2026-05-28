@@ -7,6 +7,7 @@ DEFAULT_CONFIGURATIONS = [
         key='translator',
         readable_name='Translator',
         readable_description='The translation unit to use.',
+        validation_options=sorted(known_translators),
     ),
     DeclaredConfig(
         key='span',
