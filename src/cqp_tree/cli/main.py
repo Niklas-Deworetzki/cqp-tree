@@ -85,7 +85,7 @@ def argument_parser() -> argparse.ArgumentParser:
         nargs="?",
         default=None,
         const=sys.stdout,
-        help='Print a configuration value with the current configuration prefilled to the given file. '
+        help='Print a configuration value with the current configuration to the given file. '
         'Prints to stdout if no file is given.',
     )
 
@@ -199,11 +199,12 @@ def main():
         return 0
 
     if args.print_config:
-        if isinstance(args.print_config, str):
-            dst = open(args.print_config, 'w')
-        else:
-            dst = args.print_config
-        cqp_tree.print_profile_template(dst)
+        with (
+            open(args.print_config, 'w', encoding=args.encoding)
+            if isinstance(args.print_config, str)
+            else args.print_config
+        ) as dst:
+            cqp_tree.print_profile_template(dst)
         return 0
 
     with ExitStack() as managed_resources:

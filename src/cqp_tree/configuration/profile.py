@@ -51,7 +51,7 @@ def print_profile_template(f: TextIO):
             print(f'# {entry.readable_description}', file=f)
 
             if entry.validation_options is not None:
-                print(f'# Available values: ' + ', '.join(entry.validation_options), file=f)
+                print('# Available values: ' + ', '.join(entry.validation_options), file=f)
 
             value = entry.get()
             if isinstance(value, str):

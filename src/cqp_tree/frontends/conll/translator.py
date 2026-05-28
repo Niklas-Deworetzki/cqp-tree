@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from enum import StrEnum
 from types import NoneType
 from typing import Any, Callable, Iterable, Tuple
@@ -107,6 +108,7 @@ def has_annotation(token: conllu.Token, annotation: ReservedAnnotation) -> bool:
     return False
 
 
+@dataclass(init=False)
 class ColumnConfiguration:
     mapped_annotation_columns: dict[str, str]
     mapped_feature_columns: dict[str, str]
