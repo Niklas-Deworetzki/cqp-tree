@@ -1,13 +1,14 @@
 from cqp_tree.configuration.configuration import (
-    CONFIGURATION_ENTRIES,
     Configuration,
     ConfigurationSection,
     DeclaredConfig,
     GLOBAL_CONFIGURATION_SECTION,
     declare_configuration,
     get_frontend_configuration,
+    get_declared_configuration,
     get_global_config,
     iterate_declared_configuration,
+    iterate_declared_configuration_sections,
     set_config_value,
 )
 from cqp_tree.configuration.profile import (
@@ -15,4 +16,10 @@ from cqp_tree.configuration.profile import (
     load_builtin_profile,
     load_profile,
     print_profile_template,
+)
+from cqp_tree.configuration.argparse_compat import (
+    add_config_flags_group_to_parser,
+    add_default_flags_to_parser,
+    initialize_config_from_args,
+    configurable_flags_by_section,
 )

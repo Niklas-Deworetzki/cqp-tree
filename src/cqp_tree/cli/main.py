@@ -1,8 +1,7 @@
 import argparse
 import sys
 from contextlib import ExitStack
-from pathlib import Path
-from typing import Any, Iterable, Optional
+from typing import Any, Optional
 
 import cqp_tree
 from cqp_tree.utils import format_human_readable
@@ -10,18 +9,6 @@ from cqp_tree.utils import format_human_readable
 
 def warn(msg: Any):
     print(msg, file=sys.stderr)
-
-
-CONFIG_KEYS_WITH_EXPLICIT_CLI_FLAG = {'span', 'translator', 'profile'}
-
-
-def _iterate_configurable_flags() -> Iterable[tuple[str, cqp_tree.DeclaredConfig]]:
-    for section, cfg in cqp_tree.iterate_declared_configuration():
-        if not (
-            section == cqp_tree.GLOBAL_CONFIGURATION_SECTION
-            and cfg.key in CONFIG_KEYS_WITH_EXPLICIT_CLI_FLAG
-        ):
-            yield f'{section or 'config'}.{cfg.key}', cfg
 
 
 def argument_parser() -> argparse.ArgumentParser:
@@ -63,23 +50,6 @@ def argument_parser() -> argparse.ArgumentParser:
         help='Span attribute to which a query should be constrained.',
     )
     parser.add_argument(
-        '--profile',
-        metavar='PROFILE',
-        help='Configuration profile to use when determining configuration defaults.',
-    )
-    parser.add_argument(
-        '--list-profiles',
-        action='store_true',
-        help='List available profiles to choose from.',
-    )
-    parser.add_argument(
-        '--config',
-        '-c',
-        metavar='FILE',
-        help='Configuration file used to set configuration values. '
-        'Values set via command line flags have priority over those from the configuration file.',
-    )
-    parser.add_argument(
         '--print-config',
         metavar='FILE',
         nargs="?",
@@ -114,19 +84,7 @@ def argument_parser() -> argparse.ArgumentParser:
         help='A query to translate.',
     )
 
-    configuration_group = parser.add_argument_group(
-        title='Configuration options',
-        description='List of available configuration options for this application. '
-        'Configuration keys are of the form SECTION.KEY, where the SECTION describes on of the '
-        'different parts or frontends of the application. Some configurations only apply to one '
-        'of the frontends. Active configuration values are displayed after the configuration key.',
-    )
-    for key, cfg in _iterate_configurable_flags():
-        configuration_group.add_argument(
-            f'--{key}',
-            help=cfg.readable_description,
-            metavar=cfg.get() or cfg.metavar(),
-        )
+    cqp_tree.add_config_flags_group_to_parser(parser)
     return parser
 
 
@@ -164,17 +122,7 @@ def translate(query_str: str, config: cqp_tree.Configuration) -> cqp_tree.Recipe
 
 
 def get_configuration(args: argparse.Namespace) -> cqp_tree.Configuration:
-    if args.profile:
-        cqp_tree.load_builtin_profile(args.profile)
-    if args.config:
-        cqp_tree.load_profile(Path(args.config))
-
-    for key, cfg in _iterate_configurable_flags():
-        value = getattr(args, key)
-        if value is not None:
-            cfg.put(value)
-
-    cfg = cqp_tree.get_global_config()
+    cfg = cqp_tree.initialize_config_from_args(args)
     cfg.translator = args.translator if args.translator else None
     cfg.span = args.span if args.span else None
     return cfg
