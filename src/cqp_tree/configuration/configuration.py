@@ -138,30 +138,42 @@ def get_frontend_configuration(
     return ns
 
 
+def get_declared_configuration(
+    key: str, section: ConfigurationSection = GLOBAL_CONFIGURATION_SECTION
+) -> Optional[DeclaredConfig]:
+    """Get a given declared configuration."""
+    for cfg in CONFIGURATION_ENTRIES[section or GLOBAL_CONFIGURATION_SECTION]:
+        if cfg.key == key:
+            return cfg
+    return None
+
+
 def set_config_value(
     key: str,
     value: Any,
     section: ConfigurationSection = GLOBAL_CONFIGURATION_SECTION,
 ):
     """
-    Set the value for a declared configuration.
+    Set the value for a declared configuration. Does nothing if the configuration is not declared.
 
-    :raises KeyError: If configuration key is not declared.
     :raises ValueError: If the value is not accepted by the configuration key.
     """
-    for cfg in CONFIGURATION_ENTRIES[section or GLOBAL_CONFIGURATION_SECTION]:
-        if cfg.key == key:
-            cfg.put(value)
-            return
-
-    formatted_key = f'{section}.{key}' if section else key
-    raise KeyError(f'Cannot set value for undeclared configuration: {formatted_key}')
+    cfg = get_declared_configuration(key, section)
+    if cfg is not None:
+        cfg.put(value)
 
 
 def iterate_declared_configuration() -> Iterable[tuple[ConfigurationSection, DeclaredConfig]]:
     """Iterates over all declared configurations by their associated frontends."""
-    names = {name for name in CONFIGURATION_ENTRIES.keys() if name is not None}
+    for section, entries in iterate_declared_configuration_sections():
+        for declared_config in sorted(CONFIGURATION_ENTRIES[section], key=lambda cfg: cfg.key):
+            yield section, declared_config
 
-    for frontend in [None] + sorted(names):
-        for declared_config in sorted(CONFIGURATION_ENTRIES[frontend], key=lambda cfg: cfg.key):
-            yield frontend, declared_config
+
+def iterate_declared_configuration_sections() -> (
+    Iterable[tuple[ConfigurationSection, Iterable[DeclaredConfig]]]
+):
+    """Iterates over all declared configuration sections."""
+    names = {name for name in CONFIGURATION_ENTRIES.keys() if name is not None}
+    for section in [None] + sorted(names):
+        yield section, CONFIGURATION_ENTRIES[section]
