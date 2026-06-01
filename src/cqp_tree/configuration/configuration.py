@@ -47,6 +47,9 @@ class DeclaredConfig[V]:
             setattr(self, 'validation_options', tuple(self.validation_options))
 
     def parse_value(self, value: str) -> V:
+        if not isinstance(value, str):
+            return value
+
         if self.validation_type == bool:
             return value.lower() == 'true'
         elif self.validation_type:
@@ -63,9 +66,7 @@ class DeclaredConfig[V]:
         return CONFIGURATION_VALUES.get(self, self.default_value)
 
     def put(self, value):
-        if isinstance(value, str):
-            value = self.parse_value(value)
-        CONFIGURATION_VALUES[self] = value
+        CONFIGURATION_VALUES[self] = self.parse_value(value)
 
 
 type ConfigurationSection = Optional[str]
