@@ -83,7 +83,7 @@ class Operator(Query):
         parts = []
         for q in self.queries:
             if isinstance(q, (Token, Sequence)):
-                parts.append(q.format(environment))
+                parts.append(q.format(environment, configuration))
             else:
                 parts.append('(' + q.format(environment, configuration) + ')')
         return f' {self.operator} '.join(parts)
