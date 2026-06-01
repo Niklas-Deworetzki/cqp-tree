@@ -1,0 +1,97 @@
+<div class="accordion-item">
+    {% if section is none %}
+    <h2 class="accordion-header" id="heading-config">
+        <button class="accordion-button"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapse-config">
+            General Settings
+        </button>
+    </h2>
+    <div id="collapse-config"
+         class="accordion-collapse collapse show"
+         data-bs-parent="#settings-accordion">
+    {% else %}
+    <h2 class="accordion-header" id="heading-{{section}}">
+        <button class="accordion-button collapsed" {# "collapsed" class here, hide on default. #}
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapse-{{section}}">
+            Settings for {{section}}
+        </button>
+    </h2>
+    <div id="collapse-{{section}}"
+         class="accordion-collapse collapse" {# no "show" class here, hide on default. #}
+         data-bs-parent="#settings-accordion">
+    {% endif %}
+
+        <div class="accordion-body">
+            {% for setting in available_settings %}
+            <div class="mb-3">
+                {# Show label above input, unless for bools where we show it
+                    next to the checkbox. #}
+                {% if setting.validation_type.__name__ != "bool" %}
+                    <label for="{{ setting.key }}"
+                           class="form-label"
+                           title="{{ setting.readable_description }}">
+                        {{ setting.readable_name }}
+                    </label>
+                {% endif %}
+
+                {% if setting.validation_options %}
+                <select id="{{ setting.key }}"
+                        data-section="{{ section }}"
+                        name="{{ setting.key }}"
+                        class="form-select config-field">
+                    {% for option in setting.validation_options %}
+                    <option value="{{ option }}"
+                            {% if setting.get() %}selected{% endif %}>
+                        {{ option }}
+                    </option>
+                    {% endfor %}
+                </select>
+
+                {% elif setting.validation_type.__name__ == "bool" %}
+                <div class="form-check">
+                    <input type="checkbox"
+                           id="{{ setting.key }}"
+                           data-section="{{ section }}"
+                           name="{{ setting.key }}"
+                           class="form-check-input config-field"
+                           {% if setting.get() %}checked{% endif %}>
+                    <label class="form-check-label"
+                           for="{{ setting.key }}"
+                           title="{{ setting.readable_description }}">
+                        {{ setting.readable_name }}
+                    </label>
+                </div>
+
+                {% elif setting.validation_type.__name__ == "int"
+                    or setting.validation_type.__name__ == "float" %}
+                <input type="number"
+                       id="{{ setting.key }}"
+                       data-section="{{ section }}"
+                       name="{{ setting.key }}"
+                       class="form-control config-field"
+                       {% if setting.get() is not none %}
+                       value="{{ setting.get() }}"
+                       {% endif %}
+                >
+
+                {% else %}
+                <input type="text"
+                       id="{{ setting.key }}"
+                       data-section="{{ section }}"
+                       name="{{ setting.key }}"
+                       class="form-control config-field"
+                       {% if setting.get() is not none %}
+                       value="{{ setting.get() }}"
+                       {% endif %}
+                >
+
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
