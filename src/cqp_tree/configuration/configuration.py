@@ -28,6 +28,9 @@ class DeclaredConfig[V]:
             return 'VAL'
 
     def __post_init__(self):
+        if '-' in self.key:
+            raise ValueError(f'Key is not allowed to contain - character: {self.key}')
+
         if self.validation_type:
             allowed_type_names = sorted([t.__name__ for t in self.SUPPORTED_TYPE_VALIDATORS])
             error_message = (
@@ -36,12 +39,15 @@ class DeclaredConfig[V]:
                 f'one of ' + ', '.join(allowed_type_names)
             )
 
-            if self.validation_type not in self.SUPPORTED_TYPE_VALIDATORS and not issubclass(
-                self.validation_type, StrEnum
-            ):
-                raise ValueError(error_message)
+            if self.validation_type not in self.SUPPORTED_TYPE_VALIDATORS:
+                if issubclass(self.validation_type, StrEnum):
+                    self.validation_options = [
+                        enum_value.value for enum_value in self.validation_type
+                    ]
+                else:
+                    raise ValueError(error_message)
 
-        elif self.validation_options is not None:
+        if self.validation_options is not None:
             if len(self.validation_options) == 0:
                 raise ValueError('Cannot create configuration accepting no valid value.')
             setattr(self, 'validation_options', tuple(self.validation_options))
