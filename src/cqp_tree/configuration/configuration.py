@@ -84,6 +84,20 @@ CONFIGURATION_ENTRIES: dict[ConfigurationSection, list[DeclaredConfig]] = defaul
 CONFIGURATION_ENTRIES[GLOBAL_CONFIGURATION_SECTION] = []
 
 
+def declare_configurations(
+    section: ConfigurationSection,
+    entries: Iterable[DeclaredConfig],
+) -> None:
+    """
+    Declares a collection of configuration keys.
+
+    :raises ValueError: If the same configuration key for
+    the same section already has been declared.
+    """
+    for entry in entries:
+        declare_configuration(entry, section)
+
+
 def declare_configuration(
     entry: DeclaredConfig,
     section: ConfigurationSection = GLOBAL_CONFIGURATION_SECTION,

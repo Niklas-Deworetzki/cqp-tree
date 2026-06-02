@@ -4,6 +4,7 @@ from cqp_tree.configuration.configuration import (
     DeclaredConfig,
     GLOBAL_CONFIGURATION_SECTION,
     declare_configuration,
+    declare_configurations,
     get_frontend_configuration,
     get_declared_configuration,
     get_global_config,
