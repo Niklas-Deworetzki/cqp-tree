@@ -1,11 +1,27 @@
 from pathlib import Path
 from typing import Any
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, send_file
 
 import cqp_tree
-from cqp_tree import Recipe
+from cqp_tree import DeclaredConfig, Recipe
 from cqp_tree.utils import UPPERCASE_ALPHABET, associate_with_names
+
+WEB_CONFIG = [
+    DeclaredConfig(
+        key='branding',
+        readable_name='Branding',
+        readable_description='Path to an image file which is displayed in the top-left corner.',
+        validation_type=str,
+    ),
+    DeclaredConfig(
+        key='homepage',
+        readable_name='Homepage',
+        readable_description='URL the user is redirected to when clicking on the branding logo.',
+        validation_type=str,
+    ),
+]
+cqp_tree.declare_configurations('web', WEB_CONFIG)
 
 TEMPLATE_DIR = Path(__file__).parent / 'static'
 
@@ -20,6 +36,14 @@ def main():
         cfg=cfg,
         settings=cqp_tree.configurable_flags_by_section(hidden_sections={'web'}),
     )
+
+
+@server.route('/branding')
+def branding():
+    cfg = cqp_tree.get_frontend_configuration('web')
+    if cfg.branding:
+        return send_file(cfg.branding)
+    return '', 404
 
 
 @server.route('/translators', methods=['GET'])
@@ -89,7 +113,7 @@ def extract_request_data() -> tuple[
     if translator and translator not in cqp_tree.known_translators:
         raise ValueError('Unknown value for field "translator"')
 
-    provided_settings = translation_request.get('settings', dict())
+    provided_settings = translation_request.get('settings', {})
     configuration = {}
 
     global_configuration = cqp_tree.get_global_config()
@@ -98,7 +122,9 @@ def extract_request_data() -> tuple[
             provided_section = None
             active_namespace = global_configuration
         else:
-            active_namespace = cqp_tree.get_frontend_configuration(provided_section, global_configuration)
+            active_namespace = cqp_tree.get_frontend_configuration(
+                provided_section, global_configuration
+            )
 
         for key, value in provided_values.items():
             declared_config = cqp_tree.get_declared_configuration(key, provided_section)
