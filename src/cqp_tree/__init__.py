@@ -59,5 +59,4 @@ DEFAULT_CONFIGURATIONS = [
     ),
 ]
 
-for cfg in DEFAULT_CONFIGURATIONS:
-    declare_configuration(cfg, None)
+declare_configurations(GLOBAL_CONFIGURATION_SECTION, DEFAULT_CONFIGURATIONS)
