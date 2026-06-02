@@ -1,7 +1,17 @@
 import argparse
+from pathlib import Path
+from typing import Iterable
 
-from cqp_tree.configuration.configuration import *
-from cqp_tree.configuration.profile import *
+from cqp_tree.configuration.configuration import (
+    Configuration,
+    ConfigurationSection,
+    DeclaredConfig,
+    GLOBAL_CONFIGURATION_SECTION,
+    get_global_config,
+    iterate_declared_configuration,
+    iterate_declared_configuration_sections,
+)
+from cqp_tree.configuration.profile import load_builtin_profile, load_profile
 
 CONFIG_KEYS_WITH_EXPLICIT_CLI_FLAG = {'span', 'translator', 'profile'}
 

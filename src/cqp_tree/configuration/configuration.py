@@ -106,7 +106,7 @@ def declare_configuration(
     Declares a configuration key.
 
     :raises ValueError: If the same configuration key for
-    the same frontend already has been declared.
+    the same section already has been declared.
     """
     conflicting_entries = {cfg.key for cfg in CONFIGURATION_ENTRIES[section]}
     if entry.key in conflicting_entries:
@@ -180,7 +180,7 @@ def set_config_value(
 def iterate_declared_configuration() -> Iterable[tuple[ConfigurationSection, DeclaredConfig]]:
     """Iterates over all declared configurations by their associated frontends."""
     for section, entries in iterate_declared_configuration_sections():
-        for declared_config in sorted(CONFIGURATION_ENTRIES[section], key=lambda cfg: cfg.key):
+        for declared_config in sorted(entries, key=lambda cfg: cfg.key):
             yield section, declared_config
 
 
