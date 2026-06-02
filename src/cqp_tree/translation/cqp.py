@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Iterable, Iterator, Optional, override
 
-from cqp_tree.translation.configuration import Configuration
+from cqp_tree.configuration import Configuration
 from cqp_tree.translation import query
 from cqp_tree.utils import (
     LOWERCASE_ALPHABET,
@@ -34,11 +34,11 @@ class Query(ABC):
     def referenced_identifiers(self) -> set[query.Identifier]: ...
 
     @abstractmethod
-    def format(self, environment: Environment) -> str: ...
+    def format(self, environment: Environment, configuration: Configuration) -> str: ...
 
-    def __str__(self):
+    def to_string(self, configuration: Configuration) -> str:
         environment = associate_with_names(self.referenced_identifiers(), TOKEN_ALPHABET)
-        return self.format(environment)
+        return self.format(environment, configuration)
 
 
 @dataclass
@@ -54,9 +54,9 @@ class Sequence(Query):
         return self.lhs.referenced_identifiers() | self.rhs.referenced_identifiers()
 
     @override
-    def format(self, environment: Environment) -> str:
+    def format(self, environment: Environment, configuration: Configuration) -> str:
         def format_subquery(q: Query) -> str:
-            res = q.format(environment)
+            res = q.format(environment, configuration)
             return f'({res})' if isinstance(q, Operator) else res
 
         lhs_repr = format_subquery(self.lhs)
@@ -79,13 +79,13 @@ class Operator(Query):
         return flatmap_set(self.queries, lambda q: q.referenced_identifiers())
 
     @override
-    def format(self, environment: Environment) -> str:
+    def format(self, environment: Environment, configuration: Configuration) -> str:
         parts = []
         for q in self.queries:
             if isinstance(q, (Token, Sequence)):
-                parts.append(q.format(environment))
+                parts.append(q.format(environment, configuration))
             else:
-                parts.append('(' + q.format(environment) + ')')
+                parts.append('(' + q.format(environment, configuration) + ')')
         return f' {self.operator} '.join(parts)
 
 
@@ -108,7 +108,7 @@ class Token(Query):
         return identifiers
 
     @override
-    def format(self, environment: Environment) -> str:
+    def format(self, environment: Environment, configuration: Configuration) -> str:
         prefix = environment[self.identifier] + ':' if self.identifier in environment else ''
         predicates = []
         for attribute in self.associated_predicates:
@@ -121,13 +121,27 @@ class Token(Query):
         for dependency in self.associated_dependencies:
             if dependency.src == self.identifier:
                 dst = environment[dependency.dst]
-                predicates.append(f'{dst}.dephead = ref')
+                predicates.append(self._format_dependency(configuration, dst=dst))
             else:
                 src = environment[dependency.src]
-                predicates.append(f'dephead = {src}.ref')
+                predicates.append(self._format_dependency(configuration, src=src))
 
         predicate = ' & '.join(predicates)
         return f'{prefix}[{predicate}]'
+
+    @staticmethod
+    def _format_dependency(
+        configuration: Configuration,
+        src: Optional[str] = None,
+        dst: Optional[str] = None,
+    ) -> str:
+        dephead = configuration.dephead
+        ref = configuration.token_id
+        if src is not None and dst is None:
+            return f'{dephead} = {src}.{ref}'
+        if src is None and dst is not None:
+            return f'{dst}.{dephead} = {ref}'
+        raise ValueError('Cannot format when `src´ and `dst´ are None')
 
 
 @dataclass
@@ -142,7 +156,7 @@ class Span(Query):
         return set()
 
     @override
-    def format(self, environment: Environment) -> str:
+    def format(self, environment: Environment, configuration: Configuration) -> str:
         return f'<{self.span}>' if self.position == query.Position.FIRST else f'</{self.span}>'
 
 
@@ -295,7 +309,7 @@ def add_anchors(q: Query, anchors: list[query.Constraint.Anchor], span: str) -> 
     return q
 
 
-def from_query(q: query.Query, configuration: Configuration = Configuration()) -> Query:
+def from_query(q: query.Query, configuration: Configuration) -> Query:
     """Translate a tree-based query into a CQP query for all different arrangements of tokens."""
 
     predicates = set(pred.normalize() for pred in q.predicates)
@@ -325,9 +339,7 @@ def from_query(q: query.Query, configuration: Configuration = Configuration()) -
     return result
 
 
-def format_plan(
-    plan: query.Recipe, configuration: Configuration = Configuration()
-) -> Iterator[str]:
+def format_plan(plan: query.Recipe, configuration: Configuration) -> Iterator[str]:
     within_span_restriction = ''
     if configuration.span:
         within_span_restriction = f' within {configuration.span}'
@@ -347,7 +359,8 @@ def format_plan(
             yield from rec(part.lhs)
             yield from rec(part.rhs)
         else:
-            formatted = str(from_query(part)) + within_span_restriction + ';'
+            query_text = from_query(part, configuration).to_string(configuration)
+            formatted = query_text + within_span_restriction + ';'
 
         if include_assignment:
             formatted = f'{environment[goal]} = {formatted}'

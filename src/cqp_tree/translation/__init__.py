@@ -1,5 +1,5 @@
 from cqp_tree.translation.cqp import format_plan, from_query as cqp_from_query
-from cqp_tree.translation.configuration import Configuration
+from cqp_tree.translation.configurable import dependency_type_equals, wordform_equals
 from cqp_tree.translation.errors import InputError, ParsingFailed, NotSupported
 from cqp_tree.translation.query import (
     Identifier,

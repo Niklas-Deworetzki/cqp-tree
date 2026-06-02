@@ -38,7 +38,7 @@ where = ['src']
 exclude = ['tests']
 
 [tool.setuptools.package-data]
-'*' = ['*.html']
+'*' = ['*.html', '*.toml']
 
 [project.scripts]
 cqp-tree = 'cqp_tree.cli:main'

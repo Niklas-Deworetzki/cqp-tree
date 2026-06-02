@@ -1,7 +1,10 @@
 import unittest
 
+import cqp_tree
 from cqp_tree import Constraint, NotSupported, ParsingFailed
 from cqp_tree.frontends.depsearch import translate_depsearch
+
+CONFIG = cqp_tree.get_frontend_configuration('depsearch')
 
 SUPPORTED_QUERIES = [
     '_',
@@ -86,7 +89,7 @@ class TranslatorTests(unittest.TestCase):
         for i, query in enumerate(SUPPORTED_QUERIES, start=1):
             with self.subTest(msg=f'Translating example #{i}'):
                 try:
-                    translate_depsearch(query)
+                    translate_depsearch(query, CONFIG)
                 except NotSupported:
                     raise ValueError('Unsupported query: ' + query)
 
@@ -98,12 +101,12 @@ class TranslatorTests(unittest.TestCase):
                 i += 1
                 with self.subTest(msg=f'Unsupported example #{i}: {reason}'):
                     with self.assertRaises(NotSupported):
-                        translate_depsearch(query)
+                        translate_depsearch(query, CONFIG)
 
     def test_arbitrary(self):
         query = '_'
 
-        res = translate_depsearch(query).simple_representation()
+        res = translate_depsearch(query, CONFIG).simple_representation()
 
         self.assertEqual(len(res.tokens), 1)
         self.assertEqual(len(res.predicates), 0)
@@ -111,7 +114,7 @@ class TranslatorTests(unittest.TestCase):
     def test_valid_distance(self):
         query = '_ <lin_0:1000 _'
 
-        res = translate_depsearch(query).simple_representation()
+        res = translate_depsearch(query, CONFIG).simple_representation()
 
         a, b = res.tokens
 
@@ -129,11 +132,11 @@ class TranslatorTests(unittest.TestCase):
             query = f'_ <lin_{min_dist}:{max_dist} _'
             with self.subTest(msg=query):
                 with self.assertRaises(ParsingFailed):
-                    translate_depsearch(query)
+                    translate_depsearch(query, CONFIG)
 
     def test_direction(self):
-        res_l = translate_depsearch('_ <lin_0:1000@L _').simple_representation()
-        res_r = translate_depsearch('_ <lin_0:1000@R _').simple_representation()
+        res_l = translate_depsearch('_ <lin_0:1000@L _', CONFIG).simple_representation()
+        res_r = translate_depsearch('_ <lin_0:1000@R _', CONFIG).simple_representation()
 
         [l_const] = filter(lambda x: isinstance(x, Constraint.Order), res_l.constraints)
         [r_const] = filter(lambda x: isinstance(x, Constraint.Order), res_r.constraints)
@@ -149,13 +152,13 @@ class TranslatorTests(unittest.TestCase):
     def test_dependency(self):
         query = '_ < _'
 
-        res = translate_depsearch(query).simple_representation()
+        res = translate_depsearch(query, CONFIG).simple_representation()
 
         self.assertNotEqual(len(res.dependencies), 0)
 
     def test_dependency_direction(self):
-        res_l = translate_depsearch('_ < _').simple_representation()
-        res_r = translate_depsearch('_ > _').simple_representation()
+        res_l = translate_depsearch('_ < _', CONFIG).simple_representation()
+        res_r = translate_depsearch('_ > _', CONFIG).simple_representation()
 
         [l_dep] = res_l.dependencies
         [r_dep] = res_r.dependencies
@@ -174,8 +177,8 @@ class TranslatorTests(unittest.TestCase):
         )
 
     def test_dependency_order(self):
-        res_l = translate_depsearch('_ <@L _').simple_representation()
-        res_r = translate_depsearch('_ <@R _').simple_representation()
+        res_l = translate_depsearch('_ <@L _', CONFIG).simple_representation()
+        res_r = translate_depsearch('_ <@R _', CONFIG).simple_representation()
 
         [l_const] = res_l.constraints
         [r_const] = res_r.constraints
@@ -192,8 +195,8 @@ class TranslatorTests(unittest.TestCase):
         )
 
     def test_advanced_dependencies(self):
-        res_l = translate_depsearch('_ <a|<b|<!z _').simple_representation()
-        res_r = translate_depsearch('_ >a|>b|>!z _').simple_representation()
+        res_l = translate_depsearch('_ <a|<b|<!z _', CONFIG).simple_representation()
+        res_r = translate_depsearch('_ >a|>b|>!z _', CONFIG).simple_representation()
 
         [l_dep] = res_l.dependencies
         [r_dep] = res_r.dependencies

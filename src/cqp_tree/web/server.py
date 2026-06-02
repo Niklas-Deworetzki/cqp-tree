@@ -1,17 +1,49 @@
+from pathlib import Path
 from typing import Any
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, render_template, request, send_file
 
 import cqp_tree
-from cqp_tree import Recipe
+from cqp_tree import DeclaredConfig, Recipe
 from cqp_tree.utils import UPPERCASE_ALPHABET, associate_with_names
 
-server = Flask(__name__)
+WEB_CONFIG = [
+    DeclaredConfig(
+        key='branding',
+        readable_name='Branding',
+        readable_description='Path to an image file which is displayed in the top-left corner.',
+        validation_type=str,
+    ),
+    DeclaredConfig(
+        key='homepage',
+        readable_name='Homepage',
+        readable_description='URL the user is redirected to when clicking on the branding logo.',
+        validation_type=str,
+    ),
+]
+cqp_tree.declare_configurations('web', WEB_CONFIG)
+
+TEMPLATE_DIR = Path(__file__).parent / 'static'
+
+server = Flask(__name__, template_folder=str(TEMPLATE_DIR))
 
 
 @server.route("/")
 def main():
-    return send_from_directory('static', 'index.html')
+    cfg = cqp_tree.get_frontend_configuration('web')
+    return render_template(
+        'index.html',
+        cfg=cfg,
+        settings=cqp_tree.configurable_flags_by_section(hidden_sections={'web'}),
+    )
+
+
+@server.route('/branding')
+def branding():
+    cfg = cqp_tree.get_frontend_configuration('web')
+    if cfg.branding:
+        return send_file(cfg.branding)
+    return '', 404
 
 
 @server.route('/translators', methods=['GET'])
@@ -25,27 +57,9 @@ def translate():
     def error(message: str, status: int = 400):
         return jsonify({'error': message}), status
 
-    def extract_request_data():
-        translation_request = request.get_json()
-        if translation_request is None or not isinstance(translation_request, dict):
-            raise ValueError('Malformed request')
-
-        if not 'text' in translation_request:
-            raise ValueError('Missing required field "text"')
-
-        text = translation_request['text']
-        translator = translation_request.get('translator')
-        if translator and translator not in cqp_tree.known_translators:
-            raise ValueError('Unknown value for field "translator"')
-
-        configuration = cqp_tree.Configuration(
-            translator=translator,
-        )
-        return text, configuration
-
     try:
-        text, configuration = extract_request_data()
-        plan = cqp_tree.translate_input(text, configuration.translator)
+        text, configuration, translator_configs = extract_request_data()
+        plan = cqp_tree.translate_input(text, configuration, translator_configs)
 
         if is_too_complex(plan):
             raise ValueError('Your query is too complex! Try using fewer tokens.')
@@ -82,13 +96,53 @@ def is_too_complex(plan: Recipe) -> bool:
     return False
 
 
+def extract_request_data() -> tuple[
+    str,
+    cqp_tree.Configuration,
+    dict[cqp_tree.ConfigurationSection, cqp_tree.Configuration],
+]:
+    translation_request = request.get_json()
+    if translation_request is None or not isinstance(translation_request, dict):
+        raise ValueError('Malformed request')
+
+    if not 'text' in translation_request:
+        raise ValueError('Missing required field "text"')
+
+    text = translation_request['text']
+    translator = translation_request.get('translator')
+    if translator and translator not in cqp_tree.known_translators:
+        raise ValueError('Unknown value for field "translator"')
+
+    provided_settings = translation_request.get('settings', {})
+    configuration = {}
+
+    global_configuration = cqp_tree.get_global_config()
+    for provided_section, provided_values in provided_settings.items():
+        if provided_section == 'null':
+            provided_section = None
+            active_namespace = global_configuration
+        else:
+            active_namespace = cqp_tree.get_frontend_configuration(
+                provided_section, global_configuration
+            )
+
+        for key, value in provided_values.items():
+            declared_config = cqp_tree.get_declared_configuration(key, provided_section)
+            if declared_config is not None:
+                setattr(active_namespace, key, declared_config.parse_value(value))
+        configuration[provided_section] = active_namespace
+
+    global_configuration.translator = translator
+    return text, global_configuration, configuration
+
+
 def to_json(plan: Recipe, configuration: cqp_tree.Configuration) -> dict:
     environment = associate_with_names(plan.identifiers(), UPPERCASE_ALPHABET)
 
-    queries = {
-        environment[query.identifier]: str(cqp_tree.cqp_from_query(query, configuration))
-        for query in plan.queries
-    }
+    def convert(query: cqp_tree.Query) -> str:
+        return cqp_tree.cqp_from_query(query, configuration).to_string(configuration)
+
+    queries = {environment[query.identifier]: convert(query) for query in plan.queries}
     operations = {
         environment[operation.identifier]: {
             'lhs': environment[operation.lhs],
@@ -106,7 +160,7 @@ def to_json(plan: Recipe, configuration: cqp_tree.Configuration) -> dict:
         }
     }
     if plan.has_simple_representation():
-        result['single_query'] = str(cqp_tree.cqp_from_query(plan.simple_representation()))
+        result['single_query'] = convert(plan.simple_representation())
     if configuration.span:
         result['span'] = configuration.span
     return result

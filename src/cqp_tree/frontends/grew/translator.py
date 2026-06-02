@@ -2,6 +2,7 @@ from collections import defaultdict
 from typing import Self
 
 import cqp_tree.translation as ct
+from cqp_tree import Configuration
 from cqp_tree.frontends.antlr_utils import make_parse, string_of_token
 from cqp_tree.frontends.grew.antlr import GrewLexer, GrewParser
 
@@ -16,19 +17,21 @@ def new_environment() -> Environment:
 
 
 @ct.translator('grew')
-def translate_grew(grew: str) -> ct.Recipe:
+def translate_grew(grew: str, cfg: Configuration) -> ct.Recipe:
     grew_request = parse(grew)
-    return QueryBuilder().build(grew_request)
+    return QueryBuilder.build(grew_request, cfg)
 
 
 class QueryBuilder:
 
-    def __init__(self, inherited: 'QueryBuilder' = None):
+    def __init__(self, config: Configuration = None, inherited: 'QueryBuilder' = None):
+        assert config or inherited, 'config or inherited must be provided.'
         self.dependencies = list[ct.Dependency]()
         self.constraints = list[ct.Constraint]()
         self.predicates = list[ct.Predicate]()
 
         self.environment = new_environment()
+        self.config: Configuration = config or inherited.config
 
         if inherited:
             self.dependencies += inherited.dependencies
@@ -60,11 +63,11 @@ class QueryBuilder:
         }[type(item)]
 
     @staticmethod
-    def build(request: GrewParser.RequestContext) -> ct.Recipe:
+    def build(request: GrewParser.RequestContext, cfg: Configuration) -> ct.Recipe:
         plan = ct.Recipe.Builder()
 
         pattern = request.pattern().body()
-        root_builder = QueryBuilder().translate_clauses(pattern)
+        root_builder = QueryBuilder(config=cfg).translate_clauses(pattern)
         if root_builder.is_empty():
             # If pattern is empty, match an arbitrary token.
             query = ct.Query(tokens=[ct.Token()])
@@ -75,7 +78,7 @@ class QueryBuilder:
         goal = current
 
         for item in request.requestItem():
-            builder = QueryBuilder(root_builder).translate_clauses(item.body())
+            builder = QueryBuilder(inherited=root_builder).translate_clauses(item.body())
             current = plan.add_query(builder.build_query())
 
             goal = plan.add_operation(goal, QueryBuilder.query_operator(item), current)
@@ -128,7 +131,7 @@ class QueryBuilder:
             deptypes = [self.to_operand(dt) for dt in arrow.edgeTypes().literal()]
             if isinstance(arrow, GrewParser.PositiveArrowContext):
                 dependency_constraint = ct.Disjunction.of(
-                    ct.Comparison(deprel, '=', deptype) for deptype in deptypes
+                    ct.dependency_type_equals(dst, deptype, self.config) for deptype in deptypes
                 )
 
             elif isinstance(arrow, GrewParser.NegatedArrowContext):

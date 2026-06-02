@@ -21,9 +21,54 @@
 <div class="container">
     <div class="row justify-content-center min-vh-100">
         <div class="col-md-10 col-lg-8">
-            <div class="my-3">
-                <h1>CQP/Tree</h1>
-            </div>
+            <nav class="navbar navbar-light bg-light border rounded px-3 my-3">
+                <div class="container-fluid p-0 align-items-center">
+
+                    <div class="d-flex align-items-center">
+                        {% if cfg.branding %}
+                        <!-- Hidden on very small screens -->
+                        {% if cfg.homepage %}
+                        <a href="{{ cfg.homepage }}">
+                        {% endif %}
+                            <img src="{{ url_for('branding') }}"
+                                 alt="Institution logo"
+                                 class="d-none d-sm-inline me-2"
+                                 style="height: 4rem; width: 7rem; object-fit: contain;">
+                        {% if cfg.homepage %}
+                        </a>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+
+                    <div class="flex-grow-1 text-center px-3">
+                        <span class="fw-bold fs-5 d-block truncated">
+                            CQP/Tree
+                        </span>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                data-bs-auto-close="outside">
+                            <i class="bi bi-gear"></i>
+                        </button>
+
+                        <div class="dropdown-menu dropdown-menu-end p-3"
+                             style="min-width: 40vw; max-height: 70vh; overflow-y: auto;">
+
+                            <div class="accordion accordion-flush"
+                                 id="settings-accordion">
+
+                                <!-- populate settings here -->
+                                {% for section, available_settings in settings %}
+                                {% include "setting_section.html" %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
 
             <div class="mb-3 position-relative">
                 <label for="query-input-field"
@@ -208,11 +253,37 @@
             });
         });
 
+    function collectSettings() {
+        const settings = {};
+
+        document.querySelectorAll('.config-field').forEach(field => {
+            const key = field.id;
+            const section = (field.dataset.section === 'None') ? null : field.dataset.section;
+
+            let value;
+            if (field.type === 'checkbox') {
+                value = field.checked;
+            } else if (field.type === 'number') {
+                value = field.valueAsNumber;
+            } else {
+                value = field.value;
+            }
+
+            if (!(section in settings)) {
+                settings[section] = {};
+            }
+            settings[section][key] = value;
+        });
+
+        return settings;
+    }
+
     // Make the submit button call the server.
     submitQuery.addEventListener('click', () => {
         const query = queryInput.value;
         const request = {
-            'text': query
+            'text': query,
+            'settings': collectSettings(),
         }
 
         const translator = queryLanguage.value;

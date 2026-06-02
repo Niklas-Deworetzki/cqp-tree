@@ -1,18 +1,27 @@
 from dataclasses import dataclass
 from typing import Callable, Collection, Optional, Tuple
 
+from cqp_tree.configuration.configuration import (
+    Configuration,
+    DeclaredConfig,
+    declare_configuration,
+    get_frontend_configuration,
+)
 from cqp_tree.translation.errors import NotSupported
 from cqp_tree.translation.query import Recipe
 
-type TranslationFunction = Callable[[str], Recipe]
+type TranslationFunction = Callable[[str, Configuration], Recipe]
 
 known_translators = dict[str, TranslationFunction]()
 
 
-def translator(name: str):
+def translator(name: str, *cf: DeclaredConfig):
     """
     Decorator used to register translation functions.
     """
+
+    for configuration_entry in cf:
+        declare_configuration(configuration_entry, name)
 
     def register(func: TranslationFunction) -> TranslationFunction:
         if name in known_translators:
@@ -41,7 +50,11 @@ class UnableToGuessTranslatorError(Exception):
         return f'Cannot guess translator for query: {reason}'
 
 
-def translate_input(inp: str, use_translator: Optional[str] = None) -> Recipe:
+def translate_input(
+    inp: str,
+    global_config: Configuration,
+    frontend_config: Optional[dict[str, Configuration]] = None,
+) -> Recipe:
     """
     Translates an input using the given translator. If no translator is given,
     the correct translator is guessed by trying all available translators.
@@ -52,8 +65,8 @@ def translate_input(inp: str, use_translator: Optional[str] = None) -> Recipe:
     If a translator to use is specified, but the translator is not known,
     a KeyError is raised.
     """
-    if use_translator is None:
-        guessed_translations = guess_correct_translator(inp)
+    if global_config.translator is None:
+        guessed_translations = guess_correct_translator(inp, global_config, frontend_config)
         if not guessed_translations:
             raise UnableToGuessTranslatorError(tuple())
 
@@ -63,12 +76,18 @@ def translate_input(inp: str, use_translator: Optional[str] = None) -> Recipe:
         _, query = guessed_translations[0]
         return query
 
-    if use_translator not in known_translators:
-        raise KeyError(f'Unknown translator: {use_translator}')
-    return known_translators[use_translator](inp)
+    if global_config.translator not in known_translators:
+        raise KeyError(f'Unknown translator: {global_config.translator}')
+    return _run_translator_with_configuration(
+        inp, global_config.translator, global_config, frontend_config
+    )
 
 
-def guess_correct_translator(inp: str) -> list[Tuple[str, Recipe]]:
+def guess_correct_translator(
+    inp: str,
+    global_config: Configuration,
+    translator_configs: Optional[dict[str, Configuration]] = None,
+) -> list[Tuple[str, Recipe]]:
     """
     Tries to find translators applicable for the input string.
     Returns all successfully translated queries and the name of the translation frontend that
@@ -77,13 +96,17 @@ def guess_correct_translator(inp: str) -> list[Tuple[str, Recipe]]:
     If only one translator parses the query but raises a NotSupported, this exception is propagated.
 
     :param inp: The input for which translation is attempted by all frontends.
+    :param global_config: Configuration applying for all translators.
+    :param translator_configs: Configuration applying for individual translators.
     """
     translated_queries = list[Tuple[str, Recipe]]()
     unsupported_queries = list[Tuple[str, NotSupported]]()
 
-    for name, function in known_translators.items():
+    for name in known_translators:
         try:
-            parsed = function(inp)
+            parsed = _run_translator_with_configuration(
+                inp, name, global_config, translator_configs
+            )
             translated_queries.append((name, parsed))
         except NotSupported as not_supported:
             unsupported_queries.append((name, not_supported))
@@ -97,3 +120,26 @@ def guess_correct_translator(inp: str) -> list[Tuple[str, Recipe]]:
             f'{raised_exception} (automatically selected {trans} as a translator)'
         ) from raised_exception
     return translated_queries
+
+
+def _run_translator_with_configuration(
+    inp: str,
+    translator_name: str,
+    global_config: Configuration,
+    translator_configs: Optional[dict[str, Configuration]],
+) -> Recipe:
+    """
+    Sets up the configuration for a given translator and runs the translator
+    on the given input.
+
+    :raise KeyError: If the translator name is not known.
+    :raise InputError: If the input is can not be parsed by the translator.
+    :raise NotSupported: If the input contains an unsupported feature for the translator.
+    """
+    if translator_configs is None or translator_name not in translator_configs:
+        cfg = get_frontend_configuration(translator_name, global_config)
+    else:
+        cfg = translator_configs[translator_name]
+
+    function = known_translators[translator_name]
+    return function(inp, cfg)
