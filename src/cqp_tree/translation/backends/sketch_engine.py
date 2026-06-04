@@ -1,6 +1,18 @@
 from functools import reduce
+from typing import Iterable, Optional, override
 
-from cqp_tree.translation.backends.common import *
+from cqp_tree.translation.backends.common import (
+    Configuration,
+    GlobalConstraint,
+    Operator,
+    Query,
+    QueryFormatter,
+    Sequence,
+    Token,
+    add_within_and_anchors,
+    arrangements,
+    query,
+)
 from cqp_tree.translation.errors import NotSupported
 
 # manatee does weird things when "0" is included as an identifier.
@@ -93,37 +105,20 @@ def sketchengine_from_query(q: query.Query, configuration: Configuration) -> Que
 
     return add_within_and_anchors(result, q, configuration)
 
+
 class SketchEngineFormatter(QueryFormatter):
 
     @classmethod
     def names(cls) -> Iterable[str]:
         return TOKEN_ALPHABET
 
+    @override
     def format_global_constraint(
         self, base: str, predicates: list[str], dependencies: list[str]
     ) -> str:
         constraint_repr = ' & '.join(predicates + dependencies)
         return f'({base}) & ({constraint_repr})'
 
+    @override
     def format_within_constraint(self, base: str, span: str) -> str:
         return f'{base} within <{span}/>'
-
-    def format_operator(self, operator: str, queries: list[str]) -> str:
-        return f' {operator} '.join(queries)
-
-    def format_token(
-        self, identifier: query.Identifier, predicates: list[str], dependencies: list[str]
-    ) -> str:
-        prefix = self.environment[identifier] + ':' if identifier in self.environment else ''
-        predicate = ' & '.join(predicates)
-        return f'{prefix}[{predicate}]'
-
-    def format_sequence(self, lhs: str, rhs: str, tokens_between: bool) -> str:
-        if tokens_between:
-            return f'{lhs} []* {rhs}'
-        else:
-            return f'{lhs} {rhs}'
-
-    def format_span(self, span: str, position: query.Position):
-        return f'<{span}>' if position == query.Position.FIRST else f'</{span}>'
-

@@ -16,6 +16,7 @@ def filter_is_instance[X, Y](xs: Iterable[X], cls: type[Y]) -> Iterable[Y]:
         if isinstance(x, cls):
             yield x
 
+
 def partition_set[X](s: set[X], predicate: Callable[[X], bool]) -> Tuple[set[X], set[X]]:
     """
     Partitions a set into two sets using the given predicate.

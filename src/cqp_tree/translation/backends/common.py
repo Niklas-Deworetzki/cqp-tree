@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Any, Iterable, Optional, override
+from typing import Any, Iterable, Optional, overload, override
 
 from cqp_tree.configuration import Configuration
 from cqp_tree.translation import query
@@ -23,6 +23,7 @@ class Query(ABC):
     def referenced_identifiers(self) -> set[query.Identifier]: ...
 
     # This is bound in cqp.py after knowing all the backend formatters
+    @overload
     def to_string(self, configuration: Configuration) -> str: ...
 
 
@@ -271,35 +272,24 @@ class QueryFormatter(ABC):
         span: str,
     ) -> str: ...
 
-    @abstractmethod
-    def format_operator(
-        self,
-        operator: str,
-        queries: list[str],
-    ) -> str: ...
+    def format_operator(self, operator: str, queries: list[str]) -> str:
+        return f' {operator} '.join(queries)
 
-    @abstractmethod
     def format_token(
-        self,
-        identifier: query.Identifier,
-        predicates: list[str],
-        dependencies: list[str],
-    ) -> str: ...
+        self, identifier: query.Identifier, predicates: list[str], dependencies: list[str]
+    ) -> str:
+        prefix = self.environment[identifier] + ':' if identifier in self.environment else ''
+        predicate = ' & '.join(predicates + dependencies)
+        return f'{prefix}[{predicate}]'
 
-    @abstractmethod
-    def format_sequence(
-        self,
-        lhs: str,
-        rhs: str,
-        tokens_between: bool,
-    ) -> str: ...
+    def format_sequence(self, lhs: str, rhs: str, tokens_between: bool) -> str:
+        if tokens_between:
+            return f'{lhs} []* {rhs}'
+        else:
+            return f'{lhs} {rhs}'
 
-    @abstractmethod
-    def format_span(
-        self,
-        span: str,
-        position: query.Position,
-    ): ...
+    def format_span(self, span: str, position: query.Position):
+        return f'<{span}>' if position == query.Position.FIRST else f'</{span}>'
 
     def format_dependency(
         self,
