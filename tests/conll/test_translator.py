@@ -7,7 +7,10 @@ import cqp_tree as ct
 from cqp_tree import NotSupported, ParsingFailed
 from cqp_tree.frontends.conll import translate_conll
 
-CONFIG = cqp_tree.get_frontend_configuration('conll')
+CONFIG = cqp_tree.default_configuration().project(
+    cqp_tree.DEFAULT_CONFIGURATION_SECTION,
+    'conll',
+)
 
 class TranslationTests(unittest.TestCase):
     dir_path = os.path.dirname(os.path.realpath(__file__))

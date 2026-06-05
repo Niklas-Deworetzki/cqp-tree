@@ -1,7 +1,7 @@
 import argparse
 import sys
 from contextlib import ExitStack
-from typing import Any, Optional
+from typing import Any, Iterable, Optional
 
 import cqp_tree
 from cqp_tree.utils import format_human_readable
@@ -49,6 +49,18 @@ def argument_parser() -> argparse.ArgumentParser:
         metavar='SPAN',
         help='Span attribute to which a query should be constrained.',
     )
+    cqp_tree.add_config_flag_to_parser(parser)
+    parser.add_argument(
+        '--profile',
+        metavar='NAME',
+        type=str,
+        help='Load configuration defaults from a common profile.',
+    )
+    parser.add_argument(
+        '--list-profiles',
+        action='store_true',
+        help='List available profiles.',
+    )
     parser.add_argument(
         '--print-config',
         metavar='FILE',
@@ -59,7 +71,7 @@ def argument_parser() -> argparse.ArgumentParser:
         'Prints to stdout if no file is given.',
     )
 
-    translator_names = sorted(cqp_tree.known_translators.keys())
+    translator_names: Iterable[str] = sorted(cqp_tree.known_translators.keys())
     parser.add_argument(
         'translator',
         metavar='TRANSLATOR',
@@ -107,7 +119,7 @@ def get_input(args: argparse.Namespace) -> Optional[str]:
         return sys.stdin.read() or None
 
 
-def translate(query_str: str, config: cqp_tree.Configuration) -> cqp_tree.Recipe | None:
+def translate(query_str: str, config: cqp_tree.ActiveConfig) -> cqp_tree.Recipe | None:
     try:
         return cqp_tree.translate_input(query_str, config)
     except cqp_tree.UnableToGuessTranslatorError as translation_error:
@@ -121,10 +133,23 @@ def translate(query_str: str, config: cqp_tree.Configuration) -> cqp_tree.Recipe
     return None
 
 
-def get_configuration(args: argparse.Namespace) -> cqp_tree.Configuration:
-    cfg = cqp_tree.initialize_config_from_args(args)
-    cfg.translator = args.translator if args.translator else None
-    cfg.span = args.span if args.span else None
+def get_configuration(args: argparse.Namespace) -> cqp_tree.ActiveConfig:
+    cfg = cqp_tree.default_configuration()
+    if args.profile:
+        cfg = cqp_tree.configuration_from_profile(args.profile, cfg)
+
+    cfg = cqp_tree.configuration_from_args(args, cfg)
+
+    cfg.put(
+        cqp_tree.DEFAULT_CONFIGURATION_SECTION,
+        'translator',
+        args.translator if args.translator else None,
+    )
+    cfg.put(
+        cqp_tree.DEFAULT_CONFIGURATION_SECTION,
+        'span',
+        args.span if args.span else None,
+    )
     return cfg
 
 
@@ -142,7 +167,7 @@ def main():
         return 1
 
     if args.list_profiles:
-        for profile in cqp_tree.discover_builtin_profiles():
+        for profile in sorted(cqp_tree.available_profiles()):
             print(profile)
         return 0
 
@@ -152,9 +177,13 @@ def main():
             if isinstance(args.print_config, str)
             else args.print_config
         ) as dst:
-            cqp_tree.print_profile_template(dst)
+            cqp_tree.print_configuration_file(dst, configuration)
         return 0
 
+    return _handle_io(args, configuration)
+
+
+def _handle_io(args: argparse.Namespace, configuration: cqp_tree.ActiveConfig) -> int:
     with ExitStack() as managed_resources:
         output = sys.stdout
         if args.output:
@@ -171,11 +200,13 @@ def main():
             return 1
 
         try:
-            plan = translate(query_str, configuration.translator)
+            translator = configuration.get(cqp_tree.DEFAULT_CONFIGURATION_SECTION, 'translator')
+            plan = translate(query_str, translator)
             if not plan:
                 return 1
 
-            for line in cqp_tree.format_plan(plan, configuration):
+            formatting_config = configuration.project(cqp_tree.DEFAULT_CONFIGURATION_SECTION)
+            for line in cqp_tree.format_plan(plan, formatting_config):
                 output.write(line + '\n')
 
         except cqp_tree.ParsingFailed as parse_failure:

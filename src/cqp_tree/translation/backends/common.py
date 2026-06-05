@@ -201,7 +201,6 @@ class QueryFormatter(ABC):
         return f'({s})' if isinstance(o, cls) else s
 
     def format(self, q: query.Query) -> str:
-        print('f')
         if isinstance(q, GlobalConstraint):
             base_repr = self.format(q.base)
             predicate_reprs = [self.format_predicate(p) for p in q.associated_predicates]

@@ -11,10 +11,16 @@ from cqp_tree.frontends.grew.translator import QueryBuilder, new_environment
 def do_parse[T](construct: Callable, text: str) -> T:
     return make_parse(GrewLexer, GrewParser, construct)(text)
 
-CONFIG = cqp_tree.get_frontend_configuration('grew')
+
+CONFIG = cqp_tree.default_configuration().project(
+    cqp_tree.DEFAULT_CONFIGURATION_SECTION,
+    'grew',
+)
+
 
 def get_builder() -> QueryBuilder:
     return QueryBuilder(CONFIG)
+
 
 class TranslationTests(unittest.TestCase):
 

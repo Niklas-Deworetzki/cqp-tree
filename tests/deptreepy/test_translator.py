@@ -4,7 +4,11 @@ import cqp_tree
 from cqp_tree import *
 from cqp_tree.frontends.deptreepy import translate_deptreepy
 
-CONFIG = cqp_tree.get_frontend_configuration('deptreepy')
+CONFIG = cqp_tree.default_configuration().project(
+    cqp_tree.DEFAULT_CONFIGURATION_SECTION,
+    'deptreepy',
+)
+
 
 class TranslationTests(unittest.TestCase):
 
@@ -161,7 +165,6 @@ class TranslationTests(unittest.TestCase):
         (operation,) = plan.operations
         self.assertEqual(operation.identifier, plan.goal)
         self.assertEqual(operation.operator, SetOperator.DISJUNCTION)
-
 
     def test_not_dependency(self):
         with self.assertRaises(NotSupported):

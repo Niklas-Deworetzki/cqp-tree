@@ -2,7 +2,8 @@ from cqp_tree.translation import *
 from cqp_tree.configuration import *
 from cqp_tree import frontends
 
-DEFAULT_CONFIGURATIONS = [
+declare_configuration(
+    DEFAULT_CONFIGURATION_SECTION,
     DeclaredConfig(
         key='translator',
         readable_name='Translator',
@@ -17,9 +18,11 @@ DEFAULT_CONFIGURATIONS = [
         validation_type=str,
     ),
     DeclaredConfig(
-        key='profile',
-        readable_name='Active profile',
-        readable_description='Active profile to which matched results are expanded.',
+        key='dialect',
+        readable_name='CQP Dialect',
+        readable_description='The version of the Corpus Query Protocol language to use.',
+        validation_type=CQPDialect,
+        default_value=CQPDialect.CWB,
     ),
     DeclaredConfig(
         key='dialect',
@@ -64,6 +67,4 @@ DEFAULT_CONFIGURATIONS = [
         'of a token that is matched by other token\'s dependency heads',
         default_value='ref',
     ),
-]
-
-declare_configurations(GLOBAL_CONFIGURATION_SECTION, DEFAULT_CONFIGURATIONS)
+)

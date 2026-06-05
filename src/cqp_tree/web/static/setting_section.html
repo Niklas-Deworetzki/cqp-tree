@@ -1,5 +1,5 @@
 <div class="accordion-item">
-    {% if section is none %}
+    {% if section == "general" %}
     <h2 class="accordion-header" id="heading-config">
         <button class="accordion-button"
                 type="button"
@@ -26,7 +26,7 @@
     {% endif %}
 
         <div class="accordion-body">
-            {% for setting in available_settings %}
+            {% for setting, value in available_settings %}
             <div class="mb-3">
                 {# Show label above input, unless for bools where we show it
                     next to the checkbox. #}
@@ -45,7 +45,7 @@
                         class="form-select config-field">
                     {% for option in setting.validation_options %}
                     <option value="{{ option }}"
-                            {% if setting.get() %}selected{% endif %}>
+                            {% if option == value %}selected{% endif %}>
                         {{ option }}
                     </option>
                     {% endfor %}
@@ -58,7 +58,7 @@
                            data-section="{{ section }}"
                            name="{{ setting.key }}"
                            class="form-check-input config-field"
-                           {% if setting.get() %}checked{% endif %}>
+                           {% if value %}checked{% endif %}>
                     <label class="form-check-label"
                            for="{{ setting.key }}"
                            title="{{ setting.readable_description }}">
@@ -73,8 +73,8 @@
                        data-section="{{ section }}"
                        name="{{ setting.key }}"
                        class="form-control config-field"
-                       {% if setting.get() is not none %}
-                       value="{{ setting.get() }}"
+                       {% if value is not none %}
+                       placeholder="{{ value }}"
                        {% endif %}
                 >
 
@@ -84,8 +84,8 @@
                        data-section="{{ section }}"
                        name="{{ setting.key }}"
                        class="form-control config-field"
-                       {% if setting.get() is not none %}
-                       value="{{ setting.get() }}"
+                       {% if value is not none %}
+                       placeholder="{{ value }}"
                        {% endif %}
                 >
 

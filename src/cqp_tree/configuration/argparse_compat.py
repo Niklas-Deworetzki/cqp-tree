@@ -1,71 +1,36 @@
 import argparse
+from collections import defaultdict
 from pathlib import Path
-from typing import Iterable
+from typing import Any, Iterable
 
-from cqp_tree.configuration.configuration import (
-    Configuration,
-    ConfigurationSection,
+from cqp_tree.configuration.declaration import (
+    DEFAULT_CONFIGURATION_SECTION,
     DeclaredConfig,
-    GLOBAL_CONFIGURATION_SECTION,
-    get_global_config,
-    iterate_declared_configuration,
-    iterate_declared_configuration_sections,
+    iterate_declared_configurations,
 )
-from cqp_tree.configuration.profile import load_builtin_profile, load_profile
+from cqp_tree.configuration.values import (
+    ActiveConfig,
+    configuration_from_file,
+)
 
-CONFIG_KEYS_WITH_EXPLICIT_CLI_FLAG = {'span', 'translator', 'profile'}
-
-
-def configurable_flags_by_section(
-    hidden_sections: Iterable[str] = frozenset(),
-) -> Iterable[tuple[ConfigurationSection, Iterable[DeclaredConfig]]]:
-    for section, entries in iterate_declared_configuration_sections():
-        if section in hidden_sections:
-            continue
-
-        if section == GLOBAL_CONFIGURATION_SECTION:
-            entries = [e for e in entries if e.key not in CONFIG_KEYS_WITH_EXPLICIT_CLI_FLAG]
-        else:
-            entries = list(entries)
-
-        if entries:  # Don't display empty sections.
-            yield section, entries
+CONFIG_KEYS_WITH_EXPLICIT_CLI_FLAG = {'span', 'translator'}
 
 
-def _iterate_configurable_flags() -> Iterable[tuple[str, DeclaredConfig]]:
-    for section, cfg in iterate_declared_configuration():
-        if not (
-            section == GLOBAL_CONFIGURATION_SECTION
-            and cfg.key in CONFIG_KEYS_WITH_EXPLICIT_CLI_FLAG
-        ):
-            yield f'{section or 'config'}.{cfg.key}', cfg
-
-
-def initialize_config_from_args(args: argparse.Namespace) -> Configuration:
-    if args.profile:
-        load_builtin_profile(args.profile)
+def configuration_from_args(args: argparse.Namespace, inherited: ActiveConfig) -> ActiveConfig:
     if args.config:
-        load_profile(Path(args.config))
+        config_file = Path(args.config)
+        inherited = configuration_from_file(config_file, inherited)
 
-    for key, cfg in _iterate_configurable_flags():
-        value = getattr(args, key)
+    values: dict[str, dict[str, Any]] = defaultdict(dict)
+    for section, key, _ in _iterate_cli_configs():
+        value = getattr(args, f'{section}.{key}')
         if value is not None:
-            cfg.put(value)
+            values[section][key] = value
 
-    return get_global_config()
+    return ActiveConfig(inherited=inherited, sections=values)
 
 
-def add_default_flags_to_parser(parser: argparse.ArgumentParser):
-    parser.add_argument(
-        '--profile',
-        metavar='PROFILE',
-        help='Configuration profile to use when determining configuration defaults.',
-    )
-    parser.add_argument(
-        '--list-profiles',
-        action='store_true',
-        help='List available profiles to choose from.',
-    )
+def add_config_flag_to_parser(parser: argparse.ArgumentParser):
     parser.add_argument(
         '--config',
         '-c',
@@ -78,14 +43,25 @@ def add_default_flags_to_parser(parser: argparse.ArgumentParser):
 def add_config_flags_group_to_parser(parser: argparse.ArgumentParser):
     configuration_group = parser.add_argument_group(
         title='Configuration options',
-        description='List of available configuration options for this application. '
-        'Configuration keys are of the form SECTION.KEY, where the SECTION describes on of the '
-        'different parts or frontends of the application. Some configurations only apply to one '
-        'of the frontends. Active configuration values are displayed after the configuration key.',
+        description='List of available configuration options for this application. Configuration '
+        'keys are of the form SECTION.KEY, where the SECTION describes on of the different parts '
+        'or frontends of the application. Some configurations only apply to one of the frontends.',
     )
-    for key, cfg in _iterate_configurable_flags():
+    for section, key, cfg in _iterate_cli_configs():
         configuration_group.add_argument(
-            f'--{key}',
+            f'--{section}.{key}',
             help=cfg.readable_description,
-            metavar=cfg.get() or cfg.metavar(),
+            metavar=cfg.metavar(),
         )
+
+
+def _iterate_cli_configs() -> Iterable[tuple[str, str, DeclaredConfig]]:
+    for section, entries in iterate_declared_configurations():
+        for entry in entries:
+            if (
+                section == DEFAULT_CONFIGURATION_SECTION
+                and entry.key in CONFIG_KEYS_WITH_EXPLICIT_CLI_FLAG
+            ):
+                continue
+
+            yield section, entry.key, entry

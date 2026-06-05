@@ -4,7 +4,10 @@ import cqp_tree
 from cqp_tree import Constraint, NotSupported, ParsingFailed
 from cqp_tree.frontends.depsearch import translate_depsearch
 
-CONFIG = cqp_tree.get_frontend_configuration('depsearch')
+CONFIG = cqp_tree.default_configuration().project(
+    cqp_tree.DEFAULT_CONFIGURATION_SECTION,
+    'depsearch',
+)
 
 SUPPORTED_QUERIES = [
     '_',

@@ -258,21 +258,20 @@
 
         document.querySelectorAll('.config-field').forEach(field => {
             const key = field.id;
-            const section = (field.dataset.section === 'None') ? null : field.dataset.section;
+            const section = field.dataset.section;
 
-            let value;
-            if (field.type === 'checkbox') {
-                value = field.checked;
-            } else if (field.type === 'number') {
-                value = field.valueAsNumber;
-            } else {
-                value = field.value;
-            }
+            if (field.value !== '') { // Elide unselected fields.
+                let value;
+                if (field.type === 'checkbox') {
+                    value = field.checked;
+                } else if (field.type === 'number') {
+                    value = field.valueAsNumber;
+                } else {
+                    value = field.value;
+                }
 
-            if (!(section in settings)) {
-                settings[section] = {};
+                settings[section + '.' + key] = value;
             }
-            settings[section][key] = value;
         });
 
         return settings;
@@ -323,7 +322,7 @@
     });
 
     // Make TAB actually insert a tab character.
-    queryInput.addEventListener("keydown", function (e) {
+    queryInput.addEventListener('keydown', function (e) {
         if (e.key === 'Tab') {
             e.preventDefault();
 

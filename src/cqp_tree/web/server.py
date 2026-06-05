@@ -4,10 +4,11 @@ from typing import Any
 from flask import Flask, jsonify, render_template, request, send_file
 
 import cqp_tree
-from cqp_tree import DeclaredConfig, Recipe
+from cqp_tree import ActiveConfig, DeclaredConfig, Recipe
 from cqp_tree.utils import UPPERCASE_ALPHABET, associate_with_names
 
-WEB_CONFIG = [
+cqp_tree.declare_configuration(
+    'web',
     DeclaredConfig(
         key='branding',
         readable_name='Branding',
@@ -20,51 +21,66 @@ WEB_CONFIG = [
         readable_description='URL the user is redirected to when clicking on the branding logo.',
         validation_type=str,
     ),
-]
-cqp_tree.declare_configurations('web', WEB_CONFIG)
+)
 
 TEMPLATE_DIR = Path(__file__).parent / 'static'
 
-server = Flask(__name__, template_folder=str(TEMPLATE_DIR))
+
+def setup_server(config: cqp_tree.ActiveConfig) -> Flask:
+    server = Flask(__name__, template_folder=str(TEMPLATE_DIR))
+
+    @server.route('/', methods=['GET'])
+    def index():
+        return serve_index(config)
+
+    @server.route('/branding', methods=['GET'])
+    def branding():
+        return serve_branding(config)
+
+    @server.route('/translators', methods=['GET'])
+    def translators():
+        return jsonify(sorted(cqp_tree.known_translators.keys()))
+
+    @server.route('/translate', methods=['POST'])
+    def translate():
+        return serve_translation(config)
+
+    return server
 
 
-@server.route("/")
-def main():
-    cfg = cqp_tree.get_frontend_configuration('web')
+def serve_index(config: ActiveConfig):
+    cfg = config.project('web')
     return render_template(
         'index.html',
         cfg=cfg,
-        settings=cqp_tree.configurable_flags_by_section(hidden_sections={'web'}),
+        settings=cqp_tree.iterate_configurations_by_section(
+            config,
+            hidden_sections={'web'},
+            hidden_entries={cqp_tree.DEFAULT_CONFIGURATION_SECTION: {'translator'}},
+        ),
     )
 
 
-@server.route('/branding')
-def branding():
-    cfg = cqp_tree.get_frontend_configuration('web')
+def serve_branding(config: ActiveConfig):
+    cfg = config.project('web')
     if cfg.branding:
         return send_file(cfg.branding)
     return '', 404
 
 
-@server.route('/translators', methods=['GET'])
-def get_translators():
-    translators = sorted(cqp_tree.known_translators.keys())
-    return jsonify(translators)
-
-
-@server.route('/translate', methods=['POST'])
-def translate():
+def serve_translation(config: ActiveConfig):
     def error(message: str, status: int = 400):
         return jsonify({'error': message}), status
 
     try:
-        text, configuration, translator_configs = extract_request_data()
-        plan = cqp_tree.translate_input(text, configuration, translator_configs)
+        text, configuration = extract_request_data(config)
+        plan = cqp_tree.translate_input(text, configuration)
 
         if is_too_complex(plan):
             raise ValueError('Your query is too complex! Try using fewer tokens.')
 
-        return jsonify(to_json(plan, configuration))
+        format_config = configuration.project(cqp_tree.DEFAULT_CONFIGURATION_SECTION)
+        return jsonify(to_json(plan, format_config))
 
     except ValueError as validation_error:
         return error(str(validation_error), 422)
@@ -96,11 +112,7 @@ def is_too_complex(plan: Recipe) -> bool:
     return False
 
 
-def extract_request_data() -> tuple[
-    str,
-    cqp_tree.Configuration,
-    dict[cqp_tree.ConfigurationSection, cqp_tree.Configuration],
-]:
+def extract_request_data(config: ActiveConfig) -> tuple[str, ActiveConfig]:
     translation_request = request.get_json()
     if translation_request is None or not isinstance(translation_request, dict):
         raise ValueError('Malformed request')
@@ -114,26 +126,18 @@ def extract_request_data() -> tuple[
         raise ValueError('Unknown value for field "translator"')
 
     provided_settings = translation_request.get('settings', {})
-    configuration = {}
 
-    global_configuration = cqp_tree.get_global_config()
-    for provided_section, provided_values in provided_settings.items():
-        if provided_section == 'null':
-            provided_section = None
-            active_namespace = global_configuration
-        else:
-            active_namespace = cqp_tree.get_frontend_configuration(
-                provided_section, global_configuration
-            )
+    request_config = ActiveConfig(sections={}, inherited=config)
+    for section, entries in cqp_tree.iterate_configurations_by_section(
+        config, hidden_sections={'web'}
+    ):
+        for entry, _ in entries:
+            provided_value = provided_settings.get(f'{section}.{entry.key}')
+            if provided_value is not None:
+                request_config.put(section, entry.key, provided_value)
 
-        for key, value in provided_values.items():
-            declared_config = cqp_tree.get_declared_configuration(key, provided_section)
-            if declared_config is not None:
-                setattr(active_namespace, key, declared_config.parse_value(value))
-        configuration[provided_section] = active_namespace
-
-    global_configuration.translator = translator
-    return text, global_configuration, configuration
+    request_config.put(cqp_tree.DEFAULT_CONFIGURATION_SECTION, 'translator', translator)
+    return text, request_config
 
 
 def to_json(plan: Recipe, configuration: cqp_tree.Configuration) -> dict:

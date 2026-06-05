@@ -5,7 +5,7 @@ import sys
 from waitress import serve
 
 import cqp_tree
-from cqp_tree.web.server import server
+from cqp_tree.web.server import setup_server
 
 DEFAULT_HOST = 'localhost'
 DEFAULT_PORT = 31495
@@ -41,7 +41,7 @@ def argument_parser() -> argparse.ArgumentParser:
         action='store_true',
         help='Enable debug mode.',
     )
-    cqp_tree.add_default_flags_to_parser(parser)
+    cqp_tree.add_config_flag_to_parser(parser)
     cqp_tree.add_config_flags_group_to_parser(parser)
     return parser
 
@@ -53,10 +53,11 @@ def main():
         parser.print_help()
         return
 
-    cqp_tree.initialize_config_from_args(args)
     host = args.host or DEFAULT_HOST
     port = args.port or DEFAULT_PORT
 
+    config = cqp_tree.configuration_from_args(args, cqp_tree.default_configuration())
+    server = setup_server(config)
     if args.debug:
         server.run(host=host, port=port, debug=True)
     else:
