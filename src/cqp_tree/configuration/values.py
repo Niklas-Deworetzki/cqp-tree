@@ -19,7 +19,7 @@ class ActiveConfig:
     Data structure holding all active configuration values.
     """
 
-    inherited: Optional[ActiveConfig]
+    inherited: Optional['ActiveConfig']
     sections: dict[str, dict[str, Any]]
 
     def put(self, section: str, key: str, value: Any):
