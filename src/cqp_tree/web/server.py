@@ -21,7 +21,58 @@ cqp_tree.declare_configuration(
         readable_description='URL the user is redirected to when clicking on the branding logo.',
         validation_type=str,
     ),
+    DeclaredConfig(
+        key='baseurl',
+        readable_name='Base URL',
+        readable_description='An url pointing to the the corpus system instance where queries '
+        'are executed. You may use {query} and {corpus} as placeholders for user parameters.',
+        validation_type=str,
+    ),
+    DeclaredConfig(
+        key='autodiscover_corpora',
+        readable_name='Enable Automatic Discovery of Corpora',
+        readable_description='ONLY (No)Sketch Engine! If set, the system tries to automatically '
+        'discover available corpora and display them for a user to select when running a query.'
+        'Has no effect when server is started using Corpus Workbench dialect.',
+        validation_type=bool,
+        default_value=True,
+    ),
 )
+
+# https://www.clarin.si/ske/#concordance?tab=advanced&queryselector=cql&showresults=1&corpname=diccas_ar&cql=%5Bword%3D%22.*%22%5D
+
+# https://www.clarin.si/ske/#concordance
+# ?corpname=diccas_ar
+# &tab=advanced
+# &queryselector=cql
+# &attrs=word
+# &viewmode=kwic
+# &attr_allpos=all
+# &refs_up=0
+# &shorten_refs=1
+# &glue=1
+# &gdexcnt=300
+# &show_gdex_scores=0
+# &itemsPerPage=20
+# &structs=s%2Cg
+# &refs=%3Dtext.type%2C%3Dtext.book_type
+# &default_attr=lemma
+# &cql=%5Bword%3D%22B.*%22%5D
+# &showresults=1
+# &showTBL=0
+# &tbl_template=
+# &gdexconf=
+# &f_tab=basic
+# &f_showrelfrq=1
+# &f_showperc=0
+# &f_showreldens=0
+# &f_showreltt=0
+# &c_customrange=0
+# &t_attr=
+# &t_absfrq=0
+# &t_trimempty=1
+# &t_threshold=5
+# &operations=%5B%7B%22name%22%3A%22cql%22%2C%22arg%22%3A%22%5Bword%3D%5C%22B.*%5C%22%5D%22%2C%22query%22%3A%7B%22queryselector%22%3A%22cqlrow%22%2C%22cql%22%3A%22%5Bword%3D%5C%22B.*%5C%22%5D%22%2C%22default_attr%22%3A%22lemma%22%7D%2C%22id%22%3A7693%7D%5D
 
 TEMPLATE_DIR = Path(__file__).parent / 'static'
 

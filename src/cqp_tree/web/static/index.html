@@ -307,8 +307,8 @@
 
                 } else {
                     queryOutput.value = data.single_query;
-                    runOnKorp.href = 'https://spraakbanken.gu.se/korp/#?search_tab=2&search=cqp%7C' +
-                        encodeURIComponent(data.single_query);
+                    runOnKorp.href = '{{ cfg.baseurl | safe }}'
+                        .replaceAll('{query}', encodeURIComponent(data.single_query));
 
                     show(runOnKorp);
                     hideError();
