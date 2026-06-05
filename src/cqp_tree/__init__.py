@@ -22,6 +22,13 @@ DEFAULT_CONFIGURATIONS = [
         readable_description='Active profile to which matched results are expanded.',
     ),
     DeclaredConfig(
+        key='dialect',
+        readable_name='CQP Dialect',
+        readable_description='The version of the Corpus Query Protocol language to use.',
+        validation_type=CQPDialect,
+        default_value=CQPDialect.CWB,
+    ),
+    DeclaredConfig(
         key='word',
         readable_name='Wordform annotation',
         readable_description='Name of the annotation layer encoding word forms.',
