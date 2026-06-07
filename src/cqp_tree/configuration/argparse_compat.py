@@ -22,10 +22,10 @@ def configuration_from_args(args: argparse.Namespace, inherited: ActiveConfig) -
         inherited = configuration_from_file(config_file, inherited)
 
     values: dict[str, dict[str, Any]] = defaultdict(dict)
-    for section, key, _ in _iterate_cli_configs():
+    for section, key, cfg in _iterate_cli_configs():
         value = getattr(args, f'{section}.{key}')
         if value is not None:
-            values[section][key] = value
+            values[section][key] = cfg.parse_value(value)
 
     return ActiveConfig(inherited=inherited, sections=values)
 
