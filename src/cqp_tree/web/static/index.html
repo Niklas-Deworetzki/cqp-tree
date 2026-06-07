@@ -139,9 +139,23 @@
                 </div>
             </div>
 
+            {% if cfg.autodiscover_corpora and discovered_corpora %}
             <div class="mb-3 ms-1">
-                <a id="run-on-korp-link">Run on Korp!</a>
+                <a id="run-on-korp-link">Run on </a>
+                <select id="corpora-select" class="form-select">
+                    {% for corpus in discovered_corpora %}
+                    <option value="{{ corpus.id }}"
+                        {{ corpus.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+
             </div>
+            {% else %}
+            <div class="mb-3 ms-1">
+                <a id="run-on-korp-link">Run on {{ cfg.system_name }}!</a>
+            </div>
+            {% endif %}
         </div>
 
         <footer class="text-center py-3 mt-auto">
@@ -308,7 +322,8 @@
                 } else {
                     queryOutput.value = data.single_query;
                     runOnKorp.href = '{{ cfg.baseurl | safe }}'
-                        .replaceAll('{query}', encodeURIComponent(data.single_query));
+                        .replaceAll('{query}', encodeURIComponent(data.single_query))
+                        .replaceAll('{corpus}', encodeURIComponent());
 
                     show(runOnKorp);
                     hideError();

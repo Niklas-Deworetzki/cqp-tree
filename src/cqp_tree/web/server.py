@@ -6,6 +6,7 @@ from flask import Flask, jsonify, render_template, request, send_file
 import cqp_tree
 from cqp_tree import ActiveConfig, DeclaredConfig, Recipe
 from cqp_tree.utils import UPPERCASE_ALPHABET, associate_with_names
+from cqp_tree.web import autodiscovery
 
 cqp_tree.declare_configuration(
     'web',
@@ -32,10 +33,19 @@ cqp_tree.declare_configuration(
         key='autodiscover_corpora',
         readable_name='Enable Automatic Discovery of Corpora',
         readable_description='ONLY (No)Sketch Engine! If set, the system tries to automatically '
-        'discover available corpora and display them for a user to select when running a query.'
+        'discover available corpora and display them for a user to select when running a query. '
         'Has no effect when server is started using Corpus Workbench dialect.',
         validation_type=bool,
         default_value=True,
+    ),
+    DeclaredConfig(
+        key='system_name',
+        readable_name='Name of the corpus system',
+        readable_description='The name of the corpus system. Displayed in the "Run on {NAME}" link '
+        'below the translation output in the UI, which enables users to directly run a '
+        'translated query in the live corpus system.',
+        validation_type=str,
+        default_value='corpus',
     ),
 )
 
@@ -104,6 +114,7 @@ def serve_index(config: ActiveConfig):
     return render_template(
         'index.html',
         cfg=cfg,
+        discovered_corpora=autodiscovery.corpora(cfg),
         settings=cqp_tree.iterate_configurations_by_section(
             config,
             hidden_sections={'web'},
