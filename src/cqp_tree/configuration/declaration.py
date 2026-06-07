@@ -73,6 +73,37 @@ class DeclaredConfig[V]:
 DECLARED_CONFIGURATION: dict[str, list[DeclaredConfig]] = defaultdict(list)
 
 
+def get_declared_configuration(section: str, key: str) -> Optional[DeclaredConfig]:
+    pass
+
+
+def get_declared_configuration_sections() -> Iterable[DeclaredConfigurationSection]:
+    # Sort sections alphabetically, making sure that the default section comes first.
+    sections = set(DECLARED_CONFIGURATION.keys())
+    sections.remove(DEFAULT_CONFIGURATION_SECTION)
+    sections = list(sorted(sections))
+    sections.insert(0, DEFAULT_CONFIGURATION_SECTION)
+    return [
+        DeclaredConfigurationSection(
+            name=name,
+            entries=DECLARED_CONFIGURATION[name],
+        )
+        for name in sections
+    ]
+
+
+@dataclass(frozen=True)
+class DeclaredConfigurationSection:
+    name: str
+    entries: Iterable[DeclaredConfig]
+
+    def __iter__(self):
+        return iter(self.entries)
+
+    def __bool__(self):
+        return bool(self.entries)
+
+
 def declare_configuration(
     section: ConfigurationSection,
     *entries: DeclaredConfig,

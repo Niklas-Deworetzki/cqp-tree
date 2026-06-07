@@ -6,8 +6,9 @@ from typing import Any, Container, IO, Iterable, Optional
 
 from cqp_tree.configuration.declaration import (
     DECLARED_CONFIGURATION,
-    DEFAULT_CONFIGURATION_SECTION,
     DeclaredConfig,
+    get_declared_configuration,
+    get_declared_configuration_sections,
 )
 
 type Configuration = Namespace
@@ -53,8 +54,8 @@ def default_configuration() -> ActiveConfig:
     """
 
     value_sections = {
-        section: {entry.key: entry.default_value for entry in entries}
-        for section, entries in DECLARED_CONFIGURATION.items()
+        section.name: {entry.key: entry.default_value for entry in section}
+        for section in get_declared_configuration_sections()
     }
     return ActiveConfig(inherited=None, sections=value_sections)
 
@@ -65,17 +66,16 @@ def configuration_from_file(file: Path, inherited: ActiveConfig) -> ActiveConfig
     """
     with file.open('rb') as f:
         data = tomllib.load(f)
-        value_sections = {section: dict(entries) for section, entries in data.items()}
-        return ActiveConfig(inherited=inherited, sections=value_sections)
 
-
-def _nice_section_order() -> Iterable[str]:
-    # Sort sections alphabetically, making sure that the default section comes first.
-    sections = set(DECLARED_CONFIGURATION.keys())
-    sections.remove(DEFAULT_CONFIGURATION_SECTION)
-    sections = list(sorted(sections))
-    sections.insert(0, DEFAULT_CONFIGURATION_SECTION)
-    return sections
+        loaded_config = {}
+        for section, entries in data.items():
+            parsed_section = {}
+            if isinstance(entries, dict):
+                for key, unparsed_value in entries.items():
+                    if declared := get_declared_configuration(section, key):
+                        parsed_section[key] = declared.parse_value(unparsed_value)
+            loaded_config[section] = parsed_section
+        return ActiveConfig(inherited=inherited, sections=loaded_config)
 
 
 def print_configuration_file(f: IO[str], active_configuration: ActiveConfig) -> None:
@@ -84,18 +84,18 @@ def print_configuration_file(f: IO[str], active_configuration: ActiveConfig) -> 
     print('# CQP/Tree profile configuration template.', file=f)
     print(file=f)
 
-    for section in _nice_section_order():
-        if not DECLARED_CONFIGURATION[section]:
+    for section in get_declared_configuration_sections():
+        if not section:
             continue  # Do not generate empty sections.
 
-        print(f'[{section}]', file=f)
-        for entry in DECLARED_CONFIGURATION[section]:
+        print(f'[{section.name}]', file=f)
+        for entry in section:
             print(f'# {entry.readable_description}', file=f)
 
             if entry.validation_options is not None:
                 print('# Available values: ' + ', '.join(entry.validation_options), file=f)
 
-            value = active_configuration.get(section, entry.key)
+            value = active_configuration.get(section.name, entry.key)
             if isinstance(value, str):
                 value = f'"{value}"'
             elif value is None:
@@ -111,15 +111,15 @@ def iterate_configurations_by_section(
 ) -> Iterable[tuple[str, Iterable[tuple[DeclaredConfig, Any]]]]:
     hidden_entries = hidden_entries or {}
 
-    for section in _nice_section_order():
-        if section in hidden_sections:
+    for section in get_declared_configuration_sections():
+        if section.name in hidden_sections:
             continue
 
-        hidden_entries_for_section = hidden_entries.get(section, set())
+        hidden_entries_for_section = hidden_entries.get(section.name, set())
         entries_with_values = [
-            (entry, active_configuration.get(section, entry.key))
-            for entry in DECLARED_CONFIGURATION[section]
+            (entry, active_configuration.get(section.name, entry.key))
+            for entry in section
             if entry.key not in hidden_entries_for_section
         ]
         if entries_with_values:
-            yield section, entries_with_values
+            yield section.name, entries_with_values
