@@ -1,0 +1,19 @@
+[general]
+span = "s"
+dialect = "Sketch Engine"
+word = "word"
+lemma = "lemma"
+deprel = "ud_dep" # or "jos_dep" for alternative dependency tagset
+dephead = "ud_head_id"
+token_id = "id"
+
+[conll]
+form_mapped_field = "word"
+lemma_mapped_field = "lemma"
+upos_mapped_field = "ud_pos"
+xpos_mapped_field = "tag" # this is the MSD in Slovene; "tag_en" for the MSD in English
+deprel_mapped_field = "ud_dep"
+feats_mapped_field = "ud_feats"
+
+[depsearch]
+pos = "ud_pos"
