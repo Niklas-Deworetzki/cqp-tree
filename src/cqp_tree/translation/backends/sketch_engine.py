@@ -85,7 +85,7 @@ def associate_predicates(
     for token_id, predicates in per_token_predicates.items():
         lowered_predicates = {predicate.lower_onto(token_id) for predicate in predicates}
         tokens[token_id] = Token(token_id, lowered_predicates)
-    return tokens, predicates
+    return tokens, global_predicates
 
 
 def sketchengine_from_query(q: query.Query, configuration: Configuration) -> Query:
