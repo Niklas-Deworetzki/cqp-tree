@@ -60,22 +60,26 @@ def default_configuration() -> ActiveConfig:
     return ActiveConfig(inherited=None, sections=value_sections)
 
 
+def read_corpus_config(file: Path) -> dict:
+    with file.open('rb') as f:
+        return tomllib.load(f)
+
 def configuration_from_file(file: Path, inherited: ActiveConfig) -> ActiveConfig:
     """
     Load Configuration from TOML file.
     """
-    with file.open('rb') as f:
-        data = tomllib.load(f)
-
-        loaded_config = {}
-        for section, entries in data.items():
-            parsed_section = {}
-            if isinstance(entries, dict):
-                for key, unparsed_value in entries.items():
-                    if declared := get_declared_configuration(section, key):
-                        parsed_section[key] = declared.parse_value(unparsed_value)
-            loaded_config[section] = parsed_section
-        return ActiveConfig(inherited=inherited, sections=loaded_config)
+    data = read_corpus_config(file)
+    loaded_config = {}
+    for section, entries in data.items():
+        parsed_section = {}
+        if isinstance(entries, dict):
+            for key, unparsed_value in entries.items():
+                if declared := get_declared_configuration(section, key):
+                    parsed_section[key] = declared.parse_value(unparsed_value)
+                else:
+                    parsed_section[key] = unparsed_value
+        loaded_config[section] = parsed_section
+    return ActiveConfig(inherited=inherited, sections=loaded_config)
 
 
 def print_configuration_file(f: IO[str], active_configuration: ActiveConfig) -> None:

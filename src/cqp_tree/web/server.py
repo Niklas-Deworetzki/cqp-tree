@@ -6,6 +6,7 @@ from flask import Flask, jsonify, render_template, request, send_file
 import cqp_tree
 from cqp_tree import ActiveConfig, DeclaredConfig, Recipe
 from cqp_tree.utils import UPPERCASE_ALPHABET, associate_with_names
+from cqp_tree.configuration.values import read_corpus_config
 from cqp_tree.web import autodiscovery
 
 cqp_tree.declare_configuration(
@@ -30,15 +31,6 @@ cqp_tree.declare_configuration(
         validation_type=str,
     ),
     DeclaredConfig(
-        key='autodiscover_corpora',
-        readable_name='Enable Automatic Discovery of Corpora',
-        readable_description='ONLY (No)Sketch Engine! If set, the system tries to automatically '
-        'discover available corpora and display them for a user to select when running a query. '
-        'Has no effect when server is started using Corpus Workbench dialect.',
-        validation_type=bool,
-        default_value=True,
-    ),
-    DeclaredConfig(
         key='system_name',
         readable_name='Name of the corpus system',
         readable_description='The name of the corpus system. Displayed in the "Run on {NAME}" link '
@@ -47,6 +39,13 @@ cqp_tree.declare_configuration(
         validation_type=str,
         default_value='corpus',
     ),
+    DeclaredConfig(
+        key='corpus_configs',
+        readable_name='Corpus configurations',
+        readable_description='Path to the directory with configurations for known corpora.',
+        validation_type=str,
+        default_value='src/cqp_tree/configuration/corpus_configs'
+    )
 )
 
 # https://www.clarin.si/ske/#concordance?tab=advanced&queryselector=cql&showresults=1&corpname=diccas_ar&cql=%5Bword%3D%22.*%22%5D
@@ -114,7 +113,7 @@ def serve_index(config: ActiveConfig):
     return render_template(
         'index.html',
         cfg=cfg,
-        discovered_corpora=autodiscovery.corpora(cfg),
+        corpus_configs=[(config_path, read_corpus_config(config_path)) for config_path in Path(cfg.corpus_configs).iterdir()],
         settings=cqp_tree.iterate_configurations_by_section(
             config,
             hidden_sections={'web'},
