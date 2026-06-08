@@ -14,6 +14,7 @@ from cqp_tree.translation.backends.common import (
     query,
 )
 from cqp_tree.translation.errors import NotSupported
+from cqp_tree.utils import flatmap
 
 # manatee does weird things when "0" is included as an identifier.
 # The identifier appears to not be resolved properly.
@@ -65,6 +66,14 @@ def collect_predicates(q: query.Query) -> set[query.Predicate]:
     return predicates
 
 
+def unfold_predicate(predicate: query.Predicate) -> Iterable[query.Predicate]:
+    if isinstance(predicate, query.Conjunction):
+        for conjunct in predicate.predicates:
+            yield from unfold_predicate(conjunct)
+    else:
+        yield predicate
+
+
 def associate_predicates(
     q: query.Query,
 ) -> tuple[dict[query.Identifier, Token], set[query.Predicate]]:
@@ -74,7 +83,7 @@ def associate_predicates(
     # Decide where to put the predicates
     global_predicates = set()
     per_token_predicates = {token.identifier: set() for token in q.tokens}
-    for predicate in predicates:
+    for predicate in flatmap(predicates, unfold_predicate):
         if where := where_to_place_predicate(predicate):
             per_token_predicates[where].add(predicate)
         else:

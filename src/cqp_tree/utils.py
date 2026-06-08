@@ -4,6 +4,11 @@ from typing import Annotated, Callable, Collection, Iterable, Iterator, Tuple
 type NonEmpty[T] = Annotated[Collection[T], 'Non empty Sequence of T.']
 
 
+def flatmap[X, Y](xs: Iterable[X], f: Callable[[X], Iterable[Y]]) -> Iterable[Y]:
+    for x in xs:
+        yield from f(x)
+
+
 def flatmap_set[X, Y](xs: Iterable[X], f: Callable[[X], Iterable[Y]]) -> set[Y]:
     result = set()
     for x in xs:
