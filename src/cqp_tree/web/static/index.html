@@ -68,6 +68,7 @@
                 </nav>
 
                 <div class="mb-3">
+                    <label for="corpora-select" class="form-label">Corpus:</label>
                     <select id="corpora-select" class="form-select"
                         onchange="populateSettingsFromDropdown(this)">
                         {% for (corpus_id, display_name, preselected, config) in corpus_configs %}
@@ -80,7 +81,7 @@
                 </div>
 
                 <div class="mb-3 position-relative">
-                    <label for="query-input-field" class="form-label">Your query goes here:</label>
+                    <label for="query-input-field" class="form-label">Your query:</label>
                     <textarea id="query-input-field" class="form-control font-monospace border" rows="5"
                         placeholder="Write your query here..."></textarea>
                     <div id="history-dropdown" class="dropdown-menu"
@@ -113,8 +114,12 @@
                     <button type="button" class="btn-close" aria-label="Close" onclick="hideError()"></button>
                 </div>
 
+                <div class="mb-3 ms-1 text-center">
+                    <a id="run-on-korp-link" target="_blank" rel="noopener noreferrer">Run on {{ cfg.system_name }}</a>
+                </div>
+
                 <div class=" mb-3">
-                    <label for="query-output-field" class="form-label">Generated response</label>
+                    <label for="query-output-field" class="form-label">CQL translation:</label>
                     <div class="input-group">
                         <input id="query-output-field" class="form-control border font-monospace truncated"
                             placeholder="Your generated query will appear here." readonly>
@@ -126,17 +131,21 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="mb-3 ms-1">
-                    <a id="run-on-korp-link" target="_blank" rel="noopener noreferrer">Run on {{ cfg.system_name }}</a>
-                </div>
             </div>
 
             <footer class="text-center py-3 mt-auto">
-                <div class="container">
-                    <a href="https://github.com/Niklas-Deworetzki/cqp-tree/issues/new/choose">
-                        Report an issue or request an improvement
-                    </a>
+                <div class="d-flex justify-content-between">
+                    <div class="container">
+                        <a href="https://github.com/Niklas-Deworetzki/cqp-tree/issues/new/choose">
+                            Report an issue or request an improvement
+                        </a>
+                    </div>
+                    <div class="container">
+                        If you use this tool in your research, please cite 
+                        <a href="https://lrec.elra.info/lrec2026-main-914"> <!--replaced with anthology link?-->
+                            this paper
+                        </a>
+                    </div>
                 </div>
             </footer>
         </div>
