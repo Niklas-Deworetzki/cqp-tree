@@ -75,7 +75,10 @@ DECLARED_CONFIGURATION: dict[str, list[DeclaredConfig]] = defaultdict(list)
 
 
 def get_declared_configuration(section: str, key: str) -> Optional[DeclaredConfig]:
-    pass
+    for entry in DECLARED_CONFIGURATION.get(section, []):
+        if entry.key == key:
+            return entry
+    return None
 
 
 def get_declared_configuration_sections() -> Iterable[DeclaredConfigurationSection]:

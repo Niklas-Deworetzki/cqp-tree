@@ -72,8 +72,10 @@ def setup_server(config: cqp_tree.ActiveConfig) -> Flask:
 
 
 def get_preconfigured_corpora(cfg: Configuration) -> Iterable[tuple[str, str, bool, dict]]:
-    path = Path(cfg.corpus_configs)
+    if not cfg.corpus_configs:
+        return
 
+    path = Path(cfg.corpus_configs)
     for configuration_file in path.iterdir():
         config = read_corpus_config(configuration_file)
         corpus_id = configuration_file.stem
