@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Any, Container, IO, Iterable, Optional
 
 from cqp_tree.configuration.declaration import (
-    DECLARED_CONFIGURATION,
     DeclaredConfig,
     get_declared_configuration,
     get_declared_configuration_sections,

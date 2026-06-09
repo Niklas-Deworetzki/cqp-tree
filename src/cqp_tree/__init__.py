@@ -23,7 +23,7 @@ declare_configuration(
         readable_description='The version of the Corpus Query Protocol language to use.',
         validation_type=CQPDialect,
         default_value=CQPDialect.CWB,
-    )
+    ),
 )
 declare_configuration(
     ANNOTATIONS_CONFIG_SECTION,

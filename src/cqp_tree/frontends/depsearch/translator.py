@@ -5,7 +5,7 @@ from typing import Callable, Iterator, Union
 from antlr4.tree.Tree import TerminalNode
 
 import cqp_tree.translation as ct
-from cqp_tree import Configuration, DeclaredConfig
+from cqp_tree import Configuration
 from cqp_tree.frontends.antlr_utils import make_parse, string_of_token
 from cqp_tree.frontends.depsearch.antlr import DepsearchLexer, DepsearchParser as Depsearch
 

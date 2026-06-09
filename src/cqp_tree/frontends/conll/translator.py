@@ -7,7 +7,7 @@ import conllu
 from conllu.exceptions import ParseException
 
 import cqp_tree.translation as ct
-from cqp_tree import Configuration, DeclaredConfig
+from cqp_tree import Configuration
 
 # This module is used to parse CoNLL-U (and potentially CoNLL-U Plus). Most of
 # the format parsing is done by the `conllu` package. Look here for the format
@@ -53,6 +53,7 @@ CONLL_MAPPED_FEATURE_COLUMNS = {
 #           [Tense = "Pres" & Pers = "3"]
 CONLL_EXPANDED_FEATURE_COLUMNS = {'misc'}
 
+
 class ReservedAnnotation(StrEnum):
     """
     All reserved annotations to be ignored when translating.
@@ -90,12 +91,10 @@ class ColumnConfiguration:
 
     def __init__(self, config: Configuration):
         self.mapped_annotation_columns = {
-            ud_column: getattr(config, ud_column)
-            for ud_column in CONLL_MAPPED_ANNOTATION_COLUMNS
+            ud_column: getattr(config, ud_column) for ud_column in CONLL_MAPPED_ANNOTATION_COLUMNS
         }
         self.mapped_feature_columns = {
-            ud_column: getattr(config, ud_column)
-            for ud_column in CONLL_MAPPED_FEATURE_COLUMNS
+            ud_column: getattr(config, ud_column) for ud_column in CONLL_MAPPED_FEATURE_COLUMNS
         }
         self.expanded_feature_columns = set(CONLL_EXPANDED_FEATURE_COLUMNS)
 

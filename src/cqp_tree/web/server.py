@@ -5,7 +5,7 @@ from flask import Flask, jsonify, render_template, request, send_file
 
 import cqp_tree
 from cqp_tree import ActiveConfig, Configuration, DeclaredConfig, Recipe
-from cqp_tree.utils import UPPERCASE_ALPHABET, associate_with_names
+from cqp_tree.utils import UPPERCASE_ALPHABET, associate_with_names, get_nested
 from cqp_tree.configuration.values import read_corpus_config
 
 cqp_tree.declare_configuration(
@@ -43,45 +43,11 @@ cqp_tree.declare_configuration(
         readable_name='Corpus configurations',
         readable_description='Path to the directory with configurations for known corpora.',
         validation_type=str,
-    )
+    ),
 )
 
-# https://www.clarin.si/ske/#concordance?tab=advanced&queryselector=cql&showresults=1&corpname=diccas_ar&cql=%5Bword%3D%22.*%22%5D
-
-# https://www.clarin.si/ske/#concordance
-# ?corpname=diccas_ar
-# &tab=advanced
-# &queryselector=cql
-# &attrs=word
-# &viewmode=kwic
-# &attr_allpos=all
-# &refs_up=0
-# &shorten_refs=1
-# &glue=1
-# &gdexcnt=300
-# &show_gdex_scores=0
-# &itemsPerPage=20
-# &structs=s%2Cg
-# &refs=%3Dtext.type%2C%3Dtext.book_type
-# &default_attr=lemma
-# &cql=%5Bword%3D%22B.*%22%5D
-# &showresults=1
-# &showTBL=0
-# &tbl_template=
-# &gdexconf=
-# &f_tab=basic
-# &f_showrelfrq=1
-# &f_showperc=0
-# &f_showreldens=0
-# &f_showreltt=0
-# &c_customrange=0
-# &t_attr=
-# &t_absfrq=0
-# &t_trimempty=1
-# &t_threshold=5
-# &operations=%5B%7B%22name%22%3A%22cql%22%2C%22arg%22%3A%22%5Bword%3D%5C%22B.*%5C%22%5D%22%2C%22query%22%3A%7B%22queryselector%22%3A%22cqlrow%22%2C%22cql%22%3A%22%5Bword%3D%5C%22B.*%5C%22%5D%22%2C%22default_attr%22%3A%22lemma%22%7D%2C%22id%22%3A7693%7D%5D
-
 TEMPLATE_DIR = Path(__file__).parent / 'static'
+
 
 def setup_server(config: cqp_tree.ActiveConfig) -> Flask:
     server = Flask(__name__, template_folder=str(TEMPLATE_DIR))
@@ -104,6 +70,7 @@ def setup_server(config: cqp_tree.ActiveConfig) -> Flask:
 
     return server
 
+
 def get_preconfigured_corpora(cfg: Configuration) -> Iterable[tuple[str, str, bool, dict]]:
     path = Path(cfg.corpus_configs)
 
@@ -116,6 +83,7 @@ def get_preconfigured_corpora(cfg: Configuration) -> Iterable[tuple[str, str, bo
         )
         preselected = get_nested(config, 'meta', 'preselected', default=False)
         yield corpus_id, display_name, preselected, config
+
 
 def serve_index(config: ActiveConfig):
     cfg = config.project('web')
