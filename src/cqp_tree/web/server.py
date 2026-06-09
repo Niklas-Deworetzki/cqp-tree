@@ -110,12 +110,11 @@ def get_preconfigured_corpora(cfg: Configuration) -> Iterable[tuple[str, str, bo
     for configuration_file in path.iterdir():
         config = read_corpus_config(configuration_file)
         corpus_id = configuration_file.stem
-        try:
-            display_name = config["meta"]["display_name"]
-            preselected = config["meta"]["preselected"]
-        except KeyError:
-            display_name = cfg.system_name or "corpus" 
-            preselected = False
+
+        display_name = get_nested(
+            config, 'meta', 'display_name', default=cfg.system_name or 'corpus'
+        )
+        preselected = get_nested(config, 'meta', 'preselected', default=False)
         yield corpus_id, display_name, preselected, config
 
 def serve_index(config: ActiveConfig):

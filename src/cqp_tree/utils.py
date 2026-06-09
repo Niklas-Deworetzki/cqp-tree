@@ -4,6 +4,14 @@ from typing import Annotated, Callable, Collection, Iterable, Iterator, Tuple
 type NonEmpty[T] = Annotated[Collection[T], 'Non empty Sequence of T.']
 
 
+def get_nested(d: dict, *keys, default=None):
+    for k in keys:
+        if not k in d:
+            return default
+        d = d[k]
+    return d
+
+
 def flatmap[X, Y](xs: Iterable[X], f: Callable[[X], Iterable[Y]]) -> Iterable[Y]:
     for x in xs:
         yield from f(x)
