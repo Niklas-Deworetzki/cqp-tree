@@ -104,7 +104,7 @@ def setup_server(config: cqp_tree.ActiveConfig) -> Flask:
 
     return server
 
-def get_preconfigured_corpora(cfg: Configuration) -> Iterable[tuple[str, str, dict]]:
+def get_preconfigured_corpora(cfg: Configuration) -> Iterable[tuple[str, str, bool, dict]]:
     path = Path(cfg.corpus_configs)
 
     for configuration_file in path.iterdir():
