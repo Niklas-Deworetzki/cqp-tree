@@ -1,5 +1,6 @@
 [meta]
 display_name = "SUK 1.1"
+preselected = true
 
 [general]
 span = "s"

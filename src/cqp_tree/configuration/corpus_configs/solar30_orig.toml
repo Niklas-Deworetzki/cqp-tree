@@ -1,5 +1,6 @@
 [meta]
 display_name = "Šolar: učenci (razvojni)"
+preselected = false
 
 [general]
 span = "s"

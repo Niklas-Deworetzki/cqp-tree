@@ -43,10 +43,20 @@
         function populateSettings(config) {
             for (const [_, section] of Object.entries(config)) {
                 for (const [key, value] of Object.entries(section)) {
-                    document.querySelector("#" + key).value = value;
+                    formField = document.getElementById(key);
+                    if (formField) {
+                        formField.value = value;
+                    }
                 }
             }
         }
+                let settings = {};
+        {% for (corpus_id, display_name, preselected, config) in corpus_configs %}
+        settings['{{ corpus_id }}'] = {{ config | tojson | safe }};
+        {% if preselected %}
+        populateSettings(settings['{{ corpus_id }}']);
+        {% endif %}
+        {% endfor %}
     </script>
 
     <title>CQP/Tree translator</title>
@@ -104,8 +114,10 @@
 
                 <div class="mb-3">
                     <select id="corpora-select" class="form-select">
-                        {% for (corpus_id, display_name, config) in corpus_configs %}
-                        <option value="{{ corpus_id }}" onclick="populateSettings({{ config }})">
+                        {% for (corpus_id, display_name, preselected, config) in corpus_configs %}
+                        <option value="{{ corpus_id }}" 
+                            onclick="populateSettings(settings['{{ corpus_id }}'])"
+                            {% if preselected %} selected {% endif %}>
                             {{ display_name }}
                         </option>
                         {% endfor %}

@@ -114,9 +114,11 @@ def get_preconfigured_corpora(cfg: Configuration) -> Iterable[tuple[str, str, di
         corpus_id = configuration_file.stem
         try:
             display_name = config["meta"]["display_name"]
+            preselected = config["meta"]["preselected"]
         except KeyError:
             display_name = cfg.system_name or "corpus" 
-        yield corpus_id, display_name, config
+            preselected = False
+        yield corpus_id, display_name, preselected, config
 
 def serve_index(config: ActiveConfig):
     cfg = config.project('web')
