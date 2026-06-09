@@ -1,5 +1,6 @@
 from cqp_tree.configuration.declaration import (
-    DEFAULT_CONFIGURATION_SECTION,
+    GENERAL_CONFIG_SECTION,
+    ANNOTATIONS_CONFIG_SECTION,
     DeclaredConfig,
     declare_configuration,
     iterate_declared_configurations,

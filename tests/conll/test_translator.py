@@ -8,7 +8,8 @@ from cqp_tree import NotSupported, ParsingFailed
 from cqp_tree.frontends.conll import translate_conll
 
 CONFIG = cqp_tree.default_configuration().project(
-    cqp_tree.DEFAULT_CONFIGURATION_SECTION,
+    cqp_tree.GENERAL_CONFIG_SECTION,
+    cqp_tree.ANNOTATIONS_CONFIG_SECTION,
     'conll',
 )
 

@@ -61,8 +61,12 @@ def default_configuration() -> ActiveConfig:
 
 
 def read_corpus_config(file: Path) -> dict:
-    with file.open('rb') as f:
-        return tomllib.load(f)
+    try:
+        with file.open('rb') as f:
+            return tomllib.load(f)
+    except tomllib.TOMLDecodeError as e:
+        raise ValueError(f'Invalid configuration file: {file}') from e
+
 
 def configuration_from_file(file: Path, inherited: ActiveConfig) -> ActiveConfig:
     """

@@ -5,7 +5,8 @@ from cqp_tree import Constraint, NotSupported, ParsingFailed
 from cqp_tree.frontends.depsearch import translate_depsearch
 
 CONFIG = cqp_tree.default_configuration().project(
-    cqp_tree.DEFAULT_CONFIGURATION_SECTION,
+    cqp_tree.GENERAL_CONFIG_SECTION,
+    cqp_tree.ANNOTATIONS_CONFIG_SECTION,
     'depsearch',
 )
 

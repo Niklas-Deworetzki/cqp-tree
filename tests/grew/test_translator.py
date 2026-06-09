@@ -13,7 +13,8 @@ def do_parse[T](construct: Callable, text: str) -> T:
 
 
 CONFIG = cqp_tree.default_configuration().project(
-    cqp_tree.DEFAULT_CONFIGURATION_SECTION,
+    cqp_tree.GENERAL_CONFIG_SECTION,
+    cqp_tree.ANNOTATIONS_CONFIG_SECTION,
     'grew',
 )
 

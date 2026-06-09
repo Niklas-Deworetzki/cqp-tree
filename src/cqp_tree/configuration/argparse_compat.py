@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 from cqp_tree.configuration.declaration import (
-    DEFAULT_CONFIGURATION_SECTION,
+    GENERAL_CONFIG_SECTION,
     DeclaredConfig,
     iterate_declared_configurations,
 )
@@ -59,7 +59,7 @@ def _iterate_cli_configs() -> Iterable[tuple[str, str, DeclaredConfig]]:
     for section, entries in iterate_declared_configurations():
         for entry in entries:
             if (
-                section == DEFAULT_CONFIGURATION_SECTION
+                section == GENERAL_CONFIG_SECTION
                 and entry.key in CONFIG_KEYS_WITH_EXPLICIT_CLI_FLAG
             ):
                 continue

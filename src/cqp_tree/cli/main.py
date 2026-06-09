@@ -141,12 +141,12 @@ def get_configuration(args: argparse.Namespace) -> cqp_tree.ActiveConfig:
     cfg = cqp_tree.configuration_from_args(args, cfg)
 
     cfg.put(
-        cqp_tree.DEFAULT_CONFIGURATION_SECTION,
+        cqp_tree.GENERAL_CONFIG_SECTION,
         'translator',
         args.translator if args.translator else None,
     )
     cfg.put(
-        cqp_tree.DEFAULT_CONFIGURATION_SECTION,
+        cqp_tree.GENERAL_CONFIG_SECTION,
         'span',
         args.span if args.span else None,
     )
@@ -200,12 +200,12 @@ def _handle_io(args: argparse.Namespace, configuration: cqp_tree.ActiveConfig) -
             return 1
 
         try:
-            translator = configuration.get(cqp_tree.DEFAULT_CONFIGURATION_SECTION, 'translator')
+            translator = configuration.get(cqp_tree.GENERAL_CONFIG_SECTION, 'translator')
             plan = translate(query_str, translator)
             if not plan:
                 return 1
 
-            formatting_config = configuration.project(cqp_tree.DEFAULT_CONFIGURATION_SECTION)
+            formatting_config = configuration.project(cqp_tree.GENERAL_CONFIG_SECTION)
             for line in cqp_tree.format_plan(plan, formatting_config):
                 output.write(line + '\n')
 

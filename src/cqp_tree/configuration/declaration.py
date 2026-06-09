@@ -5,7 +5,8 @@ from typing import ClassVar, Iterable, Optional
 
 type ConfigurationSection = str
 
-DEFAULT_CONFIGURATION_SECTION: ConfigurationSection = 'general'
+GENERAL_CONFIG_SECTION: ConfigurationSection = 'general'
+ANNOTATIONS_CONFIG_SECTION: ConfigurationSection = 'annotation_scheme'
 
 
 @dataclass(kw_only=True, unsafe_hash=True)
@@ -80,9 +81,10 @@ def get_declared_configuration(section: str, key: str) -> Optional[DeclaredConfi
 def get_declared_configuration_sections() -> Iterable[DeclaredConfigurationSection]:
     # Sort sections alphabetically, making sure that the default section comes first.
     sections = set(DECLARED_CONFIGURATION.keys())
-    sections.remove(DEFAULT_CONFIGURATION_SECTION)
+    sections.remove(GENERAL_CONFIG_SECTION)
+    sections.remove(ANNOTATIONS_CONFIG_SECTION)
     sections = list(sorted(sections))
-    sections.insert(0, DEFAULT_CONFIGURATION_SECTION)
+    sections = [ANNOTATIONS_CONFIG_SECTION, GENERAL_CONFIG_SECTION] + sections
     return [
         DeclaredConfigurationSection(
             name=name,

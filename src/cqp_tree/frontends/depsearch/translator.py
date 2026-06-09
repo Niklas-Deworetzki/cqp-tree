@@ -37,16 +37,7 @@ def extract_bounds_from_distance(distance: TerminalNode) -> tuple[int, int]:
         raise ct.ParsingFailed(ct.InputError(distance.getSourceInterval(), str(e) + ' in ' + text))
 
 
-@ct.translator(
-    'depsearch',
-    DeclaredConfig(
-        key='pos',
-        readable_name='Part-Of-Speech annotation',
-        readable_description='Name of the annotation layer encoding part-of-speech tags.',
-        validation_type=str,
-        default_value='pos',
-    ),
-)
+@ct.translator('depsearch')
 def translate_depsearch(depsearch: str, config: Configuration) -> ct.Recipe:
     parsed = parse(depsearch)
     return QueryBuilder.translate_query(parsed, config)
@@ -115,7 +106,7 @@ class QueryBuilder:
         return ct.Recipe.of_query(query)
 
     def wordform_attribute(self) -> ct.Attribute:
-        return ct.Attribute(None, self.configuration.word)
+        return ct.Attribute(None, self.configuration.form)
 
     def deprel_attribute(self) -> ct.Attribute:
         return ct.Attribute(None, self.configuration.deprel)
@@ -124,7 +115,7 @@ class QueryBuilder:
         return ct.Attribute(None, self.configuration.lemma)
 
     def pos_attribute(self) -> ct.Attribute:
-        return ct.Attribute(None, self.configuration.pos)
+        return ct.Attribute(None, self.configuration.upos)
 
     def translate_predicate(self, exp: DepsearchTokenContext) -> ct.Predicate:
         if isinstance(exp, WRAPPER_TYPES):

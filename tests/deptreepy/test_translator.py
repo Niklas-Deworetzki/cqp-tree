@@ -5,7 +5,8 @@ from cqp_tree import *
 from cqp_tree.frontends.deptreepy import translate_deptreepy
 
 CONFIG = cqp_tree.default_configuration().project(
-    cqp_tree.DEFAULT_CONFIGURATION_SECTION,
+    cqp_tree.GENERAL_CONFIG_SECTION,
+    cqp_tree.ANNOTATIONS_CONFIG_SECTION,
     'deptreepy',
 )
 

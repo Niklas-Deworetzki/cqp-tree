@@ -129,7 +129,7 @@ def serve_index(config: ActiveConfig):
         settings=cqp_tree.iterate_configurations_by_section(
             config,
             hidden_sections={'web'},
-            hidden_entries={cqp_tree.DEFAULT_CONFIGURATION_SECTION: {'translator'}},
+            hidden_entries={cqp_tree.GENERAL_CONFIG_SECTION: {'translator'}},
         ),
     )
 
@@ -152,7 +152,7 @@ def serve_translation(config: ActiveConfig):
         if is_too_complex(plan):
             raise ValueError('Your query is too complex! Try using fewer tokens.')
 
-        format_config = configuration.project(cqp_tree.DEFAULT_CONFIGURATION_SECTION)
+        format_config = configuration.project(cqp_tree.GENERAL_CONFIG_SECTION)
         return jsonify(to_json(plan, format_config))
 
     except ValueError as validation_error:
@@ -209,7 +209,7 @@ def extract_request_data(config: ActiveConfig) -> tuple[str, ActiveConfig]:
             if provided_value is not None:
                 request_config.put(section, entry.key, provided_value)
 
-    request_config.put(cqp_tree.DEFAULT_CONFIGURATION_SECTION, 'translator', translator)
+    request_config.put(cqp_tree.GENERAL_CONFIG_SECTION, 'translator', translator)
     return text, request_config
 
 

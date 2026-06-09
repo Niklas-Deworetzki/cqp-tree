@@ -4,7 +4,8 @@ from typing import Callable, Collection, Tuple
 from cqp_tree.configuration import (
     ActiveConfig,
     Configuration,
-    DEFAULT_CONFIGURATION_SECTION,
+    ANNOTATIONS_CONFIG_SECTION,
+    GENERAL_CONFIG_SECTION,
     DeclaredConfig,
     declare_configuration,
 )
@@ -61,7 +62,7 @@ def translate_input(inp: str, configuration: ActiveConfig) -> Recipe:
     If a translator to use is specified, but the translator is not known,
     a KeyError is raised.
     """
-    trans: str = configuration.get(DEFAULT_CONFIGURATION_SECTION, 'translator')
+    trans: str = configuration.get(GENERAL_CONFIG_SECTION, 'translator')
     if trans is None:
         guessed_translations = guess_correct_translator(inp, configuration)
         if not guessed_translations:
@@ -123,6 +124,6 @@ def _run_translator_with_configuration(
     :raise InputError: If the input is can not be parsed by the translator.
     :raise NotSupported: If the input contains an unsupported feature for the translator.
     """
-    cfg = configuration.project(DEFAULT_CONFIGURATION_SECTION, translator_name)
+    cfg = configuration.project(GENERAL_CONFIG_SECTION, ANNOTATIONS_CONFIG_SECTION, translator_name)
     function = known_translators[translator_name]
     return function(inp, cfg)

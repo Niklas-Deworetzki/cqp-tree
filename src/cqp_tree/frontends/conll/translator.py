@@ -25,7 +25,7 @@ NO_VALUE = '_'
 UNSPECIFIED_VALUE = '*'
 
 # CoNLL-U columns that are mapped to Språkbanken Korp annotations.
-SPRAAKBANKEN_MAPPED_ANNOTATION_COLUMNS = {
+CONLL_MAPPED_ANNOTATION_COLUMNS = {
     "form": "word",
     "lemma": "lemma",
     "upos": "pos",  # but upos (actual UD tags) may be added soon
@@ -43,7 +43,7 @@ SPRAAKBANKEN_MAPPED_ANNOTATION_COLUMNS = {
 # are translated into Key=Value pairs contained in the value of the 'ufeats'.
 # Tense=Pres,Pers=3 becomes
 #           [ufeats contains "Tense=Pres" & ufeats contains "Pers=3"]
-SPRAAKBANKEN_MAPPED_FEATURE_COLUMNS = {
+CONLL_MAPPED_FEATURE_COLUMNS = {
     'feats': 'ufeats',
 }
 
@@ -51,33 +51,7 @@ SPRAAKBANKEN_MAPPED_FEATURE_COLUMNS = {
 # individual annotations.
 # Tense=Pres,Pers=3 becomes
 #           [Tense = "Pres" & Pers = "3"]
-SPRAAKBANKEN_EXPANDED_FEATURE_COLUMNS = {'misc'}
-
-# Declare field behavior as configuration options.
-DECLARED_CONFIGURATION: list[DeclaredConfig] = []
-DECLARED_CONFIGURATION.extend(
-    DeclaredConfig(
-        key=f'{ud_field}_mapped_field',
-        readable_name=f'Annotation layer for {ud_field}',
-        readable_description=f'Annotation layer in corpus representing the UD {ud_field} column.',
-        default_value=spraakbanken_field,
-        validation_type=str,
-    )
-    for ud_field, spraakbanken_field in SPRAAKBANKEN_MAPPED_ANNOTATION_COLUMNS.items()
-)
-DECLARED_CONFIGURATION.extend(
-    DeclaredConfig(
-        key=f'{ud_field}_mapped_field',
-        readable_name=f'Annotation layer for {ud_field}',
-        readable_description=f'Annotation layer in corpus representing the UD {ud_field} column. '
-        'A feature like "Tense=Pres" is translated into [feats contains "Tense=Pres"] for '
-        'the given column name.',
-        default_value=spraakbanken_field,
-        validation_type=str,
-    )
-    for ud_field, spraakbanken_field in SPRAAKBANKEN_MAPPED_FEATURE_COLUMNS.items()
-)
-
+CONLL_EXPANDED_FEATURE_COLUMNS = {'misc'}
 
 class ReservedAnnotation(StrEnum):
     """
@@ -116,14 +90,14 @@ class ColumnConfiguration:
 
     def __init__(self, config: Configuration):
         self.mapped_annotation_columns = {
-            ud_column: getattr(config, f'{ud_column}_mapped_field')
-            for ud_column in SPRAAKBANKEN_MAPPED_ANNOTATION_COLUMNS
+            ud_column: getattr(config, ud_column)
+            for ud_column in CONLL_MAPPED_ANNOTATION_COLUMNS
         }
         self.mapped_feature_columns = {
-            ud_column: getattr(config, f'{ud_column}_mapped_field')
-            for ud_column in SPRAAKBANKEN_MAPPED_FEATURE_COLUMNS
+            ud_column: getattr(config, ud_column)
+            for ud_column in CONLL_MAPPED_FEATURE_COLUMNS
         }
-        self.expanded_feature_columns = set(SPRAAKBANKEN_EXPANDED_FEATURE_COLUMNS)
+        self.expanded_feature_columns = set(CONLL_EXPANDED_FEATURE_COLUMNS)
 
 
 class Translation:
@@ -290,7 +264,7 @@ def _extract_subsequent_tokens(translation: Translation):
             translation.constraints.extend(constraints)
 
 
-@ct.translator('conll', *DECLARED_CONFIGURATION)
+@ct.translator('conll')
 def translate_conll(conll: str, config: Configuration) -> ct.Recipe:
     translation = Translation.parse(conll, config)
 
