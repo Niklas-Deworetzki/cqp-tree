@@ -173,7 +173,7 @@
                 </div>
 
                 <div class="mb-3 ms-1">
-                    <a id="run-on-korp-link">Run on {{ cfg.system_name }}</a>
+                    <a id="run-on-korp-link" target="_blank" rel="noopener noreferrer">Run on {{ cfg.system_name }}</a>
                 </div>
             </div>
 
@@ -315,12 +315,13 @@
                         throw new Error('Your query contains features that we can currently not translate.');
 
                     } else {
-                        const selectedCorpus = document.getElementById('corpora-select');
+                        const id = document.getElementById('corpora-select').value;
+                        const displayName = settings[id]["meta"]["display_name"];
                         queryOutput.value = data.single_query;
                         runOnKorp.href = '{{ cfg.baseurl | safe }}'
                             .replaceAll('{query}', encodeURIComponent(data.single_query))
-                            .replaceAll('{corpus}', encodeURIComponent(selectedCorpus.value));
-                        runOnKorp.textContent = 'Run on ' + (selectedCorpus.textContent || '{{ cfg.system_name }}')
+                            .replaceAll('{corpus}', encodeURIComponent(id));
+                        runOnKorp.textContent = 'Run on ' + (displayName || '{{ cfg.system_name }}')
                             + '!';
 
                         show(runOnKorp);

@@ -1,0 +1,6 @@
+[web]
+#branding=""
+homepage="https://www.clarin.si/"
+baseurl="https://www.clarin.si/ske/#concordance?tab=advanced&queryselector=cql&showresults=1&corpname={corpus}&cql={query}"
+system_name="Sketch Engine"
+corpus_configs="src/cqp_tree/configuration/corpus_configs"
