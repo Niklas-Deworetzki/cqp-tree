@@ -16,8 +16,6 @@
     </style>
 
     <script>
-        let settings = {};
-
         function collectSettings() {
             const settings = {};
 
@@ -43,7 +41,7 @@
         }
 
         function populateSettings(config) {
-            for (const [sectionName, section] of Object.entries(config)) {
+            for (const [_, section] of Object.entries(config)) {
                 for (const [key, value] of Object.entries(section)) {
                     document.querySelector("#" + key).value = value;
                 }
@@ -104,6 +102,16 @@
                     </div>
                 </nav>
 
+                <div class="mb-3">
+                    <select id="corpora-select" class="form-select">
+                        {% for (corpus_id, display_name, config) in corpus_configs %}
+                        <option value="{{ corpus_id }}" onclick="populateSettings({{ config }})">
+                            {{ display_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
                 <div class="mb-3 position-relative">
                     <label for="query-input-field" class="form-label">Your query goes here:</label>
                     <textarea id="query-input-field" class="form-control font-monospace border" rows="5"
@@ -153,15 +161,7 @@
                 </div>
 
                 <div class="mb-3 ms-1">
-                    <a id="run-on-korp-link">Run on </a>
-                    <select id="corpora-select" class="form-select">
-                        {% for (config_path, config) in corpus_configs %}
-                        <option value="{{ config }}" onclick="populateSettings({{ config }})">
-                            {{ config_path }}
-                        </option>
-                        {% endfor %}
-                    </select>
-
+                    <a id="run-on-korp-link">Run on {{ cfg.system_name }}</a>
                 </div>
             </div>
 
@@ -303,10 +303,13 @@
                         throw new Error('Your query contains features that we can currently not translate.');
 
                     } else {
+                        const selectedCorpus = document.getElementById('corpora-select');
                         queryOutput.value = data.single_query;
                         runOnKorp.href = '{{ cfg.baseurl | safe }}'
                             .replaceAll('{query}', encodeURIComponent(data.single_query))
-                            .replaceAll('{corpus}', encodeURIComponent());
+                            .replaceAll('{corpus}', encodeURIComponent(selectedCorpus.value));
+                        runOnKorp.textContent = 'Run on ' + (selectedCorpus.textContent || '{{ cfg.system_name }}')
+                            + '!';
 
                         show(runOnKorp);
                         hideError();

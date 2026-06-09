@@ -1,10 +1,10 @@
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterable
 
 from flask import Flask, jsonify, render_template, request, send_file
 
 import cqp_tree
-from cqp_tree import ActiveConfig, DeclaredConfig, Recipe
+from cqp_tree import ActiveConfig, Configuration, DeclaredConfig, Recipe
 from cqp_tree.utils import UPPERCASE_ALPHABET, associate_with_names
 from cqp_tree.configuration.values import read_corpus_config
 from cqp_tree.web import autodiscovery
@@ -85,7 +85,6 @@ cqp_tree.declare_configuration(
 
 TEMPLATE_DIR = Path(__file__).parent / 'static'
 
-
 def setup_server(config: cqp_tree.ActiveConfig) -> Flask:
     server = Flask(__name__, template_folder=str(TEMPLATE_DIR))
 
@@ -107,13 +106,22 @@ def setup_server(config: cqp_tree.ActiveConfig) -> Flask:
 
     return server
 
+def get_preconfigured_corpora(cfg: Configuration) -> Iterable[tuple[str, str, dict]]:
+    path = Path(cfg.corpus_configs)
+    corpora = autodiscovery.corpora(cfg)
+
+    for configuration_file in path.iterdir():
+        config = read_corpus_config(configuration_file)
+        corpus_id = configuration_file.stem
+        display_name = corpora[corpus_id].name if corpus_id in corpora else corpus_id
+        yield corpus_id, display_name, config
 
 def serve_index(config: ActiveConfig):
     cfg = config.project('web')
     return render_template(
         'index.html',
         cfg=cfg,
-        corpus_configs=[(config_path, read_corpus_config(config_path)) for config_path in Path(cfg.corpus_configs).iterdir()],
+        corpus_configs=list(get_preconfigured_corpora(cfg)),
         settings=cqp_tree.iterate_configurations_by_section(
             config,
             hidden_sections={'web'},
