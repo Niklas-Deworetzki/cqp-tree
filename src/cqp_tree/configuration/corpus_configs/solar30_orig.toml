@@ -1,3 +1,6 @@
+[meta]
+display_name = "Šolar: učenci (razvojni)"
+
 [general]
 span = "s"
 dialect = "Sketch Engine"

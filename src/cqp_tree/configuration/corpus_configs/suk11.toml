@@ -1,3 +1,6 @@
+[meta]
+display_name = "SUK 1.1"
+
 [general]
 span = "s"
 dialect = "Sketch Engine"

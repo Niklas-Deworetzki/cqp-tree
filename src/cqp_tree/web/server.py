@@ -108,12 +108,14 @@ def setup_server(config: cqp_tree.ActiveConfig) -> Flask:
 
 def get_preconfigured_corpora(cfg: Configuration) -> Iterable[tuple[str, str, dict]]:
     path = Path(cfg.corpus_configs)
-    corpora = autodiscovery.corpora(cfg)
 
     for configuration_file in path.iterdir():
         config = read_corpus_config(configuration_file)
         corpus_id = configuration_file.stem
-        display_name = corpora[corpus_id].name if corpus_id in corpora else corpus_id
+        try:
+            display_name = config["meta"]["display_name"]
+        except KeyError:
+            display_name = cfg.system_name or "corpus" 
         yield corpus_id, display_name, config
 
 def serve_index(config: ActiveConfig):

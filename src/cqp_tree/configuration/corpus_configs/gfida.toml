@@ -1,3 +1,6 @@
+[meta]
+display_name = "Gigafida v2.2"
+
 [general]
 span = "s"
 dialect = "Sketch Engine"
