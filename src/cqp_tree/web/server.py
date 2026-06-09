@@ -7,7 +7,6 @@ import cqp_tree
 from cqp_tree import ActiveConfig, Configuration, DeclaredConfig, Recipe
 from cqp_tree.utils import UPPERCASE_ALPHABET, associate_with_names
 from cqp_tree.configuration.values import read_corpus_config
-from cqp_tree.web import autodiscovery
 
 cqp_tree.declare_configuration(
     'web',
