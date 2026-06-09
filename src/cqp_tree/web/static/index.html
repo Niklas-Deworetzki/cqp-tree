@@ -14,51 +14,6 @@
             text-overflow: ellipsis;
         }
     </style>
-
-    <script>
-        function collectSettings() {
-            const settings = {};
-
-            document.querySelectorAll('.config-field').forEach(field => {
-                const key = field.id;
-                const section = field.dataset.section;
-
-                if (field.value !== '') { // Elide unselected fields.
-                    let value;
-                    if (field.type === 'checkbox') {
-                        value = field.checked;
-                    } else if (field.type === 'number') {
-                        value = field.valueAsNumber;
-                    } else {
-                        value = field.value;
-                    }
-
-                    settings[section + '.' + key] = value;
-                }
-            });
-
-            return settings;
-        }
-
-        function populateSettings(config) {
-            for (const [_, section] of Object.entries(config)) {
-                for (const [key, value] of Object.entries(section)) {
-                    formField = document.getElementById(key);
-                    if (formField) {
-                        formField.value = value;
-                    }
-                }
-            }
-        }
-                let settings = {};
-        {% for (corpus_id, display_name, preselected, config) in corpus_configs %}
-        settings['{{ corpus_id }}'] = {{ config | tojson | safe }};
-        {% if preselected %}
-        populateSettings(settings['{{ corpus_id }}']);
-        {% endif %}
-        {% endfor %}
-    </script>
-
     <title>CQP/Tree translator</title>
 </head>
 
@@ -113,10 +68,10 @@
                 </nav>
 
                 <div class="mb-3">
-                    <select id="corpora-select" class="form-select">
+                    <select id="corpora-select" class="form-select"
+                        onchange="populateSettingsFromDropdown(this)">
                         {% for (corpus_id, display_name, preselected, config) in corpus_configs %}
                         <option value="{{ corpus_id }}" 
-                            onclick="populateSettings(settings['{{ corpus_id }}'])"
                             {% if preselected %} selected {% endif %}>
                             {{ display_name }}
                         </option>
@@ -199,6 +154,55 @@
     <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
     <script>
         new ClipboardJS('#copy-response');
+    </script>
+
+    <script>
+        function collectSettings() {
+            const settings = {};
+
+            document.querySelectorAll('.config-field').forEach(field => {
+                const key = field.id;
+                const section = field.dataset.section;
+
+                if (field.value !== '') { // Elide unselected fields.
+                    let value;
+                    if (field.type === 'checkbox') {
+                        value = field.checked;
+                    } else if (field.type === 'number') {
+                        value = field.valueAsNumber;
+                    } else {
+                        value = field.value;
+                    }
+
+                    settings[section + '.' + key] = value;
+                }
+            });
+
+            return settings;
+        }
+
+        function populateSettingsFromDropdown(element) {
+            console.log(element.value);
+            populateSettings(settings[element.value]);
+        }
+
+        function populateSettings(config) {
+            for (const [_, section] of Object.entries(config)) {
+                for (const [key, value] of Object.entries(section)) {
+                    formField = document.getElementById(key);
+                    if (formField) {
+                        formField.value = value;
+                    }
+                }
+            }
+        }
+                let settings = {};
+        {% for (corpus_id, display_name, preselected, config) in corpus_configs %}
+        settings['{{ corpus_id }}'] = {{ config | tojson | safe }};
+        {% if preselected %}
+        populateSettings(settings['{{ corpus_id }}']);
+        {% endif %}
+        {% endfor %}
     </script>
 
     <script>
