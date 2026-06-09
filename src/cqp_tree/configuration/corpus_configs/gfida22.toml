@@ -5,19 +5,13 @@ preselected = false
 [general]
 span = "s"
 dialect = "Sketch Engine"
-word = "word"
+
+[annotation_scheme]
+form = "word"
 lemma = "lemma"
+upos = "pos"
+xpos = "tag"
+feats = "feats"
+id = "id"
+head = "dep_head_id"
 deprel = "dep"
-dephead = "dep_head_id"
-token_id = "id"
-
-[conll]
-form_mapped_field = "word"
-lemma_mapped_field = "lemma"
-upos_mapped_field = "pos"
-xpos_mapped_field = "tag" # this is the MSD in Slovene; "tag_en" for the MSD in English
-deprel_mapped_field = "dep"
-feats_mapped_field = "feats"
-
-[depsearch]
-pos = "pos"
