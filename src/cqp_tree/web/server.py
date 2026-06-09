@@ -43,7 +43,6 @@ cqp_tree.declare_configuration(
         readable_name='Corpus configurations',
         readable_description='Path to the directory with configurations for known corpora.',
         validation_type=str,
-        default_value='src/cqp_tree/configuration/corpus_configs'
     )
 )
 
