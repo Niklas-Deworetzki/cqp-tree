@@ -13,5 +13,5 @@ upos = "pos"
 xpos = "tag" # this is the MSD in Slovene; "tag_en" for the MSD in English
 feats = "ud_feats"
 id = "id"
-head = jos_head_id"
+head = "jos_head_id"
 deprel = "jos_dep"
