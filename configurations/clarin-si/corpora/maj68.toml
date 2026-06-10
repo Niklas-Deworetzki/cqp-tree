@@ -1,0 +1,17 @@
+[meta]
+display_name = "Maj68 (Maj 1968 v literaturi)"
+preselected = false
+
+[general]
+span = "s"
+dialect = "Sketch Engine"
+
+[annotation_scheme]
+form = "word"
+lemma = "lemma"
+upos = "pos"
+xpos = "tag_en"
+feats = "feats"
+id = "id"
+head = "dep_head_id"
+deprel = "dep"
