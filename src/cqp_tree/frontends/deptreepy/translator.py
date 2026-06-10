@@ -11,6 +11,11 @@ from cqp_tree import Configuration
 def parse(s: str):
     # Parsing adapted from:
     # https://github.com/aarneranta/deptreepy/blob/a3fd7aa0b01f169afe6f37277d8bc2c624bcb433/patterns.py#L334
+    s = s.strip()
+    if not s:
+        error = ct.InputError(f'line: 0, col:0', 'The query cannot be empty.')
+        raise ct.ParsingFailed(error)
+
     if not s.startswith('('):  # add outer parentheses if missing
         s = '(' + s + ')'
     try:
@@ -149,6 +154,9 @@ def translate_deptreepy(deptreepy: str, config: Configuration) -> ct.Recipe:
         match lisp:
             case ['TREE', *_]:
                 raise ct.NotSupported('Only TREE_ is supported for matching subtrees.')
+
+            case ['TRUE']:
+                return TokenConstraint(predicate=None)
 
             case [singleton]:
                 return convert(singleton)
