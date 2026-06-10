@@ -7,7 +7,7 @@ PROFILES_DIR = Path(__file__).parent / 'profiles'
 
 def _fetch_available_profiles() -> dict[str, Path]:
     return {
-        file.name: file
+        file.stem: file
         for file in PROFILES_DIR.iterdir()
         if file.is_file() and file.suffix == '.toml'
     }
