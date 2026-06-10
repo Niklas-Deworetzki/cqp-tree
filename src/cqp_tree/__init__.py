@@ -51,14 +51,16 @@ declare_configuration(
     DeclaredConfig(
         key='xpos',
         readable_name='Language-specific/fine-grained POS tag',
-        readable_description='Name of the field encoding language-specific or finer-grained POS tags, such as XPOS or MSD.',
+        readable_description='Name of the field encoding language-specific or finer-grained POS '
+        'tags, such as XPOS or MSD.',
         validation_type=str,
         default_value='msd',
     ),
     DeclaredConfig(
         key='feats',
         readable_name='Morphological features',
-        readable_description='Name of the field encoding morphological features, such as Universal features.',
+        readable_description='Name of the field encoding morphological features, '
+        'such as Universal features.',
         validation_type=str,
         default_value='ufeats',
     ),
@@ -71,7 +73,8 @@ declare_configuration(
     DeclaredConfig(
         key='head',
         readable_name='Dependency head ID',
-        readable_description='Name of the field encoding the token ID of a token\'s syntactic head',
+        readable_description='Name of the field encoding the token ID of a token\'s '
+        'syntactic head',
         validation_type=str,
         default_value='dephead',
     ),

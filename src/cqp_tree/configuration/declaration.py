@@ -74,29 +74,6 @@ class DeclaredConfig[V]:
 DECLARED_CONFIGURATION: dict[str, list[DeclaredConfig]] = defaultdict(list)
 
 
-def get_declared_configuration(section: str, key: str) -> Optional[DeclaredConfig]:
-    for entry in DECLARED_CONFIGURATION.get(section, []):
-        if entry.key == key:
-            return entry
-    return None
-
-
-def get_declared_configuration_sections() -> Iterable[DeclaredConfigurationSection]:
-    # Sort sections alphabetically, making sure that the default section comes first.
-    sections = set(DECLARED_CONFIGURATION.keys())
-    sections.remove(GENERAL_CONFIG_SECTION)
-    sections.remove(ANNOTATIONS_CONFIG_SECTION)
-    sections = list(sorted(sections))
-    sections = [ANNOTATIONS_CONFIG_SECTION, GENERAL_CONFIG_SECTION] + sections
-    return [
-        DeclaredConfigurationSection(
-            name=name,
-            entries=DECLARED_CONFIGURATION[name],
-        )
-        for name in sections
-    ]
-
-
 @dataclass(frozen=True)
 class DeclaredConfigurationSection:
     name: str
@@ -126,6 +103,29 @@ def declare_configuration(
         conflicting_keys.add(entry.key)
 
         DECLARED_CONFIGURATION[section].append(entry)
+
+
+def get_declared_configuration(section: str, key: str) -> Optional[DeclaredConfig]:
+    for entry in DECLARED_CONFIGURATION.get(section, []):
+        if entry.key == key:
+            return entry
+    return None
+
+
+def get_declared_configuration_sections() -> Iterable[DeclaredConfigurationSection]:
+    # Sort sections alphabetically, making sure that the default section comes first.
+    sections = set(DECLARED_CONFIGURATION.keys())
+    sections.remove(GENERAL_CONFIG_SECTION)
+    sections.remove(ANNOTATIONS_CONFIG_SECTION)
+    sections = list(sorted(sections))
+    sections = [ANNOTATIONS_CONFIG_SECTION, GENERAL_CONFIG_SECTION] + sections
+    return [
+        DeclaredConfigurationSection(
+            name=name,
+            entries=DECLARED_CONFIGURATION[name],
+        )
+        for name in sections
+    ]
 
 
 def iterate_declared_configurations() -> Iterable[tuple[str, Iterable[DeclaredConfig]]]:
