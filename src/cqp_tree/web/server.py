@@ -14,7 +14,7 @@ cqp_tree.declare_configuration(
     DeclaredConfig(
         key='branding',
         readable_name='Branding',
-        readable_description='Path to an image file which is displayed in the top-left corner.',
+        readable_description='Path or URL to an image file which is displayed in the top-left corner.',
         validation_type=str,
     ),
     DeclaredConfig(
@@ -26,7 +26,7 @@ cqp_tree.declare_configuration(
     DeclaredConfig(
         key='baseurl',
         readable_name='Base URL',
-        readable_description='An url pointing to the the corpus system instance where queries '
+        readable_description='An url pointing to the corpus system instance where queries '
         'are executed. You may use {query} and {corpus} as placeholders for user parameters.',
         validation_type=str,
     ),

@@ -13,8 +13,9 @@ declare_configuration(
     DeclaredConfig(
         key='span',
         readable_name='Span',
-        readable_description='Text span to which matched results are expanded. '
-        'Affects precision of translation.',
+        readable_description='Text span in which token dependencies are valid. '
+        'Usually, this is the sentence level, indicated by "s" or "sentence". '
+        'The actual value of this field depends on your annotation scheme used.',
         validation_type=str,
     ),
     DeclaredConfig(

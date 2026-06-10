@@ -1,0 +1,39 @@
+# Template file for per corpus configuration.
+# The filename is the identifier filled in to the {corpus} template
+# when building the url to run on.
+
+[meta]
+# This is how the corpus appears in the dropdown menu.
+display_name = "Språkbanken Korp"
+# Set this to true, if you want the corpus to be the standard one to run queries on.
+preselected = true
+
+# All the usual configuration fields are also possible to be pre-configured
+# per corpus. The user is always capable of changing these manually.
+
+# [general]
+# Text span in which token dependencies are valid. Usually, this is the sentence level,
+# indicated by "s" or "sentence".
+# The actual value of this field depends on your annotation scheme used.
+#span =
+# The version of the Corpus Query Protocol language to use.
+# Available values: Corpus Workbench, Sketch Engine
+#dialect = "Sketch Engine"
+
+# [annotation_scheme]
+# Name of the field encoding the surface word forms.
+#form = "word"
+# Name of the field encoding lemmas.
+#lemma = "lemma"
+# Name of the field (Universal) POS tags.
+#upos = "pos"
+# Name of the field encoding language-specific or finer-grained POS tags, such as XPOS or MSD.
+#xpos = "msd"
+# Name of the field encoding morphological features, such as Universal features.
+#feats = "ufeats"
+# Name of the field encoding the token ID
+#id = "ref"
+# Name of the field encoding the token ID of a token's syntactic head
+#head = "dephead"
+# Name of the field encoding relation labels.
+#deprel = "deprel"

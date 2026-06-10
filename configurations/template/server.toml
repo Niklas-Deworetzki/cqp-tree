@@ -1,0 +1,56 @@
+# CQP/Tree server configuration template.
+
+[web]
+# Path to an image file which is displayed in the top-left corner.
+branding = "logo.png"
+# URL the user is redirected to when clicking on the branding logo.
+homepage = "https://www.my-institute.edu/"
+
+# An url pointing to the corpus system instance where queries are executed.
+# You may use {query} and {corpus} as placeholders for user parameters.
+# If your system does not differenciate between corpora, you may elide {corpus} in the template.
+baseurl = "https://www.my-institute.edu/search/{corpus}?query={query}"
+# The name of the corpus system.
+# Displayed in the "Run on {NAME}" link below the translation UI,
+# which enables users to directly run a translated query in the live corpus system.
+# Note that this only shows up, if you have no (or only one) preconfigured corpus,
+# or if there is no name set for a preconfigured corpus.
+system_name = "Awesome Corpus System"
+# Path to the directory with configurations for known corpora.
+corpus_configs = "template/corpora"
+
+
+# You may also set all of these configurations as defaults for the UI or applying to all
+# pre-configured corpora.
+# These configurations can also be set per corpus or by the user directly in the UI.
+
+# [general]
+# The translation unit to use. If left empty, the translation unit is automatically
+# determined from the input query.
+# Available values: conll, depsearch, deptreepy, grew
+#translator =
+# Text span in which token dependencies are valid. Usually, this is the sentence level,
+# indicated by "s" or "sentence".
+# The actual value of this field depends on your annotation scheme used.
+#span =
+# The version of the Corpus Query Protocol language to use.
+# Available values: Corpus Workbench, Sketch Engine
+#dialect = "Sketch Engine"
+
+# [annotation_scheme]
+# Name of the field encoding the surface word forms.
+#form = "word"
+# Name of the field encoding lemmas.
+#lemma = "lemma"
+# Name of the field (Universal) POS tags.
+#upos = "pos"
+# Name of the field encoding language-specific or finer-grained POS tags, such as XPOS or MSD.
+#xpos = "msd"
+# Name of the field encoding morphological features, such as Universal features.
+#feats = "ufeats"
+# Name of the field encoding the token ID
+#id = "ref"
+# Name of the field encoding the token ID of a token's syntactic head
+#head = "dephead"
+# Name of the field encoding relation labels.
+#deprel = "deprel"
