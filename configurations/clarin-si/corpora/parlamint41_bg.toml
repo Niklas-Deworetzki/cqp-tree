@@ -1,0 +1,17 @@
+[meta]
+display_name = "ParlaMint-BG 4.1 (Bulgarian parliament)"
+preselected = false
+
+[general]
+span = "s"
+dialect = "Sketch Engine"
+
+[annotation_scheme]
+form = "word"
+lemma = "lemma"
+upos = "pos"
+xpos = "pos"
+feats = "feats"
+id = "id"
+head = "dep_head_id"
+deprel = "dep"
