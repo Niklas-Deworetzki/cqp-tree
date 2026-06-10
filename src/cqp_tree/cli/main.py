@@ -200,12 +200,14 @@ def _handle_io(args: argparse.Namespace, configuration: cqp_tree.ActiveConfig) -
             return 1
 
         try:
-            translator = configuration.get(cqp_tree.GENERAL_CONFIG_SECTION, 'translator')
-            plan = translate(query_str, translator)
+            plan = translate(query_str, configuration)
             if not plan:
                 return 1
 
-            formatting_config = configuration.project(cqp_tree.GENERAL_CONFIG_SECTION)
+            formatting_config = configuration.project(
+                cqp_tree.GENERAL_CONFIG_SECTION,
+                cqp_tree.ANNOTATIONS_CONFIG_SECTION,
+            )
             for line in cqp_tree.format_plan(plan, formatting_config):
                 output.write(line + '\n')
 
