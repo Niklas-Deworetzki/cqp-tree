@@ -11,7 +11,7 @@ def wordform_equals(
     Creates a predicate to compare a tokens word form with a given value.
     """
     return Comparison(
-        Attribute(_to_identifier(token), cfg.word),
+        Attribute(_to_identifier(token), cfg.form),
         '=',
         value,
     )
@@ -27,7 +27,7 @@ def dependency_type_equals(
     Assumes that the dependency type information is stored on the dependant.
     """
     return Comparison(
-        Attribute(_to_identifier(dependant), cfg.dependency),
+        Attribute(_to_identifier(dependant), cfg.deprel),
         '=',
         value,
     )

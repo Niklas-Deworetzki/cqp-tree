@@ -24,28 +24,25 @@ NO_VALUE = '_'
 
 UNSPECIFIED_VALUE = '*'
 
-# CoNLL-U columns that are mapped to Språkbanken Korp annotations.
+# CoNLL-U columns that are mapped directly to existing annotation layers.
 CONLL_MAPPED_ANNOTATION_COLUMNS = {
-    "form": "word",
-    "lemma": "lemma",
-    "upos": "pos",  # but upos (actual UD tags) may be added soon
-    "xpos": "msd",  # not sure about this one
-    "deprel": "deprel",  # mambadep, but UD relations may be added soon
+    "form",
+    "lemma",
+    "upos",
+    "xpos",
+    "deprel",
     # id and head are used for dependencies
     # deps is ignored for now
     # feats is translated as the attribute
     # misc is expanded and added to the token
 }
 
-# CoNLL-U columns that are mapped to an annotation holding a feature string
-# in Språkbanken Korp.
+# CoNLL-U columns that are mapped to an annotation holding a feature string.
 # An entry 'feats': 'ufeats' means that all annotations in the 'feats' column
 # are translated into Key=Value pairs contained in the value of the 'ufeats'.
 # Tense=Pres,Pers=3 becomes
 #           [ufeats contains "Tense=Pres" & ufeats contains "Pers=3"]
-CONLL_MAPPED_FEATURE_COLUMNS = {
-    'feats': 'ufeats',
-}
+CONLL_MAPPED_FEATURE_COLUMNS = {'feats'}
 
 # CoNLL-U columns that have their features expanded and translated into
 # individual annotations.

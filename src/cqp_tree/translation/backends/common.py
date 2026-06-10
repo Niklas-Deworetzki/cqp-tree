@@ -295,8 +295,8 @@ class QueryFormatter(ABC):
         src: Optional[query.Identifier] = None,
         dst: Optional[query.Identifier] = None,
     ) -> str:
-        dephead = self.configuration.dephead
-        ref = self.configuration.token_id
+        dephead = self.configuration.head
+        ref = self.configuration.id
 
         src = self.environment[src] if src is not None else None
         dst = self.environment[dst] if dst is not None else None
