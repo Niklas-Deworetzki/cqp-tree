@@ -14,7 +14,7 @@ cqp_tree.declare_configuration(
     DeclaredConfig(
         key='branding',
         readable_name='Branding',
-        readable_description='Path or URL to an image file which is displayed in the top-left corner.',
+        readable_description='Path or URL to an image which is displayed in the top-left corner.',
         validation_type=str,
     ),
     DeclaredConfig(
