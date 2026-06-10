@@ -119,7 +119,10 @@ def serve_translation(config: ActiveConfig):
         if is_too_complex(plan):
             raise ValueError('Your query is too complex! Try using fewer tokens.')
 
-        format_config = configuration.project(cqp_tree.GENERAL_CONFIG_SECTION)
+        format_config = configuration.project(
+            cqp_tree.GENERAL_CONFIG_SECTION,
+            cqp_tree.ANNOTATIONS_CONFIG_SECTION,
+        )
         return jsonify(to_json(plan, format_config))
 
     except ValueError as validation_error:
