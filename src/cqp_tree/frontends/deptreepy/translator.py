@@ -13,7 +13,7 @@ def parse(s: str):
     # https://github.com/aarneranta/deptreepy/blob/a3fd7aa0b01f169afe6f37277d8bc2c624bcb433/patterns.py#L334
     s = s.strip()
     if not s:
-        error = ct.InputError(f'line: 0, col:0', 'The query cannot be empty.')
+        error = ct.InputError('line: 0, col:0', 'The query cannot be empty.')
         raise ct.ParsingFailed(error)
 
     if not s.startswith('('):  # add outer parentheses if missing
@@ -150,16 +150,11 @@ def translate_deptreepy(deptreepy: str, config: Configuration) -> ct.Recipe:
 
     # we want to return here for every possible operator
     # pylint: disable=too-many-return-statements
+    # pylint: disable=too-many-branches
     def convert(lisp) -> TokenConstraint | DependencyConstraint | Query:
         match lisp:
             case ['TREE', *_]:
                 raise ct.NotSupported('Only TREE_ is supported for matching subtrees.')
-
-            case ['TRUE']:
-                return TokenConstraint(predicate=None)
-
-            case [singleton]:
-                return convert(singleton)
 
             case ['TREE_', *args]:
                 if not args:
@@ -212,6 +207,12 @@ def translate_deptreepy(deptreepy: str, config: Configuration) -> ct.Recipe:
             case [field, strpatt]:
                 pred = operation_constructor_for_field(field)(strpatt)
                 return TokenConstraint(predicate=pred)
+
+            case ['TRUE']:
+                return TokenConstraint(predicate=None)
+
+            case [singleton]:
+                return convert(singleton)
 
             case unsupported:
                 raise ct.NotSupported(f'Encountered unsupported expression: {unsupported}')
