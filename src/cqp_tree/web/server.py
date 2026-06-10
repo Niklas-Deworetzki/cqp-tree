@@ -1,7 +1,8 @@
+from urllib.parse import urlparse
 from pathlib import Path
 from typing import Any, Iterable
 
-from flask import Flask, jsonify, render_template, request, send_file
+from flask import Flask, jsonify, redirect, render_template, request, send_file
 
 import cqp_tree
 from cqp_tree import ActiveConfig, Configuration, DeclaredConfig, Recipe
@@ -104,6 +105,9 @@ def serve_index(config: ActiveConfig):
 def serve_branding(config: ActiveConfig):
     cfg = config.project('web')
     if cfg.branding:
+        parsed_url = urlparse(cfg.branding)
+        if parsed_url.scheme in ('http', 'https'):
+            return redirect(cfg.branding)
         return send_file(cfg.branding)
     return '', 404
 
