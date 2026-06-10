@@ -67,6 +67,7 @@
                     </div>
                 </nav>
 
+                {% if corpus_configs | length > 1 %}
                 <div class="mb-3">
                     <label for="corpora-select" class="form-label">Corpus:</label>
                     <select id="corpora-select" class="form-select"
@@ -79,6 +80,7 @@
                         {% endfor %}
                     </select>
                 </div>
+                {% endif %}
 
                 <div class="mb-3 position-relative">
                     <label for="query-input-field" class="form-label">Your query:</label>
@@ -205,7 +207,8 @@
                 }
             }
         }
-                let settings = {};
+
+        let settings = {};
         {% for (corpus_id, display_name, preselected, config) in corpus_configs %}
         settings['{{ corpus_id }}'] = {{ config | tojson | safe }};
         {% if preselected %}
@@ -218,6 +221,7 @@
         const alert = document.getElementById('error-alert');
         const runOnKorp = document.getElementById('run-on-korp-link');
         const submitQuery = document.getElementById('submit-query');
+        const corpusSelection = document.getElementById('corpora-select');
 
         const queryInput = document.getElementById('query-input-field');
         const queryOutput = document.getElementById('query-output-field')
@@ -328,15 +332,20 @@
                         throw new Error('Your query contains features that we can currently not translate.');
 
                     } else {
-                        const id = document.getElementById('corpora-select').value;
-                        const displayName = settings[id]["meta"]["display_name"];
                         queryOutput.value = data.single_query;
-                        runOnKorp.href = '{{ cfg.baseurl | safe }}'
+                        let targetUrl = '{{ cfg.baseurl | safe }}'
                             .replaceAll('{query}', encodeURIComponent(data.single_query))
-                            .replaceAll('{corpus}', encodeURIComponent(id));
-                        runOnKorp.textContent = 'Run on ' + (displayName || '{{ cfg.system_name }}')
-                            + '!';
 
+                        let displayName = '{{ cfg.system_name }}';
+                        if (corpusSelection) {
+                            const id = document.getElementById('corpora-select').value;
+                            displayName = settings[id]["meta"]["display_name"];
+
+                            targetUrl = targetUrl.replaceAll('{corpus}', encodeURIComponent(id));
+                        }
+
+                        runOnKorp.href = targetUrl;
+                        runOnKorp.textContent = 'Run on ' + displayName + '!';
                         show(runOnKorp);
                         hideError();
                         saveToHistory(query);
