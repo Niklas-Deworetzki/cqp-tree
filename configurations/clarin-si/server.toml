@@ -1,0 +1,6 @@
+[web]
+branding = "https://www.clarin.si/ske/clarin/Logo-CLARIN.SI-en-INVERTED-transparent.gif"
+homepage = "https://www.clarin.si/"
+baseurl = "https://www.clarin.si/ske/#concordance?tab=advanced&queryselector=cql&showresults=1&corpname={corpus}&cql={query}"
+system_name = "Sketch Engine"
+corpus_configs = "configurations/clarin-si/corpora"
