@@ -69,6 +69,9 @@ disable = [
     # Positional arguments appear to be out of order?
     'W1114',
 
+    # We sometimes need to have broad exceptions, as we work with external code.
+    'W0718',
+
     # Control flow should be readable, not dictated by a tool.
     'R1705',
     'R1720',

@@ -116,8 +116,33 @@
                     <button type="button" class="btn-close" aria-label="Close" onclick="hideError()"></button>
                 </div>
 
-                <div class="mb-3 ms-1 text-center">
-                    <a id="run-on-korp-link" target="_blank" rel="noopener noreferrer">Run on {{ cfg.system_name }}</a>
+
+                <div id="translation-result-area" class="mb-5">
+                    <div class="mb-3 d-grid col-md-10 mx-auto">
+                        <a id="run-on-korp-link" class="btn btn-outline-primary" target="_blank" rel="noopener noreferrer">
+                            Run on {{ cfg.system_name }}
+                        </a>
+                    </div>
+                    <div class="text-center">
+                        {% if cfg.allow_external_search %}
+                        <div class="d-flex align-items-center justify-content-center gap-2">
+                            <label for="external-search-url" class="form-label mb-0">
+                                ...or another corpus
+                            </label>
+                            <input
+                                type="text"
+                                id="external-search-url"
+                                class="form-control w-25"
+                                placeholder="corpus url">
+                            <button
+                                type="button"
+                                id="run-external-search"
+                                class="btn btn-outline-primary">
+                                Run
+                            </button>
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
 
                 <div class=" mb-3">
@@ -220,6 +245,9 @@
     <script>
         const alert = document.getElementById('error-alert');
         const runOnKorp = document.getElementById('run-on-korp-link');
+        const translationResultArea = document.getElementById('translation-result-area');
+        const externalSearchButton = document.getElementById('run-external-search');
+        const externalSearchUrl = document.getElementById('external-search-url');
         const submitQuery = document.getElementById('submit-query');
         const corpusSelection = document.getElementById('corpora-select');
 
@@ -230,7 +258,7 @@
 
         // Hide unless we have something to show.
         alert.style.display = 'none';
-        runOnKorp.style.display = 'none';
+        translationResultArea.style.display = 'none';
 
         function show(element) {
             element.style.display = 'block';
@@ -346,7 +374,7 @@
 
                         runOnKorp.href = targetUrl;
                         runOnKorp.textContent = 'Run on ' + displayName + '!';
-                        show(runOnKorp);
+                        show(translationResultArea);
                         hideError();
                         saveToHistory(query);
                         loadHistory();
@@ -355,6 +383,14 @@
                 .catch(err => {
                     showError(err.message);
                 });
+        });
+
+        // Make the external search button do a request
+        externalSearchButton.addEventListener('click', () => {
+            const url = new URL(location.href + '/external_search');
+            url.searchParams.set('url', encodeURIComponent(externalSearchUrl.value));
+            url.searchParams.set('query', encodeURIComponent(queryOutput.value));
+            window.open(url, '_blank', 'noopener,noreferrer');
         });
 
         // Make TAB actually insert a tab character.

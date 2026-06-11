@@ -1,7 +1,7 @@
 import itertools
 from typing import Annotated, Callable, Collection, Iterable, Iterator, Tuple
 
-type NonEmpty[T] = Annotated[Collection[T], 'Non empty Sequence of T.']
+type NonEmpty[T] = Annotated[Collection[T], 'Non empty Collection of T.']
 
 
 def get_nested(d: dict, *keys, default=None):

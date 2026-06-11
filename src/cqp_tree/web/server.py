@@ -1,4 +1,4 @@
-from urllib.parse import urlparse
+from urllib.parse import urlparse, unquote
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -8,6 +8,7 @@ import cqp_tree
 from cqp_tree import ActiveConfig, Configuration, DeclaredConfig, Recipe
 from cqp_tree.utils import UPPERCASE_ALPHABET, associate_with_names, get_nested
 from cqp_tree.configuration.values import read_corpus_config
+from cqp_tree.web.run_on_url import make_external_search_url
 
 cqp_tree.declare_configuration(
     'web',
@@ -45,6 +46,15 @@ cqp_tree.declare_configuration(
         readable_description='Path to the directory with configurations for known corpora.',
         validation_type=str,
     ),
+    DeclaredConfig(
+        key='allow_external_search',
+        readable_name='Allow External Search',
+        readable_description='Allows to run the translated query on another not '
+        'pre-configured corpus. The corpus is provided as an URL, which is then automatically '
+        'analyzed and transformed into a proper format.',
+        validation_type=bool,
+        default_value=False,
+    ),
 )
 
 TEMPLATE_DIR = Path(__file__).parent / 'static'
@@ -68,6 +78,10 @@ def setup_server(config: cqp_tree.ActiveConfig) -> Flask:
     @server.route('/translate', methods=['POST'])
     def translate():
         return serve_translation(config)
+
+    @server.route('/external_search', methods=['GET'])
+    def external_search():
+        return serve_external_search()
 
     return server
 
@@ -93,13 +107,26 @@ def serve_index(config: ActiveConfig):
     return render_template(
         'index.html',
         cfg=cfg,
-        corpus_configs=list(get_preconfigured_corpora(cfg)),
+        corpus_configs=sorted(get_preconfigured_corpora(cfg), key=lambda x: x[1].casefold()),
         settings=cqp_tree.iterate_configurations_by_section(
             config,
             hidden_sections={'web'},
             hidden_entries={cqp_tree.GENERAL_CONFIG_SECTION: {'translator'}},
         ),
     )
+
+
+def serve_external_search():
+    url = unquote(request.args.get('url'))
+    query = unquote(request.args.get('query'))
+    try:
+        search_url = make_external_search_url(url, query)
+        return redirect(search_url)
+    except Exception:
+        return render_template(
+            'external_search_not_possible.html',
+            url=url,
+        )
 
 
 def serve_branding(config: ActiveConfig):
