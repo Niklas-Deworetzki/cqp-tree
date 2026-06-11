@@ -1,6 +1,7 @@
 [meta]
 display_name = "Gigafida v2.2"
 preselected = false
+preferred = true
 
 [general]
 span = "s"

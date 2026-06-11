@@ -105,13 +105,18 @@ def get_preconfigured_corpora(cfg: Configuration) -> Iterable[tuple[str, str, bo
         preselected = get_nested(config, 'meta', 'preselected', default=False)
         yield corpus_id, display_name, preselected, config
 
+def corpus_sorting(data):
+    """First preferred corpora, then sort alphabetically."""
+    priority = get_nested(data[3], 'meta', 'preferred', default=False)
+    name = data[1]
+    return not priority, name.casefold()
 
 def serve_index(config: ActiveConfig):
     cfg = config.project('web')
     return render_template(
         'index.html',
         cfg=cfg,
-        corpus_configs=sorted(get_preconfigured_corpora(cfg), key=lambda x: x[1].casefold()),
+        corpus_configs=sorted(get_preconfigured_corpora(cfg), key=corpus_sorting),
         settings=cqp_tree.iterate_configurations_by_section(
             config,
             hidden_sections={'web'},
