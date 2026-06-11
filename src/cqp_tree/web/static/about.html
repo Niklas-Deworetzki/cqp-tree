@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <title>CQP/Tree translator</title>
+
+    <style>
+        p {
+            text-align: justify;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="row justify-content-center min-vh-100">
+        <div class="col-md-10 col-lg-8 flex-grow-1">
+            <div>
+
+                <h1 class="my-5">CQP/Tree</h1>
+                <h2>Convert syntactic tree queries into CQL</h2>
+
+                <p>
+                    CQP/Tree converts readable syntactic tree queries into CQL for use in Sketch Engine, Korp, Corpus
+                    Workbench and related corpus search systems. This installation is primarily intended to support
+                    syntactic searching in
+                    {% if cfg.homepage %}
+                    <a href="{{ cfg.homepage }}">{{ cfg.system_name }}</a>
+                    {% else %}
+                    {{ cfg.system_name }}
+                    {% endif %}
+                    corpora, but the generated queries can also be used with other Sketch Engine-compatible or Corpus
+                    Workbench-compatible corpora and platforms.
+                </p>
+
+                <p>
+                    If you are new to syntactic tree querying, you may want to start with the example queries below or
+                    consult the documentation for the supported input languages, such as
+                    <a href="https://orodja.cjvt.si/drevesnik/help/en/">depsearch</a>
+                    or
+                    <a href="https://universal.grew.fr/?corpus=UD_English-ParTUT@2.18">Grew</a>.
+                </p>
+
+                <h2>
+                    Note on recall
+                </h2>
+                <p>
+                    Translated queries may differ from native syntactic search tools in terms of precision and recall,
+                    especially for complex multi-token queries. For details on the translation approach, evaluation and
+                    known limitations, see the
+                    <a href="https://lrec.elra.info/lrec2026-main-914">accompanying paper</a>.
+                </p>
+
+                <h2>
+                    Acknowledgments
+                </h2>
+                <p>
+                    This service is based on the CQP/Tree tool developed by Niklas Deworetzki and Arianna Masciolini,
+                    with the support of Språkbanken – jointly funded by its 10 partner institutions and the Swedish
+                    Research Council (2025–2028; project id 2023-00161).
+                    The CLARIN integration was supported by the ARIS-funded projects GC-0002 (LLM4DH: Large Language
+                    Models for Digital Humanities) and J6-70213 (MAPCASE: Mapping case architectures in Slovenian and
+                    across languages).
+                </p>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center align-items-center mb-5">
+            FOOTER
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

@@ -83,6 +83,10 @@ def setup_server(config: cqp_tree.ActiveConfig) -> Flask:
     def external_search():
         return serve_external_search()
 
+    @server.route('/about.html', methods=['GET'])
+    def about():
+        return serve_about(config)
+
     return server
 
 
@@ -115,6 +119,9 @@ def serve_index(config: ActiveConfig):
         ),
     )
 
+def serve_about(config: ActiveConfig):
+    cfg = config.project('web')
+    return render_template('about.html', cfg=cfg)
 
 def serve_external_search():
     url = unquote(request.args.get('url'))
