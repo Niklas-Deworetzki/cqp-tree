@@ -1,7 +1,14 @@
-FROM python:3.13
+FROM python:3.14
 
-RUN pip install gunicorn cqp-tree==0.2a1
+ARG VERSION="clarin-integration"
 
-ENTRYPOINT ["gunicorn", "cqp_tree.web.server:server", "--bind", "0.0.0.0:8000"]
+RUN git clone https://github.com/Niklas-Deworetzki/cqp-tree.git \
+    cqp-tree \
+    --branch=${VERSION}
+WORKDIR cqp-tree
+
+RUN pip install -e .
+
+ENTRYPOINT ["cqp-tree-web", "--host", "0.0.0.0", "--port", "8000"]
 
 EXPOSE 8000
