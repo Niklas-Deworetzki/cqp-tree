@@ -123,13 +123,13 @@ class QueryBuilder:
 
         elif isinstance(exp, Depsearch.ConjunctionTokenContext):
             lhs = self.translate_predicate(exp.lhs)
-            rhs = self.translate_predicate(exp.lhs)
-            return ct.Conjunction([lhs, rhs])
+            rhs = self.translate_predicate(exp.rhs)
+            return ct.Conjunction((lhs, rhs))
 
         elif isinstance(exp, Depsearch.DisjunctionTokenContext):
             lhs = self.translate_predicate(exp.lhs)
-            rhs = self.translate_predicate(exp.lhs)
-            return ct.Disjunction([lhs, rhs])
+            rhs = self.translate_predicate(exp.rhs)
+            return ct.Disjunction((lhs, rhs))
 
         elif isinstance(exp, Depsearch.NegationTokenContext):
             res = self.translate_predicate(exp.exp)
