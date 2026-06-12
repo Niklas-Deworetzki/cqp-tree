@@ -250,7 +250,7 @@ class GenericJunction(Predicate, ABC):
     """Abstract superclass for Conjunction and Disjunction.
     Implements all their method in a generic manner."""
 
-    predicates: Iterable[Predicate]
+    predicates: tuple[Predicate, ...]
 
     def __init_subclass__(cls):
         super().__init_subclass__()
