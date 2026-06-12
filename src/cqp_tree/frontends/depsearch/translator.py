@@ -92,7 +92,7 @@ class QueryBuilder:
                 'Cannot translate universally-quantified queries using the -> operator.'
             )
 
-        expression, *additional_expressions = list(query.tokenExpression())
+        expression, *additional_expressions = list(query.tokensExpression())
         if additional_expressions:
             raise ct.NotSupported('Cannot translate queries using the + operator yet.')
 
