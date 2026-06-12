@@ -1,36 +1,40 @@
 grammar Depsearch;
 
 
-query : allQuantified? tokenExpression ('+' tokenExpression)* EOF ;
+query : allQuantified? tokensExpression ('+' tokensExpression)* EOF ;
 
 allQuantified
     : atomicToken '->'
     ;
 
+tokensExpression
+    // TODO: How does sequencing associate?
+    : lhs=tokenExpression '.' rhs=tokensExpression                           # SequenceToken
+    | lhs=tokenExpression LinearDistance orderModifier? rhs=tokensExpression # DistanceToken
+    // t1 > t2 > t3 means t2 and t3 are dependents of t1
+    // t1 > (t2 > t3) searches for chains instead.
+    | src=tokenExpression (dependencyDescription)+                          # DependenciesToken
+    | exp=tokenExpression                                                   # JustAToken
+    ;
+
 tokenExpression
     : lhs=tokenExpression '&' rhs=tokenExpression                       # ConjunctionToken
     | lhs=tokenExpression '|' rhs=tokenExpression                       # DisjunctionToken
-    // TODO: How does sequencing associate?
-    | lhs=atomicToken '.' rhs=atomicToken                               # SequenceToken
-    | lhs=atomicToken LinearDistance orderModifier? rhs=atomicToken # DistanceToken
-    // t1 > t2 > t3 means t2 and t3 are dependents of t1
-    // t1 > (t2 > t3) searches for chains instead.
-    | src=negatedToken (dependencyDescription)+                         # DependenciesToken
     | exp=negatedToken                                                  # PossiblyNegatedToken
     ;
 
 negatedToken : Neg exp=atomicToken  # NegationToken
-             | exp=atomicToken      # JustAToken
+             | exp=atomicToken      # JustATokenAttribute
              ;
 
-atomicToken : '(' exp=tokenExpression ')'   # ParenthesizedToken
+atomicToken : '(' exp=tokensExpression ')'  # ParenthesizedToken
             | '_'                           # ArbitraryToken
             | Value                         # WordOrTagToken
             | String                        # WordformToken
             | key=Value '=' (value=Value | regex=String)    # AttributeToken
             ;
 
-dependencyDescription : dependencyExpression dst=negatedToken
+dependencyDescription : dependencyExpression dst=tokensExpression
                       ;
 
 // one can use OR operator to query dependency relations

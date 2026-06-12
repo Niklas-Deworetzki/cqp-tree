@@ -62,6 +62,7 @@ type DepsearchDependencyContext = Union[
 WRAPPER_TYPES = (
     Depsearch.PossiblyNegatedTokenContext,
     Depsearch.JustATokenContext,
+    Depsearch.JustATokenAttributeContext,
     Depsearch.ParenthesizedTokenContext,
 )
 
