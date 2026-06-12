@@ -86,6 +86,8 @@ EXAMPLE_QUERIES_FROM_DOCUMENTATION = [
     '_ >nsubj:cop _ !>cop _',
     'ADJ&Tra <xcomp _',
     'VerbForm=Part <acl _ >nsubj _',
+    'VERB&X=Vm.p.sn >expl _',
+    'VERB >obj Case=Acc >aux|>advmod Polarity=Neg',
 ]
 
 
