@@ -301,7 +301,7 @@ class GenericJunction(Predicate, ABC):
         operands = list(operands)
         if len(operands) == 1:
             return operands[0]
-        return cls(operands)
+        return cls(tuple(operands))
 
 
 @dataclass(frozen=True)
