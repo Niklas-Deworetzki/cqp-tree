@@ -53,7 +53,7 @@ class Query(Result):
 
     @override
     def as_dependency_constraint(self) -> 'DependencyConstraint':
-        raise ct.NotSupported('This operation does not support ')
+        raise ct.NotSupported('This operation is not supported.')
 
 
 class DependencyConstraint(Result):
