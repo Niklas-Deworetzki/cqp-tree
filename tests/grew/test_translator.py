@@ -153,7 +153,7 @@ class TranslationTests(unittest.TestCase):
         self.assertEqual(
             result,
             ct.Disjunction(
-                [
+                (
                     ct.Comparison(
                         ct.Attribute(None, 'lemma'),
                         '=',
@@ -164,7 +164,7 @@ class TranslationTests(unittest.TestCase):
                         '=',
                         ct.Literal('"cat"'),
                     ),
-                ]
+                )
             ),
         )
 
@@ -178,7 +178,7 @@ class TranslationTests(unittest.TestCase):
         self.assertEqual(
             result,
             ct.Conjunction(
-                [
+                (
                     ct.Comparison(
                         ct.Attribute(None, 'lemma'),
                         '!=',
@@ -189,7 +189,7 @@ class TranslationTests(unittest.TestCase):
                         '!=',
                         ct.Literal('"cat"'),
                     ),
-                ]
+                )
             ),
         )
 
@@ -203,11 +203,11 @@ class TranslationTests(unittest.TestCase):
         self.assertEqual(
             result,
             ct.Conjunction(
-                [
+                (
                     ct.Exists(ct.Attribute(None, 'Tense')),
                     ct.Negation(ct.Exists(ct.Attribute(None, 'Number'))),
                     ct.Disjunction(
-                        [
+                        (
                             ct.Comparison(
                                 ct.Attribute(None, 'lemma'),
                                 '=',
@@ -218,9 +218,9 @@ class TranslationTests(unittest.TestCase):
                                 '=',
                                 ct.Literal('"B"'),
                             ),
-                        ]
+                        )
                     ),
-                ]
+                )
             ),
         )
 
