@@ -63,10 +63,9 @@ def format_recipe(plan: query.Recipe, configuration: Configuration) -> Iterable[
     between queries.
     """
     environment = associate_with_names(plan.identifiers(), QUERY_ALPHABET)
-    parts = plan.as_dict()
 
-    def rec(goal: query.Identifier, include_assignment: bool = True) -> Iterable[str]:
-        part = parts[goal]
+    flattened_plan = list(plan)
+    for i, part in enumerate(flattened_plan):
         if isinstance(part, query.Operation):
             op, lhs, rhs = (
                 CQP_OPERATIONS[part.operator],
@@ -74,14 +73,11 @@ def format_recipe(plan: query.Recipe, configuration: Configuration) -> Iterable[
                 environment[part.rhs],
             )
             formatted = f'{op} {lhs} {rhs};'
-            yield from rec(part.lhs)
-            yield from rec(part.rhs)
         else:
             query_text = parsed_to_cqp(part, configuration).to_string(configuration)
             formatted = query_text + ';'
 
-        if include_assignment:
-            formatted = f'{environment[goal]} = {formatted}'
-        yield formatted
+        if i <= len(flattened_plan):
+            formatted = f'{environment[part.identifier]} = {formatted}'
 
-    yield from rec(plan.goal, include_assignment=False)
+        yield formatted

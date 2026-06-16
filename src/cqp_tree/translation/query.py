@@ -3,7 +3,18 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import StrEnum, auto
 from itertools import count
-from typing import Callable, ClassVar, Collection, Iterable, List, Optional, Self, Set, override
+from typing import (
+    Callable,
+    ClassVar,
+    Collection,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Self,
+    Set,
+    override,
+)
 
 from cqp_tree.translation.regex import escape_regex_string
 from cqp_tree.utils import flatmap_set
@@ -554,7 +565,7 @@ class Operation:
 
 
 @dataclass(frozen=True)
-class Recipe:
+class Recipe(Iterable[Operation | Query]):
     """
     The full recipe to execute and combine a combination of Queries.
     The goal parameter determines what the recipe actually computes.
@@ -606,6 +617,18 @@ class Recipe:
         for operation in self.operations:
             result[operation.identifier] = operation
         return result
+
+    def __iter__(self) -> Iterator[Query | Operation]:
+        environment = self.as_dict()
+
+        def rec(goal: Identifier) -> Iterator[Query | Operation]:
+            part = environment[goal]
+            if isinstance(part, Operation):
+                yield from rec(part.lhs)
+                yield from rec(part.rhs)
+            yield part
+
+        yield from rec(self.goal)
 
     class Builder:
         def __init__(self):
