@@ -13,12 +13,16 @@ CONFIG = cqp_tree.default_configuration().project(
 
 class TranslationTests(unittest.TestCase):
 
-    def test_tree_(self):
+    def test_tree(self):
         with self.assertRaises(NotSupported):
             translate_deptreepy('TREE a b c', CONFIG)
 
-    def test_tree(self):
+    def test_tree_(self):
         translate_deptreepy('TREE_ ((AND (POS NOUN) (DEPREL det))) (OR (LEMMA IN a b c)))', CONFIG)
+
+    def test_empty_string(self):
+        with self.assertRaises(ParsingFailed):
+            translate_deptreepy('', CONFIG)
 
     def test_field_comparison(self):
         (q,) = translate_deptreepy('field a', CONFIG).queries
@@ -89,6 +93,14 @@ class TranslationTests(unittest.TestCase):
                 ]
             ),
         )
+
+    def test_true(self):
+        (q,) = translate_deptreepy('TRUE', CONFIG).queries
+        self.assertEqual(1, len(q.tokens), 'Query should have one token.')
+        self.assertEqual(0, len(q.predicates), 'Query should not have any predicates.')
+        (token, ) = q.tokens
+        self.assertIsNone(token.attributes)
+
 
     def test_and_predicate(self):
         (q,) = translate_deptreepy('(AND (a 1) (b 2))', CONFIG).queries
