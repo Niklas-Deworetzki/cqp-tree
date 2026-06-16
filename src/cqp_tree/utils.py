@@ -1,15 +1,13 @@
 import itertools
-from typing import Annotated, Callable, Collection, Iterable, Iterator, Tuple
+from typing import Annotated, Callable, Collection, Iterable, Iterator, Optional, Tuple
 
 type NonEmpty[T] = Annotated[Collection[T], 'Non empty Collection of T.']
 
 
-def get_nested(d: dict, *keys, default=None):
-    for k in keys:
-        if not k in d:
-            return default
-        d = d[k]
-    return d
+def filter_not_null[X](xs: Iterable[Optional[X]]) -> Iterable[X]:
+    for x in xs:
+        if x is not None:
+            yield x
 
 
 def flatmap[X, Y](xs: Iterable[X], f: Callable[[X], Iterable[Y]]) -> Iterable[Y]:

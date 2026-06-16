@@ -6,6 +6,7 @@ from pyparsing import ParseException, nestedExpr
 
 import cqp_tree.translation as ct
 from cqp_tree import Configuration
+from cqp_tree.utils import filter_not_null
 
 
 def parse(s: str):
@@ -135,8 +136,8 @@ def translate_deptreepy(deptreepy: str, config: Configuration) -> ct.Recipe:
         operator: ct.SetOperator,
     ) -> TokenConstraint | Query:
         if all(isinstance(part, TokenConstraint) for part in parts):
-            conjuncts = [part.predicate for part in parts if part.predicate]
-            pred = ctor(conjuncts)
+            conjuncts = filter_not_null(part.predicate for part in parts)
+            pred = ctor.of(conjuncts)
             return TokenConstraint(predicate=pred)
 
         else:
@@ -199,7 +200,7 @@ def translate_deptreepy(deptreepy: str, config: Configuration) -> ct.Recipe:
 
             case [field, 'IN', *strpatts]:
                 ctor = operation_constructor_for_field(field)
-                pred = ct.Disjunction([ctor(strpatt) for strpatt in strpatts])
+                pred = ct.Disjunction.of(ctor(strpatt) for strpatt in strpatts)
                 return TokenConstraint(predicate=pred)
 
             case [field, strpatt]:
