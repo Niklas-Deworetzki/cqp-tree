@@ -217,10 +217,7 @@ def translate_deptreepy(deptreepy: str, config: Configuration) -> ct.Recipe:
                 raise ct.NotSupported(f'Encountered unsupported expression: {unsupported}')
 
     result = convert(parse(deptreepy))
-    if isinstance(result, TokenConstraint):
-        result = result.as_dependency_constraint()
-    if isinstance(result, DependencyConstraint):
-        result = result.as_query(builder)
+    result = result.as_query(builder)
 
     builder.set_goal(result.identifier)
     return builder.build()
