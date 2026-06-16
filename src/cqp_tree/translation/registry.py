@@ -1,14 +1,7 @@
 from dataclasses import dataclass
 from typing import Callable, Collection, Tuple
 
-from cqp_tree.configuration import (
-    ActiveConfig,
-    Configuration,
-    ANNOTATIONS_CONFIG_SECTION,
-    GENERAL_CONFIG_SECTION,
-    DeclaredConfig,
-    declare_configuration,
-)
+from cqp_tree.configuration import Configuration, DeclaredConfig, declare_configuration
 from cqp_tree.translation.errors import NotSupported
 from cqp_tree.translation.query import Recipe
 
@@ -51,7 +44,7 @@ class UnableToGuessTranslatorError(Exception):
         return f'Cannot guess translator for query: {reason}'
 
 
-def translate_input(inp: str, configuration: ActiveConfig) -> Recipe:
+def translate_input(inp: str, configuration: Configuration) -> Recipe:
     """
     Translates an input using the given translator. If no translator is given,
     the correct translator is guessed by trying all available translators.
@@ -62,7 +55,7 @@ def translate_input(inp: str, configuration: ActiveConfig) -> Recipe:
     If a translator to use is specified, but the translator is not known,
     a KeyError is raised.
     """
-    trans: str = configuration.get(GENERAL_CONFIG_SECTION, 'translator')
+    trans: str = configuration.translator
     if trans is None:
         guessed_translations = guess_correct_translator(inp, configuration)
         if not guessed_translations:
@@ -79,7 +72,7 @@ def translate_input(inp: str, configuration: ActiveConfig) -> Recipe:
     return _run_translator_with_configuration(inp, trans, configuration)
 
 
-def guess_correct_translator(inp: str, configuration: ActiveConfig) -> list[Tuple[str, Recipe]]:
+def guess_correct_translator(inp: str, configuration: Configuration) -> list[Tuple[str, Recipe]]:
     """
     Tries to find translators applicable for the input string.
     Returns all successfully translated queries and the name of the translation frontend that
@@ -114,7 +107,7 @@ def guess_correct_translator(inp: str, configuration: ActiveConfig) -> list[Tupl
 def _run_translator_with_configuration(
     inp: str,
     translator_name: str,
-    configuration: ActiveConfig,
+    configuration: Configuration,
 ) -> Recipe:
     """
     Sets up the configuration for a given translator and runs the translator
@@ -124,6 +117,5 @@ def _run_translator_with_configuration(
     :raise InputError: If the input is can not be parsed by the translator.
     :raise NotSupported: If the input contains an unsupported feature for the translator.
     """
-    cfg = configuration.project(GENERAL_CONFIG_SECTION, ANNOTATIONS_CONFIG_SECTION, translator_name)
     function = known_translators[translator_name]
-    return function(inp, cfg)
+    return function(inp, configuration)

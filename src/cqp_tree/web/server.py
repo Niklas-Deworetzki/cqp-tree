@@ -5,9 +5,8 @@ from typing import Any, Iterable
 from flask import Flask, jsonify, redirect, render_template, request, send_file
 
 import cqp_tree
-from cqp_tree import ActiveConfig, Configuration, DeclaredConfig, Recipe
-from cqp_tree.utils import UPPERCASE_ALPHABET, associate_with_names, get_nested
-from cqp_tree.configuration.values import read_corpus_config
+from cqp_tree import Configuration, DeclaredConfig, Recipe
+from cqp_tree.utils import UPPERCASE_ALPHABET, associate_with_names
 from cqp_tree.web.run_on_url import make_external_search_url
 
 cqp_tree.declare_configuration(
@@ -60,7 +59,7 @@ cqp_tree.declare_configuration(
 TEMPLATE_DIR = Path(__file__).parent / 'static'
 
 
-def setup_server(config: cqp_tree.ActiveConfig) -> Flask:
+def setup_server(config: Configuration) -> Flask:
     server = Flask(__name__, template_folder=str(TEMPLATE_DIR))
 
     @server.route('/', methods=['GET'])
@@ -91,34 +90,24 @@ def setup_server(config: cqp_tree.ActiveConfig) -> Flask:
 
 
 def get_preconfigured_corpora(cfg: Configuration) -> Iterable[tuple[str, str, bool, dict]]:
+def get_preconfigured_corpora(cfg: Configuration) -> Iterable[PreconfiguredCorpus]:
     if not cfg.corpus_configs:
         return
 
     path = Path(cfg.corpus_configs)
     for configuration_file in path.iterdir():
-        config = read_corpus_config(configuration_file)
+        config = cqp_tree.configuration_from_file(configuration_file)
         corpus_id = configuration_file.stem
-
-        display_name = get_nested(
-            config, 'meta', 'display_name', default=cfg.system_name or 'corpus'
-        )
-        preselected = get_nested(config, 'meta', 'preselected', default=False)
-        yield corpus_id, display_name, preselected, config
+        display_name = config.display_name or cfg.system_name or 'corpus'
+        yield PreconfiguredCorpus(corpus_id, display_name, config)
 
 
-def corpus_sorting(data):
-    """First preferred corpora, then sort alphabetically."""
-    priority = get_nested(data[3], 'meta', 'preferred', default=False)
-    name = data[1]
-    return not priority, name.casefold()
-
-
-def serve_index(config: ActiveConfig):
-    cfg = config.project('web')
+def serve_index(config: Configuration):
     return render_template(
         'index.html',
         cfg=cfg,
         corpus_configs=sorted(get_preconfigured_corpora(cfg), key=corpus_sorting),
+        cfg=config,
         settings=cqp_tree.iterate_configurations_by_section(
             config,
             hidden_sections={'web'},
@@ -127,9 +116,8 @@ def serve_index(config: ActiveConfig):
     )
 
 
-def serve_about(config: ActiveConfig):
-    cfg = config.project('web')
-    return render_template('about.html', cfg=cfg)
+def serve_about(config: Configuration):
+    return render_template('about.html', cfg=config)
 
 
 def serve_external_search():
@@ -145,20 +133,16 @@ def serve_external_search():
         )
 
 
-def serve_branding(config: ActiveConfig):
-    cfg = config.project('web')
-    if cfg.branding:
-        parsed_url = urlparse(cfg.branding)
+def serve_branding(config: Configuration):
+    if config.branding:
+        parsed_url = urlparse(config.branding)
         if parsed_url.scheme in ('http', 'https'):
-            return redirect(cfg.branding)
-        return send_file(cfg.branding)
+            return redirect(config.branding)
+        return send_file(config.branding)
     return '', 404
 
 
-def serve_translation(config: ActiveConfig):
-    def error(message: str, status: int = 400):
-        return jsonify({'error': message}), status
-
+def serve_translation(config: Configuration):
     try:
         text, configuration = extract_request_data(config)
         plan = cqp_tree.translate_input(text, configuration)
@@ -166,11 +150,7 @@ def serve_translation(config: ActiveConfig):
         if is_too_complex(plan):
             raise ValueError('Your query is too complex! Try using fewer tokens.')
 
-        format_config = configuration.project(
-            cqp_tree.GENERAL_CONFIG_SECTION,
-            cqp_tree.ANNOTATIONS_CONFIG_SECTION,
-        )
-        return jsonify(to_json(plan, format_config))
+        return jsonify(to_json(plan, config))
 
     except ValueError as validation_error:
         return error(str(validation_error), 422)
@@ -202,7 +182,7 @@ def is_too_complex(plan: Recipe) -> bool:
     return False
 
 
-def extract_request_data(config: ActiveConfig) -> tuple[str, ActiveConfig]:
+def extract_request_data(config: Configuration) -> tuple[str, Configuration]:
     translation_request = request.get_json()
     if translation_request is None or not isinstance(translation_request, dict):
         raise ValueError('Malformed request')
@@ -217,20 +197,21 @@ def extract_request_data(config: ActiveConfig) -> tuple[str, ActiveConfig]:
 
     provided_settings = translation_request.get('settings', {})
 
-    request_config = ActiveConfig(sections={}, inherited=config)
+    # Build a new configuration scope, applying configuration requested from client
+    request_config = Configuration(sections={}, inherited=config)
     for section, entries in cqp_tree.iterate_configurations_by_section(
         config, hidden_sections={'web'}
     ):
         for entry, _ in entries:
             provided_value = provided_settings.get(f'{section}.{entry.key}')
             if provided_value is not None:
-                request_config.put(section, entry.key, provided_value)
+                request_config[entry.key] = provided_value
 
-    request_config.put(cqp_tree.GENERAL_CONFIG_SECTION, 'translator', translator)
+    request_config.translator = translator
     return text, request_config
 
 
-def to_json(plan: Recipe, configuration: cqp_tree.Configuration) -> dict:
+def to_json(plan: Recipe, configuration: Configuration) -> dict:
     environment = associate_with_names(plan.identifiers(), UPPERCASE_ALPHABET)
 
     def convert(query: cqp_tree.Query) -> str:

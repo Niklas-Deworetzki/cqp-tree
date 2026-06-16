@@ -1,6 +1,7 @@
 from pathlib import Path
+from typing import Optional
 
-from cqp_tree.configuration.values import ActiveConfig, configuration_from_file
+from cqp_tree.configuration.configurations import Configuration, configuration_from_file
 
 PROFILES_DIR = Path(__file__).parent / 'profiles'
 
@@ -18,7 +19,11 @@ def available_profiles() -> set[str]:
     return set(_fetch_available_profiles().keys())
 
 
-def configuration_from_profile(name: str, inherited: ActiveConfig) -> ActiveConfig:
+def configuration_from_profile(
+    name: str,
+    inherited: Optional[Configuration] = None,
+    inherit_from_default: bool = False,
+) -> Configuration:
     """
     Attempt to load an ActiveConfig from a profile file.
 
@@ -27,4 +32,4 @@ def configuration_from_profile(name: str, inherited: ActiveConfig) -> ActiveConf
     profile_file = _fetch_available_profiles().get(name)
     if profile_file is None:
         raise KeyError(f'No profile named {name}.')
-    return configuration_from_file(profile_file, inherited)
+    return configuration_from_file(profile_file, inherited, inherit_from_default)

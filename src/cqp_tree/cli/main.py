@@ -119,7 +119,7 @@ def get_input(args: argparse.Namespace) -> Optional[str]:
         return sys.stdin.read() or None
 
 
-def translate(query_str: str, config: cqp_tree.ActiveConfig) -> cqp_tree.Recipe | None:
+def translate(query_str: str, config: cqp_tree.Configuration) -> cqp_tree.Recipe | None:
     try:
         return cqp_tree.translate_input(query_str, config)
     except cqp_tree.UnableToGuessTranslatorError as translation_error:
@@ -133,23 +133,15 @@ def translate(query_str: str, config: cqp_tree.ActiveConfig) -> cqp_tree.Recipe 
     return None
 
 
-def get_configuration(args: argparse.Namespace) -> cqp_tree.ActiveConfig:
+def get_configuration(args: argparse.Namespace) -> cqp_tree.Configuration:
     cfg = cqp_tree.default_configuration()
     if args.profile:
         cfg = cqp_tree.configuration_from_profile(args.profile, cfg)
 
     cfg = cqp_tree.configuration_from_args(args, cfg)
 
-    cfg.put(
-        cqp_tree.GENERAL_CONFIG_SECTION,
-        'translator',
-        args.translator if args.translator else None,
-    )
-    cfg.put(
-        cqp_tree.GENERAL_CONFIG_SECTION,
-        'span',
-        args.span if args.span else None,
-    )
+    cfg.translator = args.translator if args.translator else None
+    cfg.span = args.span if args.span else None
     return cfg
 
 
@@ -183,7 +175,7 @@ def main():
     return _handle_io(args, configuration)
 
 
-def _handle_io(args: argparse.Namespace, configuration: cqp_tree.ActiveConfig) -> int:
+def _handle_io(args: argparse.Namespace, configuration: cqp_tree.Configuration) -> int:
     with ExitStack() as managed_resources:
         output = sys.stdout
         if args.output:
@@ -204,11 +196,7 @@ def _handle_io(args: argparse.Namespace, configuration: cqp_tree.ActiveConfig) -
             if not plan:
                 return 1
 
-            formatting_config = configuration.project(
-                cqp_tree.GENERAL_CONFIG_SECTION,
-                cqp_tree.ANNOTATIONS_CONFIG_SECTION,
-            )
-            for line in cqp_tree.format_plan(plan, formatting_config):
+            for line in cqp_tree.format_recipe(plan, configuration):
                 output.write(line + '\n')
 
         except cqp_tree.ParsingFailed as parse_failure:

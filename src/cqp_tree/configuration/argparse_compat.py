@@ -3,20 +3,18 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any, Iterable
 
-from cqp_tree.configuration.declaration import (
+from cqp_tree.configuration.configurations import (
+    Configuration,
+    configuration_from_file,
     GENERAL_CONFIG_SECTION,
     DeclaredConfig,
     iterate_declared_configurations,
-)
-from cqp_tree.configuration.values import (
-    ActiveConfig,
-    configuration_from_file,
 )
 
 CONFIG_KEYS_WITH_EXPLICIT_CLI_FLAG = {'span', 'translator'}
 
 
-def configuration_from_args(args: argparse.Namespace, inherited: ActiveConfig) -> ActiveConfig:
+def configuration_from_args(args: argparse.Namespace, inherited: Configuration) -> Configuration:
     if args.config:
         config_file = Path(args.config)
         inherited = configuration_from_file(config_file, inherited)
@@ -27,7 +25,7 @@ def configuration_from_args(args: argparse.Namespace, inherited: ActiveConfig) -
         if value is not None:
             values[section][key] = cfg.parse_value(value)
 
-    return ActiveConfig(inherited=inherited, sections=values)
+    return Configuration(inherited=inherited, sections=values)
 
 
 def add_config_flag_to_parser(parser: argparse.ArgumentParser):
