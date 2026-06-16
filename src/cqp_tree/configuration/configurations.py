@@ -125,7 +125,7 @@ def get_declared_configuration_sections() -> Iterable[DeclaredConfigurationSecti
 
     # Sort sections alphabetically, making sure that the default sections come first.
     sections = set(DECLARED_CONFIGURATION.keys())
-    sections -= (GENERAL_CONFIG_SECTION, ANNOTATIONS_CONFIG_SECTION)
+    sections -= {GENERAL_CONFIG_SECTION, ANNOTATIONS_CONFIG_SECTION}
     sections = [ANNOTATIONS_CONFIG_SECTION, GENERAL_CONFIG_SECTION] + list(sorted(sections))
     for name in sections:
         section = DeclaredConfigurationSection(
@@ -149,12 +149,6 @@ class Configuration:
 
         values = reduce(dict.__or__, sections.values(), {})
         object.__setattr__(self, '_values', values)
-
-    def put(self):
-        pass
-
-    def project(self):
-        pass
 
     def get(self, key: str) -> Any:
         if key in self._values:

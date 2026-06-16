@@ -267,6 +267,6 @@ def to_json(plan: Recipe, configuration: Configuration) -> dict:
         result['span'] = configuration.span
     return result
 
+
 def bad_request(message: str, status: int = 400):
     return jsonify({'error': message}), status
-

@@ -12,11 +12,7 @@ def do_parse[T](construct: Callable, text: str) -> T:
     return make_parse(GrewLexer, GrewParser, construct)(text)
 
 
-CONFIG = cqp_tree.default_configuration().project(
-    cqp_tree.GENERAL_CONFIG_SECTION,
-    cqp_tree.ANNOTATIONS_CONFIG_SECTION,
-    'grew',
-)
+CONFIG = cqp_tree.default_configuration()
 
 
 def get_builder() -> QueryBuilder:

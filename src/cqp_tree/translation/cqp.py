@@ -8,7 +8,10 @@ from cqp_tree.translation.backends.sketch_engine import (
     sketchengine_from_query,
 )
 from cqp_tree.translation.backends.common import Query, QueryFormatter
-from cqp_tree.translation.backends.cwb import CwbFormatter, cwb_from_query
+from cqp_tree.translation.backends.cwb import (
+    CwbFormatter,
+    cwb_from_query,
+)
 from cqp_tree.utils import (
     UPPERCASE_ALPHABET,
     associate_with_names,

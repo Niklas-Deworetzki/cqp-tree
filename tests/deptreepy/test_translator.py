@@ -4,11 +4,7 @@ import cqp_tree
 from cqp_tree import *
 from cqp_tree.frontends.deptreepy import translate_deptreepy
 
-CONFIG = cqp_tree.default_configuration().project(
-    cqp_tree.GENERAL_CONFIG_SECTION,
-    cqp_tree.ANNOTATIONS_CONFIG_SECTION,
-    'deptreepy',
-)
+CONFIG = cqp_tree.default_configuration()
 
 
 class TranslationTests(unittest.TestCase):
@@ -44,7 +40,7 @@ class TranslationTests(unittest.TestCase):
         self.assertEqual(
             token.attributes,
             Disjunction(
-                [
+                (
                     Comparison(
                         Attribute(None, 'field'),
                         '=',
@@ -55,7 +51,7 @@ class TranslationTests(unittest.TestCase):
                         '=',
                         Literal('"b"'),
                     ),
-                ]
+                )
             ),
         )
 
@@ -79,7 +75,7 @@ class TranslationTests(unittest.TestCase):
         self.assertEqual(
             token.attributes,
             Disjunction(
-                [
+                (
                     Comparison(
                         Attribute(None, 'field'),
                         'contains',
@@ -90,7 +86,7 @@ class TranslationTests(unittest.TestCase):
                         'contains',
                         Literal('"b"'),
                     ),
-                ]
+                )
             ),
         )
 
@@ -101,7 +97,6 @@ class TranslationTests(unittest.TestCase):
         (token, ) = q.tokens
         self.assertIsNone(token.attributes)
 
-
     def test_and_predicate(self):
         (q,) = translate_deptreepy('(AND (a 1) (b 2))', CONFIG).queries
         (token,) = q.tokens
@@ -109,7 +104,7 @@ class TranslationTests(unittest.TestCase):
         self.assertEqual(
             token.attributes,
             Conjunction(
-                [
+                (
                     Comparison(
                         Attribute(None, 'a'),
                         '=',
@@ -120,7 +115,7 @@ class TranslationTests(unittest.TestCase):
                         '=',
                         Literal('"2"'),
                     ),
-                ]
+                )
             ),
         )
 
@@ -131,7 +126,7 @@ class TranslationTests(unittest.TestCase):
         self.assertEqual(
             token.attributes,
             Disjunction(
-                [
+                (
                     Comparison(
                         Attribute(None, 'a'),
                         '=',
@@ -142,7 +137,7 @@ class TranslationTests(unittest.TestCase):
                         '=',
                         Literal('"2"'),
                     ),
-                ]
+                )
             ),
         )
 
