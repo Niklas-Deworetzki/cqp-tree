@@ -24,6 +24,8 @@ CQP_OPERATIONS = {
 
 
 class CQPDialect(StrEnum):
+    """Supported CQP dialects."""
+
     CWB = 'Corpus Workbench'
     SKETCH_ENGINE = 'Sketch Engine'
 
@@ -39,18 +41,27 @@ FORMATTERS: dict[CQPDialect, type[QueryFormatter]] = {
 }
 
 
-def from_query(q: query.Query, configuration: Configuration) -> Query:
+def parsed_to_cqp(q: query.Query, configuration: Configuration) -> Query:
+    """Convert a parsed query from a frontend into CQP."""
     return TRANSLATORS[configuration.dialect](q, configuration)
 
 
 def format_query(q: Query, configuration: Configuration) -> str:
+    """Format a query into string representation given a configuration."""
     return FORMATTERS[configuration.dialect].to_str(q, configuration)
 
 
 Query.to_string = format_query
 
 
-def format_plan(plan: query.Recipe, configuration: Configuration) -> Iterable[str]:
+def format_recipe(plan: query.Recipe, configuration: Configuration) -> Iterable[str]:
+    """
+    Format a parsed recipe into an iterator of strings,
+    each of which represents one query of the recipe.
+
+    The order in which strings are produced by this function respects dependencies
+    between queries.
+    """
     environment = associate_with_names(plan.identifiers(), QUERY_ALPHABET)
     parts = plan.as_dict()
 
@@ -66,7 +77,7 @@ def format_plan(plan: query.Recipe, configuration: Configuration) -> Iterable[st
             yield from rec(part.lhs)
             yield from rec(part.rhs)
         else:
-            query_text = from_query(part, configuration).to_string(configuration)
+            query_text = parsed_to_cqp(part, configuration).to_string(configuration)
             formatted = query_text + ';'
 
         if include_assignment:
