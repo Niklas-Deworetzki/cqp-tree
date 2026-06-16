@@ -177,7 +177,7 @@ def serve_translation(config: Configuration):
         if is_too_complex(plan):
             raise ValueError('Your query is too complex! Try using fewer tokens.')
 
-        return jsonify(to_json(plan, config))
+        return jsonify(to_json(plan, configuration))
 
     except ValueError as validation_error:
         return bad_request(str(validation_error), 422)
@@ -232,7 +232,7 @@ def extract_request_data(config: Configuration) -> tuple[str, Configuration]:
         for entry, _ in entries:
             provided_value = provided_settings.get(f'{section}.{entry.key}')
             if provided_value is not None:
-                request_config[entry.key] = provided_value
+                request_config[entry.key] = entry.parse_value(provided_value)
 
     request_config.translator = translator
     return text, request_config
