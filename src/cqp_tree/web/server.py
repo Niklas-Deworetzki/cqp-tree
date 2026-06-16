@@ -1,6 +1,8 @@
-from urllib.parse import urlparse, unquote
+from dataclasses import dataclass
+from functools import total_ordering
 from pathlib import Path
 from typing import Any, Iterable
+from urllib.parse import unquote, urlparse
 
 from flask import Flask, jsonify, redirect, render_template, request, send_file
 
@@ -89,7 +91,30 @@ def setup_server(config: Configuration) -> Flask:
     return server
 
 
-def get_preconfigured_corpora(cfg: Configuration) -> Iterable[tuple[str, str, bool, dict]]:
+@total_ordering
+@dataclass(frozen=True, eq=True)
+class PreconfiguredCorpus:
+    corpus_id: str
+    display_name: str
+    config: Configuration
+
+    @property
+    def preselected(self):
+        return self.config.preselected or False
+
+    @property
+    def preferred(self):
+        return self.config.preferred or False
+
+    def __lt__(self, other: 'PreconfiguredCorpus'):
+        # Preferred corpora get priority, being displayed above the others.
+        if self.preferred and not other.preferred:
+            return True
+        if not self.preferred and other.preferred:
+            return False
+        return self.display_name.casefold() < other.display_name.casefold()
+
+
 def get_preconfigured_corpora(cfg: Configuration) -> Iterable[PreconfiguredCorpus]:
     if not cfg.corpus_configs:
         return
@@ -105,9 +130,8 @@ def get_preconfigured_corpora(cfg: Configuration) -> Iterable[PreconfiguredCorpu
 def serve_index(config: Configuration):
     return render_template(
         'index.html',
-        cfg=cfg,
-        corpus_configs=sorted(get_preconfigured_corpora(cfg), key=corpus_sorting),
         cfg=config,
+        corpus_configs=sorted(get_preconfigured_corpora(config)),
         settings=cqp_tree.iterate_configurations_by_section(
             config,
             hidden_sections={'web'},

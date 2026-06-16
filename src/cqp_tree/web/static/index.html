@@ -86,10 +86,10 @@
                     <label for="corpora-select" class="form-label">Corpus:</label>
                     <select id="corpora-select" class="form-select"
                         onchange="populateSettingsFromDropdown(this)">
-                        {% for (corpus_id, display_name, preselected, config) in corpus_configs %}
-                        <option value="{{ corpus_id }}" 
-                            {% if preselected %} selected {% endif %}>
-                            {{ display_name }}
+                        {% for preconfigured_corpus in corpus_configs %}
+                        <option value="{{ preconfigured_corpus.corpus_id }}"
+                            {% if preconfigured_corpus.preselected %} selected {% endif %}>
+                            {{ preconfigured_corpus.display_name }}
                         </option>
                         {% endfor %}
                     </select>
@@ -253,10 +253,10 @@
         }
 
         let settings = {};
-        {% for (corpus_id, display_name, preselected, config) in corpus_configs %}
-        settings['{{ corpus_id }}'] = {{ config | tojson | safe }};
-        {% if preselected %}
-        populateSettings(settings['{{ corpus_id }}']);
+        {% for preconfigured_corpus in corpus_configs %}
+        settings['{{ preconfigured_corpus.corpus_id }}'] = {{ preconfigured_corpus.config | tojson | safe }};
+        {% if preconfigured_corpus.preselected %}
+        populateSettings(settings['{{ preconfigured_corpus.corpus_id }}']);
         {% endif %}
         {% endfor %}
     </script>
