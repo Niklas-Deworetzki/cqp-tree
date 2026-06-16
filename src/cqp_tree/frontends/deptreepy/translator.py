@@ -124,9 +124,9 @@ def operation_constructor_for_field(field) -> Callable[[str], ct.Comparison]:
     return constructor
 
 
-# pylint: disable=unused-argument
 @ct.translator('deptreepy')
 def translate_deptreepy(deptreepy: str, config: Configuration) -> ct.Recipe:
+    assert config  # Make it so that the argument appears as used to the linter.
     builder = ct.Recipe.Builder()
 
     def combine_operation(
@@ -149,8 +149,6 @@ def translate_deptreepy(deptreepy: str, config: Configuration) -> ct.Recipe:
             return Query(res)
 
     # we want to return here for every possible operator
-    # pylint: disable=too-many-return-statements
-    # pylint: disable=too-many-branches
     def convert(lisp) -> TokenConstraint | DependencyConstraint | Query:
         match lisp:
             case ['TREE', *_]:

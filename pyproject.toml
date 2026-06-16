@@ -24,7 +24,6 @@ dependencies = [
     'antlr4-python3-runtime==4.13.2',
     'pyparsing==3.2.5',
     'conllu==6.0.0',
-
     'Flask==3.1.2',
     'waitress==3.0.2',
 ]
@@ -55,8 +54,6 @@ min-public-methods = 1
 max-locals = 20
 max-positional-arguments = 7
 max-args = 10
-max-branches = 15
-max-returns = 10
 ignore-paths = [
     'src/cqp_tree/frontends/grew/antlr/',
     'src/cqp_tree/frontends/depsearch/antlr/',
@@ -65,19 +62,22 @@ allowed-redefined-builtins = [
     'id'
 ]
 disable = [
-    'W0511',
+    'W0511', # We want to mark unfinished code or missing features as such.
+
     # Positional arguments appear to be out of order?
-    'W1114',
+    'W1114', # arguments-out-of-order
 
     # We sometimes need to have broad exceptions, as we work with external code.
-    'W0718',
+    'W0718', # broad-exception-caught
 
     # Control flow should be readable, not dictated by a tool.
-    'R1705',
-    'R1720',
+    'R0911', # too-many-return-statements
+    'R0912', # too-many-branches
+    'R1705', # no-else-return
+    'R1720', # no-else-raise
 
     # Not everything needs a docstring (for now).
-    'C0114',
-    'C0115',
-    'C0116',
+    'C0114', # missing-module-docstring
+    'C0115', # missing-class-docstring
+    'C0116', # missing-function-docstring
 ]
