@@ -96,6 +96,7 @@
                 </div>
                 {% endif %}
 
+                <!-- QUERY INPUT -->
                 <div class="mb-3 position-relative">
                     <label for="query-input-field" class="form-label">Your query:</label>
                     <textarea id="query-input-field" class="form-control font-monospace border" rows="5"
@@ -105,6 +106,7 @@
                     </div>
                 </div>
 
+                <!-- LANGUAGE SELECTION -->
                 <div class="d-flex flex-column flex-md-row justify-content-between mb-3">
                     <div class="align-content-center me-md-3 mb-1 mb-md-0">
                         <label for="query-language-selection" class="form-label">
@@ -119,19 +121,36 @@
                     </div>
                 </div>
 
+                <!-- TRANSLATE QUERY BUTTON -->
                 <div class="mb-5 d-grid col-md-10 mx-auto">
                     <button type="button" id="submit-query" class="btn btn-primary">Translate query
                     </button>
                 </div>
 
+                <!-- ERROR DISPLAY -->
                 <div id="error-alert" class="alert alert-warning alert-dismissible fade" role="alert">
                     <h4>Something went wrong!</h4>
                     <span id="error-msg">Unknown error</span>
                     <button type="button" class="btn-close" aria-label="Close" onclick="hideError()"></button>
                 </div>
 
+                <!-- QUERY OUTPUT -->
+                <div class="mb-5">
+                    <label for="query-output-field" class="form-label">CQL translation:</label>
+                    <div class="input-group">
+                        <input id="query-output-field" class="form-control border font-monospace truncated"
+                            placeholder="Your generated query will appear here." readonly>
+                        <div class="input-group-append">
+                            <button type="button" id="copy-response" class="btn btn-outline-primary"
+                                data-clipboard-target="#query-output-field" title="Copy to clipboard">
+                                <i class="bi bi-clipboard"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
-                <div id="translation-result-area" class="mb-5">
+                <!-- RUN ON CORPUS INTEGRATION -->
+                <div id="translation-result-area" class="mb-3">
                     <div class="mb-3 d-grid col-md-10 mx-auto">
                         <a id="run-on-korp-link" class="btn btn-outline-primary" target="_blank" rel="noopener noreferrer">
                             Run on {{ cfg.system_name }}
@@ -156,20 +175,6 @@
                             </button>
                         </div>
                         {% endif %}
-                    </div>
-                </div>
-
-                <div class=" mb-3">
-                    <label for="query-output-field" class="form-label">CQL translation:</label>
-                    <div class="input-group">
-                        <input id="query-output-field" class="form-control border font-monospace truncated"
-                            placeholder="Your generated query will appear here." readonly>
-                        <div class="input-group-append">
-                            <button type="button" id="copy-response" class="btn btn-outline-primary"
-                                data-clipboard-target="#query-output-field" title="Copy to clipboard">
-                                <i class="bi bi-clipboard"></i>
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>
