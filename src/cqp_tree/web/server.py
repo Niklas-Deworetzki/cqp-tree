@@ -145,8 +145,11 @@ def serve_about(config: Configuration):
 
 
 def serve_external_search():
-    url = unquote(request.args.get('url'))
-    query = unquote(request.args.get('query'))
+    if 'url' not in request.args or 'query' not in request.args:
+        return bad_request('Missing required query parameters "url" or "query".')
+
+    url = unquote(request.args['url'])
+    query = unquote(request.args['query'])
     try:
         search_url = make_external_search_url(url, query)
         return redirect(search_url)
@@ -177,25 +180,25 @@ def serve_translation(config: Configuration):
         return jsonify(to_json(plan, config))
 
     except ValueError as validation_error:
-        return error(str(validation_error), 422)
+        return bad_request(str(validation_error), 422)
 
     except cqp_tree.UnableToGuessTranslatorError as unable_to_guess_translator:
         if unable_to_guess_translator.no_translator_matches():
-            return error(
+            return bad_request(
                 'This query cannot be translated. '
                 'Try checking for syntax errors or manually select the query language.'
             )
-        return error(
+        return bad_request(
             'This query is valid in multiple query languages. '
             'Please manually select the query language you intend.'
         )
 
     except cqp_tree.NotSupported as not_supported:
-        return error('This query is not supported: ' + str(not_supported))
+        return bad_request('This query is not supported: ' + str(not_supported))
 
     except cqp_tree.ParsingFailed as parse_error:
         parse_error = next(iter(parse_error.errors))
-        return error('This query cannot be parsed: ' + parse_error.message)
+        return bad_request('This query cannot be parsed: ' + parse_error.message)
 
 
 def is_too_complex(plan: Recipe) -> bool:
@@ -239,7 +242,7 @@ def to_json(plan: Recipe, configuration: Configuration) -> dict:
     environment = associate_with_names(plan.identifiers(), UPPERCASE_ALPHABET)
 
     def convert(query: cqp_tree.Query) -> str:
-        return cqp_tree.cqp_from_query(query, configuration).to_string(configuration)
+        return cqp_tree.parsed_to_cqp(query, configuration).to_string(configuration)
 
     queries = {environment[query.identifier]: convert(query) for query in plan.queries}
     operations = {
@@ -263,3 +266,7 @@ def to_json(plan: Recipe, configuration: Configuration) -> dict:
     if configuration.span:
         result['span'] = configuration.span
     return result
+
+def bad_request(message: str, status: int = 400):
+    return jsonify({'error': message}), status
+
