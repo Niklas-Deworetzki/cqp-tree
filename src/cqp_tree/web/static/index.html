@@ -242,19 +242,17 @@
         }
 
         function populateSettings(config) {
-            for (const [_, section] of Object.entries(config)) {
-                for (const [key, value] of Object.entries(section)) {
-                    formField = document.getElementById(key);
-                    if (formField) {
-                        formField.value = value;
-                    }
+            for (const [key, value] of Object.entries(config)) {
+                let formField = document.getElementById(key);
+                if (formField) {
+                    formField.value = value;
                 }
             }
         }
 
         let settings = {};
         {% for preconfigured_corpus in corpus_configs %}
-        settings['{{ preconfigured_corpus.corpus_id }}'] = {{ preconfigured_corpus.config | tojson | safe }};
+        settings['{{ preconfigured_corpus.corpus_id }}'] = {{ preconfigured_corpus.config.flatten() | tojson | safe }};
         {% if preconfigured_corpus.preselected %}
         populateSettings(settings['{{ preconfigured_corpus.corpus_id }}']);
         {% endif %}
@@ -386,7 +384,7 @@
                         let displayName = '{{ cfg.system_name }}';
                         if (corpusSelection) {
                             const id = document.getElementById('corpora-select').value;
-                            displayName = settings[id]["meta"]["display_name"];
+                            displayName = settings[id]['display_name'];
 
                             targetUrl = targetUrl.replaceAll('{corpus}', encodeURIComponent(id));
                         }

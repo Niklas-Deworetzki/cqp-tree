@@ -173,6 +173,10 @@ class Configuration:
     def __setattr__(self, name: str, value: Any):
         self.set(name, value)
 
+    def flatten(self) -> dict[str, Any]:
+        flattened = self._inherited.flatten() if self._inherited is not None else {}
+        return flattened | self._values
+
 
 def default_configuration() -> Configuration:
     """
