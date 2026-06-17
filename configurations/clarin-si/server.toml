@@ -5,3 +5,8 @@ baseurl = "https://www.clarin.si/ske/#concordance?tab=advanced&queryselector=cql
 system_name = "CLARIN.SI noSketch Engine"
 corpus_configs = "configurations/clarin-si/corpora"
 allow_external_search = true
+
+[general]
+ud_mode = true
+span = "s"
+dialect = "Sketch Engine"

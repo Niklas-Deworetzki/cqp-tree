@@ -2,10 +2,6 @@
 display_name = "ParlaMint-IT 5.0 (Italian parliament)"
 preselected = false
 
-[general]
-span = "s"
-dialect = "Sketch Engine"
-
 [annotation_scheme]
 form = "word"
 lemma = "lemma"
