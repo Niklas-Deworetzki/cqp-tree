@@ -1,0 +1,17 @@
+[meta]
+display_name = "Šolar: učenci (razvojni)"
+preselected = false
+
+[general]
+span = "s"
+dialect = "Sketch Engine"
+
+[annotation_scheme]
+form = "word"
+lemma = "lemma"
+upos = "pos"
+xpos = "tag" # this is the MSD in Slovene; "tag_en" for the MSD in English
+feats = "ud_feats"
+id = "id"
+head = "jos_head_id"
+deprel = "jos_dep"

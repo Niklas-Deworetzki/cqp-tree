@@ -1,7 +1,7 @@
 import math
 import unittest
 
-import cqp_tree.translation.cqp as cqp
+import cqp_tree.translation.backends.common as cqp
 import cqp_tree.translation.query as query
 
 

@@ -1,0 +1,17 @@
+[meta]
+display_name = "CLASSLAWiki-bg (Bulgarian Wikipedia)"
+preselected = false
+
+[general]
+span = "s"
+dialect = "Sketch Engine"
+
+[annotation_scheme]
+form = "word"
+lemma = "lemma"
+upos = "pos"
+xpos = "tag"
+feats = "feats"
+id = "id"
+head = "dep_head_id"
+deprel = "dep"

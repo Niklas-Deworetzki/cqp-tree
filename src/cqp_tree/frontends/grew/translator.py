@@ -1,39 +1,12 @@
 from collections import defaultdict
-from dataclasses import dataclass, field
-from typing import List, Self, override
-
-from antlr4 import CommonTokenStream, InputStream, TerminalNode
-from antlr4.error.ErrorListener import ErrorListener
+from typing import Self
 
 import cqp_tree.translation as ct
+from cqp_tree import Configuration
+from cqp_tree.frontends.antlr_utils import make_parse, string_of_token
 from cqp_tree.frontends.grew.antlr import GrewLexer, GrewParser
 
-
-@dataclass
-class ParseErrorListener(ErrorListener):
-    errors: List[ct.InputError] = field(default_factory=list)
-
-    @override
-    def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
-        self.errors.append(ct.InputError(f'{line}, {column}', msg))
-
-
-def parse(query: str) -> GrewParser.RequestContext:
-    listener = ParseErrorListener()
-
-    lexer = GrewLexer(InputStream(query))
-    stream = CommonTokenStream(lexer)
-    parser = GrewParser(stream)
-
-    for antlr in [lexer, parser]:
-        antlr.removeErrorListeners()
-        antlr.addErrorListener(listener)
-
-    result = parser.request()
-    if listener.errors:
-        raise ct.ParsingFailed(*listener.errors)
-
-    return result
+parse = make_parse(GrewLexer, GrewParser, GrewParser.request)
 
 
 Environment = defaultdict[str, ct.Token]
@@ -44,19 +17,21 @@ def new_environment() -> Environment:
 
 
 @ct.translator('grew')
-def translate_grew(grew: str) -> ct.Recipe:
+def translate_grew(grew: str, cfg: Configuration) -> ct.Recipe:
     grew_request = parse(grew)
-    return QueryBuilder().build(grew_request)
+    return QueryBuilder.build(grew_request, cfg)
 
 
 class QueryBuilder:
 
-    def __init__(self, inherited: 'QueryBuilder' = None):
+    def __init__(self, config: Configuration = None, inherited: 'QueryBuilder' = None):
+        assert config or inherited, 'config or inherited must be provided.'
         self.dependencies = list[ct.Dependency]()
         self.constraints = list[ct.Constraint]()
         self.predicates = list[ct.Predicate]()
 
         self.environment = new_environment()
+        self.config: Configuration = config or inherited.config
 
         if inherited:
             self.dependencies += inherited.dependencies
@@ -88,11 +63,11 @@ class QueryBuilder:
         }[type(item)]
 
     @staticmethod
-    def build(request: GrewParser.RequestContext) -> ct.Recipe:
+    def build(request: GrewParser.RequestContext, cfg: Configuration) -> ct.Recipe:
         plan = ct.Recipe.Builder()
 
         pattern = request.pattern().body()
-        root_builder = QueryBuilder().translate_clauses(pattern)
+        root_builder = QueryBuilder(config=cfg).translate_clauses(pattern)
         if root_builder.is_empty():
             # If pattern is empty, match an arbitrary token.
             query = ct.Query(tokens=[ct.Token()])
@@ -103,7 +78,7 @@ class QueryBuilder:
         goal = current
 
         for item in request.requestItem():
-            builder = QueryBuilder(root_builder).translate_clauses(item.body())
+            builder = QueryBuilder(inherited=root_builder).translate_clauses(item.body())
             current = plan.add_query(builder.build_query())
 
             goal = plan.add_operation(goal, QueryBuilder.query_operator(item), current)
@@ -115,10 +90,6 @@ class QueryBuilder:
         for clause in clauses.clause():
             self.translate_clause(clause)
         return self
-
-    @staticmethod
-    def string_of_token(token: TerminalNode) -> str:
-        return token.symbol.text
 
     @staticmethod
     def to_cqp_operator(grew: GrewParser.CompareContext) -> str:
@@ -160,7 +131,7 @@ class QueryBuilder:
             deptypes = [self.to_operand(dt) for dt in arrow.edgeTypes().literal()]
             if isinstance(arrow, GrewParser.PositiveArrowContext):
                 dependency_constraint = ct.Disjunction.of(
-                    ct.Comparison(deprel, '=', deptype) for deptype in deptypes
+                    ct.dependency_type_equals(dst, deptype, self.config) for deptype in deptypes
                 )
 
             elif isinstance(arrow, GrewParser.NegatedArrowContext):
@@ -198,17 +169,17 @@ class QueryBuilder:
     ) -> ct.Predicate | None:
         # Checking for existence of feature: Tense
         if isinstance(grew, GrewParser.PresenceContext):
-            attribute_name = self.string_of_token(grew.Identifier())
+            attribute_name = string_of_token(grew.Identifier())
             return ct.Exists(ct.Attribute(None, attribute_name))
 
         # Checking for absence of feature: !Tense
         if isinstance(grew, GrewParser.AbsenceContext):
-            attribute_name = self.string_of_token(grew.Identifier())
+            attribute_name = string_of_token(grew.Identifier())
             return ct.Negation(ct.Exists(ct.Attribute(None, attribute_name)))
 
         # Requirement of feature to be certain value: Tense <> A|B|C
         if isinstance(grew, GrewParser.RequiresContext):
-            attribute_name = self.string_of_token(grew.Identifier())
+            attribute_name = string_of_token(grew.Identifier())
             attribute = ct.Attribute(None, attribute_name)
 
             alternatives = [self.to_operand(feature) for feature in grew.featureValue()]
@@ -239,23 +210,23 @@ class QueryBuilder:
     ) -> ct.Operand:
         # Proper string like: "aßσþ"
         if isinstance(grew, GrewParser.UnicodeStringContext):
-            text = self.string_of_token(grew.String())
+            text = string_of_token(grew.String())
             return ct.Literal(text)
 
         # Dependency type with subtype: nsubj:pass
         if isinstance(grew, GrewParser.SubtypeContext):
-            sup = self.string_of_token(grew.Identifier(0))
-            sub = self.string_of_token(grew.Identifier(1))
+            sup = string_of_token(grew.Identifier(0))
+            sub = string_of_token(grew.Identifier(1))
             return ct.Literal(f'"{sup}:{sub}"')
 
         # Identifier used as simple string: Tense
         if isinstance(grew, GrewParser.SimpleStringContext):
-            text = self.string_of_token(grew.Identifier())
+            text = string_of_token(grew.Identifier())
             return ct.Literal(f'"{text}"')
 
         # Regular expression: re"a.*"
         if isinstance(grew, GrewParser.RegexContext):
-            text = self.string_of_token(grew.String())
+            text = string_of_token(grew.String())
             return ct.Literal(text, represents_regex=True)
 
         # PCRE expression: /a.*/i
@@ -264,8 +235,8 @@ class QueryBuilder:
 
         # Attribute of another token: X.upos
         if isinstance(grew, GrewParser.AttributeContext):
-            instance = self.string_of_token(grew.Identifier(0))
-            attribute_name = self.string_of_token(grew.Identifier(1))
+            instance = string_of_token(grew.Identifier(0))
+            attribute_name = string_of_token(grew.Identifier(1))
             return ct.Attribute(self.environment[instance].identifier, attribute_name)
 
         # Literal used as part of feature structure, covered by other cases.

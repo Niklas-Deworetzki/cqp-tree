@@ -33,7 +33,7 @@ cqp-tree-web
 ```
 
 Running this command will start the server locally.
-Once it's started, click on the link displayed in your terminal or manually enter  http://localhost:5000 to start translating queries.
+Once it's started, click on the link displayed in your terminal or manually enter  http://localhost:31495 to start translating queries.
 To stop the server again, press Ctrl and C in your terminal window.
 
 ## Translating Queries
@@ -42,8 +42,9 @@ The module provides an executable called `cqp-tree`.
 It can translate different queries into a common CQP representation and offers the most control over the translation process.
 Currently, the following other query-languages are (partially) supported:
 1. [Grew-match](https://match.grew.fr/)
-2. [deptreepy](https://github.com/aarneranta/deptreepy/tree/main)
-3. [CoNLL-U](https://universaldependencies.org/format.html): this is not commonly intended as a query language, but (partial) trees in CoNLL-U format can be interpreted as queries. For details, see [conll_frontend.md](https://github.com/Niklas-Deworetzki/cqp-tree/blob/main/conll_frontend.md)
+2. [dep_search](https://aclanthology.org/W17-0233/) we have [some documentation on supported features and extensions](https://github.com/Niklas-Deworetzki/cqp-tree/blob/main/doc/depsearch.md)
+3. [deptreepy](https://github.com/aarneranta/deptreepy/tree/main)
+4. [CoNLL-U](https://universaldependencies.org/format.html): this is not commonly intended as a query language, but (partial) trees in CoNLL-U format can be interpreted as queries. For details, see [conll_frontend.md](https://github.com/Niklas-Deworetzki/cqp-tree/blob/main/docs/conll_frontend.md)
 
 In order to translate a query, you can provide it either via the command line, as the contents of a file or by directly typing it out into the program:
 

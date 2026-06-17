@@ -5,11 +5,18 @@ from typing import Callable, List, Optional, Self, Type, override
 from pyparsing import ParseException, nestedExpr
 
 import cqp_tree.translation as ct
+from cqp_tree import Configuration
+from cqp_tree.utils import filter_not_null
 
 
 def parse(s: str):
     # Parsing adapted from:
     # https://github.com/aarneranta/deptreepy/blob/a3fd7aa0b01f169afe6f37277d8bc2c624bcb433/patterns.py#L334
+    s = s.strip()
+    if not s:
+        error = ct.InputError('line: 0, col:0', 'The query cannot be empty.')
+        raise ct.ParsingFailed(error)
+
     if not s.startswith('('):  # add outer parentheses if missing
         s = '(' + s + ')'
     try:
@@ -47,7 +54,7 @@ class Query(Result):
 
     @override
     def as_dependency_constraint(self) -> 'DependencyConstraint':
-        raise ct.NotSupported('This operation does not support ')
+        raise ct.NotSupported('This operation is not supported.')
 
 
 class DependencyConstraint(Result):
@@ -119,7 +126,8 @@ def operation_constructor_for_field(field) -> Callable[[str], ct.Comparison]:
 
 
 @ct.translator('deptreepy')
-def translate_deptreepy(deptreepy: str) -> ct.Recipe:
+def translate_deptreepy(deptreepy: str, config: Configuration) -> ct.Recipe:
+    assert config  # Make it so that the argument appears as used to the linter.
     builder = ct.Recipe.Builder()
 
     def combine_operation(
@@ -128,8 +136,8 @@ def translate_deptreepy(deptreepy: str) -> ct.Recipe:
         operator: ct.SetOperator,
     ) -> TokenConstraint | Query:
         if all(isinstance(part, TokenConstraint) for part in parts):
-            conjuncts = [part.predicate for part in parts if part.predicate]
-            pred = ctor(conjuncts)
+            conjuncts = filter_not_null(part.predicate for part in parts)
+            pred = ctor.of(conjuncts)
             return TokenConstraint(predicate=pred)
 
         else:
@@ -142,14 +150,10 @@ def translate_deptreepy(deptreepy: str) -> ct.Recipe:
             return Query(res)
 
     # we want to return here for every possible operator
-    # pylint: disable=too-many-return-statements
     def convert(lisp) -> TokenConstraint | DependencyConstraint | Query:
         match lisp:
             case ['TREE', *_]:
                 raise ct.NotSupported('Only TREE_ is supported for matching subtrees.')
-
-            case [singleton]:
-                return convert(singleton)
 
             case ['TREE_', *args]:
                 if not args:
@@ -196,21 +200,24 @@ def translate_deptreepy(deptreepy: str) -> ct.Recipe:
 
             case [field, 'IN', *strpatts]:
                 ctor = operation_constructor_for_field(field)
-                pred = ct.Disjunction([ctor(strpatt) for strpatt in strpatts])
+                pred = ct.Disjunction.of(ctor(strpatt) for strpatt in strpatts)
                 return TokenConstraint(predicate=pred)
 
             case [field, strpatt]:
                 pred = operation_constructor_for_field(field)(strpatt)
                 return TokenConstraint(predicate=pred)
 
+            case ['TRUE']:
+                return TokenConstraint(predicate=None)
+
+            case [singleton]:
+                return convert(singleton)
+
             case unsupported:
                 raise ct.NotSupported(f'Encountered unsupported expression: {unsupported}')
 
     result = convert(parse(deptreepy))
-    if isinstance(result, TokenConstraint):
-        result = result.as_dependency_constraint()
-    if isinstance(result, DependencyConstraint):
-        result = result.as_query(builder)
+    result = result.as_query(builder)
 
     builder.set_goal(result.identifier)
     return builder.build()

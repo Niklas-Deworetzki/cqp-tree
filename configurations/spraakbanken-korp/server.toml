@@ -1,0 +1,6 @@
+[web]
+branding = "https://spraakbanken.gu.se/korp/574c266f2118886f71f7.svg"
+homepage = "https://spraakbanken.gu.se/"
+baseurl = "https://spraakbanken.gu.se/korp/#?search_tab=2&search=cqp%7C{query}"
+system_name = "Språkbankens Korp"
+corpus_configs = "configurations/spraakbanken-korp/corpora"

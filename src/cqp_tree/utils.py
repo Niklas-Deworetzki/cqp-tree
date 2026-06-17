@@ -1,7 +1,18 @@
 import itertools
-from typing import Annotated, Callable, Collection, Iterable, Iterator, Tuple
+from typing import Annotated, Callable, Collection, Iterable, Iterator, Optional, Tuple
 
-type NonEmpty[T] = Annotated[Collection[T], 'Non empty Sequence of T.']
+type NonEmpty[T] = Annotated[Collection[T], 'Non empty Collection of T.']
+
+
+def filter_not_null[X](xs: Iterable[Optional[X]]) -> Iterable[X]:
+    for x in xs:
+        if x is not None:
+            yield x
+
+
+def flatmap[X, Y](xs: Iterable[X], f: Callable[[X], Iterable[Y]]) -> Iterable[Y]:
+    for x in xs:
+        yield from f(x)
 
 
 def flatmap_set[X, Y](xs: Iterable[X], f: Callable[[X], Iterable[Y]]) -> set[Y]:
@@ -9,6 +20,12 @@ def flatmap_set[X, Y](xs: Iterable[X], f: Callable[[X], Iterable[Y]]) -> set[Y]:
     for x in xs:
         result.update(f(x))
     return result
+
+
+def filter_is_instance[X, Y](xs: Iterable[X], cls: type[Y]) -> Iterable[Y]:
+    for x in xs:
+        if isinstance(x, cls):
+            yield x
 
 
 def partition_set[X](s: set[X], predicate: Callable[[X], bool]) -> Tuple[set[X], set[X]]:

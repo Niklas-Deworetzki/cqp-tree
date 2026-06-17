@@ -1,0 +1,19 @@
+# CQP/Tree profile configuration for UD.
+
+[annotation_scheme]
+# Name of the field encoding the surface word forms.
+form = "form"
+# Name of the field encoding lemmas.
+lemma = "lemma"
+# Name of the field (Universal) POS tags.
+upos = "upos"
+# Name of the field encoding language-specific or finer-grained POS tags, such as XPOS or MSD.
+xpos = "xpos"
+# Name of the field encoding morphological features, such as Universal features.
+feats = "feats"
+# Name of the field encoding the token ID
+id = "id"
+# Name of the field encoding the token ID of a token's syntactic head
+head = "head"
+# Name of the field encoding relation labels.
+deprel = "deprel"

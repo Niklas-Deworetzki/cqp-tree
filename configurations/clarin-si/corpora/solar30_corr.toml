@@ -1,0 +1,17 @@
+[meta]
+display_name = "Šolar: učitelji (razvojni)"
+preselected = false
+
+[general]
+span = "s"
+dialect = "Sketch Engine"
+
+[annotation_scheme]
+form = "word"
+lemma = "lemma"
+upos = "pos"
+xpos = "tag"
+feats = "ud_feats"
+id = "id"
+head = "jos_head_id"
+deprel = "jos_dep"

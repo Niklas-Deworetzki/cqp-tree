@@ -1,0 +1,18 @@
+[meta]
+display_name = "Gigafida v2.2"
+preselected = false
+preferred = true
+
+[general]
+span = "s"
+dialect = "Sketch Engine"
+
+[annotation_scheme]
+form = "word"
+lemma = "lemma"
+upos = "pos"
+xpos = "tag"
+feats = "feats"
+id = "id"
+head = "dep_head_id"
+deprel = "dep"

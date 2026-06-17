@@ -1,5 +1,14 @@
 import argparse
-from cqp_tree.web.server import server
+import errno
+import sys
+
+from waitress import serve
+
+import cqp_tree
+from cqp_tree.web.server import setup_server
+
+DEFAULT_HOST = 'localhost'
+DEFAULT_PORT = 31495
 
 
 def argument_parser() -> argparse.ArgumentParser:
@@ -32,6 +41,8 @@ def argument_parser() -> argparse.ArgumentParser:
         action='store_true',
         help='Enable debug mode.',
     )
+    cqp_tree.add_config_flag_to_parser(parser)
+    cqp_tree.add_config_flags_group_to_parser(parser)
     return parser
 
 
@@ -40,12 +51,30 @@ def main():
     args = parser.parse_args()
     if args.help:
         parser.print_help()
+        return
+
+    host = args.host or DEFAULT_HOST
+    port = args.port or DEFAULT_PORT
+
+    config = cqp_tree.configuration_from_args(args, cqp_tree.default_configuration())
+    server = setup_server(config)
+    if args.debug:
+        server.run(host=host, port=port, debug=True)
     else:
-        server.run(
-            host=args.host or 'localhost',
-            port=args.port or 5000,
-            debug=args.debug,
-        )
+        try:
+            print(f'Starting local server on http://{host}:{port}')
+            print('Press CTRL+C to quit.')
+            serve(server, host=host, port=port, _quiet=False)
+        except OSError as e:
+            if e.errno == errno.EADDRINUSE:
+                print(
+                    'Starting the server failed. '
+                    'Attempt using the --port option to try a different port.',
+                    file=sys.stderr,
+                )
+            else:
+                print(f'Starting the server failed: {e}', file=sys.stderr)
+            sys.exit(1)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,18 @@
+[meta]
+display_name = "SUK 1.1"
+preselected = true
+preferred = true
+
+[general]
+span = "s"
+dialect = "Sketch Engine"
+
+[annotation_scheme]
+form = "word"
+lemma = "lemma"
+upos = "ud_pos"
+xpos = "tag" # this is the MSD in Slovene; "tag_en" for the MSD in English
+feats = "ud_feats"
+id = "id"
+head = "ud_head_id"
+deprel = "ud_dep" # or "jos_dep" for alternative dependency tagset

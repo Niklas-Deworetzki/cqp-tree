@@ -1,10 +1,11 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <style>
         .truncated {
@@ -13,272 +14,421 @@
             text-overflow: ellipsis;
         }
     </style>
-
     <title>CQP/Tree translator</title>
 </head>
+
 <body>
 
-<div class="container">
-    <div class="row justify-content-center min-vh-100">
-        <div class="col-md-10 col-lg-8">
-            <div class="my-3">
-                <h1>CQP/Tree</h1>
-            </div>
+    <div class="container">
+        <div class="row justify-content-center min-vh-100">
+            <div class="col-md-10 col-lg-8">
+                <nav class="navbar navbar-light bg-light border rounded px-3 my-3">
+                    <div class="container-fluid p-0 align-items-center">
 
-            <div class="mb-3 position-relative">
-                <label for="query-input-field"
-                       class="form-label">Your query goes here:</label>
-                <textarea id="query-input-field"
-                          class="form-control font-monospace border"
-                          rows="5"
-                          placeholder="Write your query here..."
-                ></textarea>
-                <div id="history-dropdown"
-                     class="dropdown-menu"
-                     style="max-height: 200px; overflow-y: auto; width:100%;">
-                </div>
-            </div>
+                        <div class="d-flex align-items-center">
+                            {% if cfg.branding %}
+                            <!-- Hidden on very small screens -->
+                            {% if cfg.homepage %}
+                            <a href="{{ cfg.homepage }}">
+                                {% endif %}
+                                <img src="{{ url_for('branding') }}" alt="Institution logo"
+                                    class="d-none d-sm-inline me-2"
+                                    style="height: 4rem; width: 7rem; object-fit: contain;">
+                                {% if cfg.homepage %}
+                            </a>
+                            {% endif %}
+                            {% endif %}
+                        </div>
 
-            <div class="d-flex flex-column flex-md-row justify-content-between mb-3">
-                <div class="align-content-center me-md-3 mb-1 mb-md-0">
-                    <label for="query-language-selection"
-                           class="form-label">
-                        Which language is your query in?
-                    </label>
-                </div>
-                <div class="">
-                    <select id="query-language-selection"
-                            class="form-select">
-                        <option selected
-                                value="">Detect automatically
+                        <div class="flex-grow-1 text-center px-3">
+                            <span class="fw-bold fs-5 d-block truncated">
+                                CQP/Tree
+                            </span>
+                            <span class="fs-6 text-muted d-block">
+                                Syntactic queries for {{ cfg.system_name }}
+                            </span>
+                        </div>
+
+                        <div class="me-1">
+                            <a title="Show information about this tool" class="btn btn-outline-secondary"
+                                href="/about.html" target="_blank" rel="noopener noreferrer">
+                                <i class="bi bi-info"></i>
+                            </a>
+                        </div>
+
+                        <div class="dropdown">
+                            <button title="Open the settings menu" class="btn btn-outline-secondary" type="button"
+                                data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                                <i class="bi bi-gear"></i>
+                            </button>
+
+                            <div class="dropdown-menu dropdown-menu-end p-3"
+                                style="min-width: 40vw; max-height: 70vh; overflow-y: auto;">
+
+                                <div class="accordion accordion-flush" id="settings-accordion">
+
+                                    <!-- populate settings here -->
+                                    {% for section, available_settings in settings %}
+                                    {% include "setting_section.html" %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+
+                {% if corpus_configs | length > 1 %}
+                <div class="mb-3">
+                    <label for="corpora-select" class="form-label">Corpus:</label>
+                    <select id="corpora-select" class="form-select" onchange="populateSettingsFromDropdown(this)">
+                        {% for preconfigured_corpus in corpus_configs %}
+                        <option value="{{ preconfigured_corpus.corpus_id }}" {% if preconfigured_corpus.preselected %}
+                            selected {% endif %}>
+                            {{ preconfigured_corpus.display_name }}
                         </option>
+                        {% endfor %}
                     </select>
                 </div>
-            </div>
+                {% endif %}
 
-            <div class="mb-5 d-grid col-md-10 mx-auto">
-                <button type="button"
-                        id="submit-query"
-                        class="btn btn-primary">Translate query
-                </button>
-            </div>
+                <!-- QUERY INPUT -->
+                <div class="mb-3 position-relative">
+                    <label for="query-input-field" class="form-label">Your query:</label>
+                    <textarea id="query-input-field" class="form-control font-monospace border" rows="5"
+                        placeholder="Write your query here..."></textarea>
+                    <div id="history-dropdown" class="dropdown-menu"
+                        style="max-height: 200px; overflow-y: auto; width:100%;">
+                    </div>
+                </div>
 
-            <div id="error-alert"
-                 class="alert alert-warning alert-dismissible fade"
-                 role="alert">
-                <h4>Something went wrong!</h4>
-                <span id="error-msg">Unknown error</span>
-                <button type="button"
-                        class="btn-close"
-                        aria-label="Close"
-                        onclick="hideError()"></button>
-            </div>
+                <!-- LANGUAGE SELECTION -->
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-3">
+                    <div class="align-content-center me-md-3 mb-1 mb-md-0">
+                        <label for="query-language-selection" class="form-label">
+                            Which language is your query in?
+                        </label>
+                    </div>
+                    <div class="">
+                        <select id="query-language-selection" class="form-select">
+                            <option selected value="">Detect automatically
+                            </option>
+                        </select>
+                    </div>
+                </div>
 
-            <div class=" mb-3">
-                <label for="query-output-field"
-                       class="form-label">Generated response</label>
-                <div class="input-group">
-                    <input id="query-output-field"
-                           class="form-control border font-monospace truncated"
-                           placeholder="Your generated query will appear here."
-                           readonly>
-                    <div class="input-group-append">
-                        <button type="button"
-                                id="copy-response"
-                                class="btn btn-outline-primary"
-                                data-clipboard-target="#query-output-field"
-                                title="Copy to clipboard">
-                            <i class="bi bi-clipboard"></i>
-                        </button>
+                <!-- TRANSLATE QUERY BUTTON -->
+                <div class="mb-5 d-grid col-md-10 mx-auto">
+                    <button type="button" id="submit-query" class="btn btn-primary">Translate query
+                    </button>
+                </div>
+
+                <!-- ERROR DISPLAY -->
+                <div id="error-alert" class="alert alert-warning alert-dismissible fade" role="alert">
+                    <h4>Something went wrong!</h4>
+                    <span id="error-msg">Unknown error</span>
+                    <button type="button" class="btn-close" aria-label="Close" onclick="hideError()"></button>
+                </div>
+
+                <!-- QUERY OUTPUT -->
+                <div class="mb-5">
+                    <label for="query-output-field" class="form-label">CQL translation:</label>
+                    <div class="input-group">
+                        <input id="query-output-field" class="form-control border font-monospace truncated"
+                            placeholder="Your generated query will appear here." readonly>
+                        <div class="input-group-append">
+                            <button type="button" id="copy-response" class="btn btn-outline-primary"
+                                data-clipboard-target="#query-output-field" title="Copy to clipboard">
+                                <i class="bi bi-clipboard"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RUN ON CORPUS INTEGRATION -->
+                <div id="translation-result-area" class="mb-3">
+                    <div class="mb-3 d-grid col-md-10 mx-auto">
+                        <a id="run-on-korp-link" class="btn btn-outline-primary" target="_blank"
+                            rel="noopener noreferrer">
+                            Run on {{ cfg.system_name }}
+                        </a>
+                    </div>
+                    <div class="text-center">
+                        {% if cfg.allow_external_search %}
+                        <div class="d-flex align-items-center justify-content-center gap-2">
+                            <label for="external-search-url" class="form-label mb-0">
+                                ...or another corpus
+                            </label>
+                            <input type="text" id="external-search-url" class="form-control w-25"
+                                placeholder="corpus url">
+                            <button type="button" id="run-external-search" class="btn btn-outline-primary">
+                                Run
+                            </button>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
 
-            <div class="mb-3 ms-1">
-                <a id="run-on-korp-link">Run on Korp!</a>
-            </div>
+            <footer class="text-center py-3 mt-auto">
+                <div class="d-flex justify-content-between">
+                    <div class="container">
+                        <a href="https://github.com/Niklas-Deworetzki/cqp-tree/issues/new/choose">
+                            Report an issue or request an improvement
+                        </a>
+                    </div>
+                    <div class="container">
+                        If you use this tool in your research, please cite
+                        <a href="https://lrec.elra.info/lrec2026-main-914"> <!--replaced with anthology link?-->
+                            this paper
+                        </a>
+                    </div>
+                </div>
+            </footer>
         </div>
-
-        <footer class="text-center py-3 mt-auto">
-            <div class="container">
-                <a href="https://github.com/Niklas-Deworetzki/cqp-tree/issues/new/choose">
-                    Report an issue or request an improvement
-                </a>
-            </div>
-        </footer>
     </div>
-</div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
         integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
         crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
         integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
         crossorigin="anonymous"></script>
 
-<!-- Make it possible to copy a generated query using a simple click. -->
-<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
-<script>
-    new ClipboardJS('#copy-response');
-</script>
+    <!-- Make it possible to copy a generated query using a simple click. -->
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+    <script>
+        new ClipboardJS('#copy-response');
+    </script>
 
-<script>
-    const alert = document.getElementById('error-alert');
-    const runOnKorp = document.getElementById('run-on-korp-link');
-    const submitQuery = document.getElementById('submit-query');
+    <script>
+        function collectSettings() {
+            const settings = {};
 
-    const queryInput = document.getElementById('query-input-field');
-    const queryOutput = document.getElementById('query-output-field')
-    const queryLanguage = document.getElementById('query-language-selection');
-    const queryHistory = document.getElementById('history-dropdown');
+            document.querySelectorAll('.config-field').forEach(field => {
+                const key = field.id;
+                const section = field.dataset.section;
 
-    // Hide unless we have something to show.
-    alert.style.display = 'none';
-    runOnKorp.style.display = 'none';
+                if (field.value !== '') { // Elide unselected fields.
+                    let value;
+                    if (field.type === 'checkbox') {
+                        value = field.checked;
+                    } else if (field.type === 'number') {
+                        value = field.valueAsNumber;
+                    } else {
+                        value = field.value;
+                    }
 
-    function show(element) {
-        element.style.display = 'block';
-        requestAnimationFrame(() => {
-            if (!element.classList.contains('show')) {
-                element.classList.add('show');
+                    settings[section + '.' + key] = value;
+                }
+            });
+
+            return settings;
+        }
+
+        function populateSettingsFromDropdown(element) {
+            console.log(element.value);
+            populateSettings(settings[element.value]);
+        }
+
+        function populateSettings(config) {
+            for (const [key, value] of Object.entries(config)) {
+                let formField = document.getElementById(key);
+                if (formField) {
+                    formField.value = value;
+                }
+            }
+        }
+
+        let settings = {};
+        {% for preconfigured_corpus in corpus_configs %}
+        settings['{{ preconfigured_corpus.corpus_id }}'] = {{ preconfigured_corpus.config.flatten() | tojson | safe }};
+        {% if preconfigured_corpus.preselected %}
+        populateSettings(settings['{{ preconfigured_corpus.corpus_id }}']);
+        {% endif %}
+        {% endfor %}
+    </script>
+
+    <script>
+        const alert = document.getElementById('error-alert');
+        const runOnKorp = document.getElementById('run-on-korp-link');
+        const translationResultArea = document.getElementById('translation-result-area');
+        const externalSearchButton = document.getElementById('run-external-search');
+        const externalSearchUrl = document.getElementById('external-search-url');
+        const submitQuery = document.getElementById('submit-query');
+        const corpusSelection = document.getElementById('corpora-select');
+
+        const queryInput = document.getElementById('query-input-field');
+        const queryOutput = document.getElementById('query-output-field')
+        const queryLanguage = document.getElementById('query-language-selection');
+        const queryHistory = document.getElementById('history-dropdown');
+
+        // Hide unless we have something to show.
+        alert.style.display = 'none';
+        translationResultArea.style.display = 'none';
+
+        function show(element) {
+            element.style.display = 'block';
+            requestAnimationFrame(() => {
+                if (!element.classList.contains('show')) {
+                    element.classList.add('show');
+                }
+            });
+        }
+
+        function hide(element) {
+            if (element.style.display !== 'none') {
+                element.classList.remove('show');
+                element.addEventListener('transitionend', function onFadeOut() {
+                    element.style.display = 'none';
+                    element.removeEventListener('transitionend', onFadeOut);
+                });
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('error-msg').textContent = message;
+            show(alert);
+        }
+
+        function hideError() {
+            hide(alert);
+        }
+
+        // Provide functionality for query history
+        const getHistory = () =>
+            JSON.parse(localStorage.getItem('queryHistory') || '[]');
+
+        function saveToHistory(value) {
+            let history = getHistory();
+            if (!history.includes(value)) {
+                console.log('Saving item to history:', value);
+                history.push(value);
+                localStorage.setItem('queryHistory', JSON.stringify(history));
+            }
+        }
+
+        function loadHistory() {
+            queryHistory.innerHTML = '';
+            getHistory().forEach(item => {
+                const option = document.createElement('button');
+                option.type = 'button';
+                option.className = 'dropdown-item';
+                option.textContent = item;
+                option.onclick = () => {
+                    queryInput.value = item;
+                    queryHistory.classList.remove('show');
+                };
+                queryHistory.appendChild(option);
+            });
+        }
+
+        // Populate list of supported languages.
+        fetch('/translators')
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                data.forEach(lang => {
+                    const option = document.createElement('option');
+                    option.textContent = lang;
+                    option.value = lang;
+                    queryLanguage.appendChild(option);
+                });
+            });
+
+        // Make the submit button call the server.
+        submitQuery.addEventListener('click', () => {
+            const query = queryInput.value;
+            const request = {
+                'text': query,
+                'settings': collectSettings(),
+            }
+
+            const translator = queryLanguage.value;
+            if (translator !== '') {
+                request['translator'] = translator
+            }
+
+            fetch('/translate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(request)
+            })
+                .then(async response => {
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error(data.error || 'An critical error occurred.');
+
+                    } else if (!('single_query' in data)) {
+                        throw new Error('Your query contains features that we can currently not translate.');
+
+                    } else {
+                        queryOutput.value = data.single_query;
+                        let targetUrl = '{{ cfg.baseurl | safe }}'
+                            .replaceAll('{query}', encodeURIComponent(data.single_query))
+
+                        let displayName = '{{ cfg.system_name }}';
+                        if (corpusSelection) {
+                            const id = document.getElementById('corpora-select').value;
+                            displayName = settings[id]['display_name'];
+
+                            targetUrl = targetUrl.replaceAll('{corpus}', encodeURIComponent(id));
+                        }
+
+                        runOnKorp.href = targetUrl;
+                        runOnKorp.textContent = 'Run on ' + displayName + '!';
+                        show(translationResultArea);
+                        hideError();
+                        saveToHistory(query);
+                        loadHistory();
+                    }
+                })
+                .catch(err => {
+                    showError(err.message);
+                });
+        });
+
+        // Make the external search button do a request
+        externalSearchButton.addEventListener('click', () => {
+            const url = new URL(location.href + '/external_search');
+            url.searchParams.set('url', encodeURIComponent(externalSearchUrl.value));
+            url.searchParams.set('query', encodeURIComponent(queryOutput.value));
+            window.open(url, '_blank', 'noopener,noreferrer');
+        });
+
+        // Make TAB actually insert a tab character.
+        queryInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+
+                // Insert a tab character at the cursor position
+                this.value = this.value.substring(0, start) + '\t' + this.value.substring(start, end + 1);
+                // Move cursor after the tab
+                this.selectionStart = this.selectionEnd = start + 1;
             }
         });
-    }
 
-    function hide(element) {
-        if (element.style.display !== 'none') {
-            element.classList.remove('show');
-            element.addEventListener('transitionend', function onFadeOut() {
-                element.style.display = 'none';
-                element.removeEventListener('transitionend', onFadeOut);
-            });
-        }
-    }
-
-    function showError(message) {
-        document.getElementById('error-msg').textContent = message;
-        show(alert);
-    }
-
-    function hideError() {
-        hide(alert);
-    }
-
-    // Provide functionality for query history
-    const getHistory = () =>
-        JSON.parse(localStorage.getItem('queryHistory') || '[]');
-
-    function saveToHistory(value) {
-        let history = getHistory();
-        if (!history.includes(value)) {
-            console.log('Saving item to history:', value);
-            history.push(value);
-            localStorage.setItem('queryHistory', JSON.stringify(history));
-        }
-    }
-
-    function loadHistory() {
-        queryHistory.innerHTML = '';
-        getHistory().forEach(item => {
-            const option = document.createElement('button');
-            option.type = 'button';
-            option.className = 'dropdown-item';
-            option.textContent = item;
-            option.onclick = () => {
-                queryInput.value = item;
-                queryHistory.classList.remove('show');
-            };
-            queryHistory.appendChild(option);
-        });
-    }
-
-    // Populate list of supported languages.
-    fetch('translators')
-        .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok');
-            return response.json();
-        })
-        .then(data => {
-            data.forEach(lang => {
-                const option = document.createElement('option');
-                option.textContent = lang;
-                option.value = lang;
-                queryLanguage.appendChild(option);
-            });
+        // Make history selection dropdown visible when textarea is clicked.
+        queryInput.addEventListener('focus', () => {
+            if (queryHistory.children.length > 0) {
+                queryHistory.classList.add('show');
+            }
         });
 
-    // Make the submit button call the server.
-    submitQuery.addEventListener('click', () => {
-        const query = queryInput.value;
-        const request = {
-            'text': query
-        }
+        queryInput.addEventListener('blur', () => {
+            setTimeout(() => queryHistory.classList.remove('show'), 200);
+        });
 
-        const translator = queryLanguage.value;
-        if (translator !== '') {
-            request['translator'] = translator
-        }
-
-        fetch('translate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(request)
-        })
-            .then(async response => {
-                const data = await response.json();
-                if (!response.ok) {
-                    throw new Error(data.error || 'An critical error occurred.');
-
-                } else if (!('single_query' in data)) {
-                    throw new Error('Your query contains features that we can currently not translate.');
-
-                } else {
-                    queryOutput.value = data.single_query;
-                    runOnKorp.href = 'https://spraakbanken.gu.se/korp/#?search_tab=2&search=cqp%7C' +
-                        encodeURIComponent(data.single_query);
-
-                    show(runOnKorp);
-                    hideError();
-                    saveToHistory(query);
-                    loadHistory();
-                }
-            })
-            .catch(err => {
-                showError(err.message);
-            });
-    });
-
-    // Make TAB actually insert a tab character.
-    queryInput.addEventListener("keydown", function (e) {
-        if (e.key === 'Tab') {
-            e.preventDefault();
-
-            const start = this.selectionStart;
-            const end = this.selectionEnd;
-
-            // Insert a tab character at the cursor position
-            this.value = this.value.substring(0, start) + '\t' + this.value.substring(start, end + 1);
-            // Move cursor after the tab
-            this.selectionStart = this.selectionEnd = start + 1;
-        }
-    });
-
-    // Make history selection dropdown visible when textarea is clicked.
-    queryInput.addEventListener('focus', () => {
-        if (queryHistory.children.length > 0) {
-            queryHistory.classList.add('show');
-        }
-    });
-
-    queryInput.addEventListener('blur', () => {
-        setTimeout(() => queryHistory.classList.remove('show'), 200);
-    });
-
-    loadHistory();
-</script>
+        loadHistory();
+    </script>
 
 </body>
+
 </html>

@@ -1,0 +1,16 @@
+[meta]
+display_name = "Språkbanken Korp"
+preselected = true
+
+[general]
+dialect = "Corpus Workbench"
+
+[annotation_scheme]
+form = "word"
+lemma = "lemma"
+upos = "pos" # but upos (actual UD tags) may be added soon
+xpos = "msd"
+feats = "ufeats"
+id = "ref"
+head = "dephead"
+deprel = "deprel" # mambadep, but UD relations may be added soon
