@@ -2,10 +2,6 @@
 display_name = "ParlaMint-IL 1.0 (Israeli parliament)"
 preselected = false
 
-[general]
-span = "s"
-dialect = "Sketch Engine"
-
 [annotation_scheme]
 form = "word"
 lemma = "lemma"

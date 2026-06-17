@@ -127,21 +127,13 @@ class QueryBuilder:
             if isinstance(arrow, GrewParser.SimpleArrowContext):
                 return  # No dependency types specified. Nothing else to do.
 
-            deprel = ct.Attribute(dst, 'deprel')
             deptypes = [self.to_operand(dt) for dt in arrow.edgeTypes().literal()]
-            if isinstance(arrow, GrewParser.PositiveArrowContext):
-                dependency_constraint = ct.Disjunction.of(
-                    ct.dependency_type_equals(dst, deptype, self.config) for deptype in deptypes
-                )
-
-            elif isinstance(arrow, GrewParser.NegatedArrowContext):
-                dependency_constraint = ct.Conjunction.of(
-                    ct.Comparison(deprel, '!=', deptype) for deptype in deptypes
-                )
-
-            else:
-                raise ct.NotSupported(f'Unknown arrow type: {type(arrow)}')
-
+            dependency_constraint = ct.dependency_type(
+                self.config,
+                dst,
+                *deptypes,
+                negated=isinstance(arrow, GrewParser.NegatedArrowContext),
+            )
             self.predicates.append(dependency_constraint)
 
         elif isinstance(clause, GrewParser.ConstraintClauseContext):
@@ -168,31 +160,33 @@ class QueryBuilder:
         grew: GrewParser.FeatureContext | GrewParser.FeatureStructureContext,
     ) -> ct.Predicate | None:
         # Checking for existence of feature: Tense
-        if isinstance(grew, GrewParser.PresenceContext):
+        # or absence of feature: !Tense
+        if isinstance(grew, GrewParser.PresenceContext | GrewParser.AbsenceContext):
             attribute_name = string_of_token(grew.Identifier())
-            return ct.Exists(ct.Attribute(None, attribute_name))
+            if ct.is_ud_feature(self.config, attribute_name):
+                # See if the feature exists as part of the feats column.
+                pred = ct.contains(
+                    self.config, ct.Attribute(None, self.config.feats), ct.Literal(attribute_name)
+                )
+            else:
+                pred = ct.Exists(ct.Attribute(None, attribute_name))
 
-        # Checking for absence of feature: !Tense
-        if isinstance(grew, GrewParser.AbsenceContext):
-            attribute_name = string_of_token(grew.Identifier())
-            return ct.Negation(ct.Exists(ct.Attribute(None, attribute_name)))
+            if isinstance(grew, GrewParser.AbsenceContext):
+                pred = ct.Negation(pred)
+            return pred
 
         # Requirement of feature to be certain value: Tense <> A|B|C
         if isinstance(grew, GrewParser.RequiresContext):
             attribute_name = string_of_token(grew.Identifier())
-            attribute = ct.Attribute(None, attribute_name)
-
             alternatives = [self.to_operand(feature) for feature in grew.featureValue()]
-            comparison = grew.compare()
-            if isinstance(comparison, GrewParser.EqualityContext):
-                return ct.Disjunction.of(ct.Comparison(attribute, '=', alt) for alt in alternatives)
 
-            if isinstance(comparison, GrewParser.InequalityContext):
-                return ct.Conjunction.of(
-                    ct.Comparison(attribute, '!=', alt) for alt in alternatives
-                )
-
-            raise ct.NotSupported(f'Unknown comparison type: {type(comparison)}')
+            return ct.ud_feature(
+                self.config,
+                None,
+                attribute_name,
+                *alternatives,
+                negated=isinstance(grew.compare(), GrewParser.InequalityContext),
+            )
 
         # Translate entire feature structure: [Tense, !Number, lemma = re"a.*"]
         if isinstance(grew, GrewParser.FeatureStructureContext):
