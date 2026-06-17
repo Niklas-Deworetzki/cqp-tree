@@ -1,5 +1,8 @@
+from typing import Optional
+
 from cqp_tree.configuration import Configuration
 from cqp_tree.translation.cqp import CQPDialect
+from cqp_tree.translation.errors import NotSupported
 from cqp_tree.translation.query import (
     Attribute,
     Comparison,
@@ -68,24 +71,34 @@ UD_FEATURES = {
 def contains(
     cfg: Configuration,
     attr: Attribute,
-    *strings: str,
+    *values: Operand,
     negated: bool = False,
 ) -> Predicate:
     """Creates an expression like [attr contains strings], adapted different corpus systems."""
     if cfg.dialect == CQPDialect.SKETCH_ENGINE:
         # SketchEngine does not have the "contains" operator, so we have to emulate it.
         # We do so by crafting a regex that searches for value with arbitrary pre/suffix.
-        contains_regexes = [f'".*{escape_regex_string(string)}.*"' for string in strings]
+        expected_strings = []
+        for value in values:
+            if isinstance(value, Literal):
+                string_value: str = value.value
+                if string_value[0] == '"' and string_value[-1] == '"':
+                    expected_strings.append(string_value[1:-1])
+                    continue
+
+            raise NotSupported(
+                'In Sketch Engine, you can only use string literals or regular expressions when '
+                'checking whether an annotation contains a certain value.'
+            )
+
+        contains_regexes = [f'".*{escape_regex_string(string)}.*"' for string in expected_strings]
         pred = Disjunction.of(
             Comparison(attr, '=', Literal(regex, represents_regex=True))
             for regex in contains_regexes
         )
 
     else:
-        pred = Disjunction.of(
-            Comparison(attr, 'contains', Literal(f'"{value}"', represents_regex=False))
-            for value in strings
-        )
+        pred = Disjunction.of(Comparison(attr, 'contains', value) for value in values)
 
     if negated:
         pred = Negation(pred)
@@ -94,7 +107,7 @@ def contains(
 
 def wordform(
     cfg: Configuration,
-    token: Token | Identifier,
+    token: Optional[Token | Identifier],
     *values: Operand,
     negated: bool = False,
 ) -> Predicate:
@@ -108,10 +121,26 @@ def wordform(
         return Conjunction.of(Comparison(attr, '!=', value) for value in values)
 
 
+def upos(
+    cfg: Configuration,
+    token: Optional[Token | Identifier],
+    *tags: Operand,
+    negated: bool = False,
+):
+    """
+    Creates a predicate to compare a tokens universal part-of-speech with a set of given values.
+    """
+    attr = Attribute(_to_identifier(token), cfg.upos)
+    if not negated:
+        return Disjunction.of(Comparison(attr, '=', value) for value in tags)
+    else:
+        return Conjunction.of(Comparison(attr, '!=', value) for value in tags)
+
+
 def dependency_type(
     cfg: Configuration,
-    dependant: Token | Identifier,
-    *values: Operand,
+    dependant: Optional[Token | Identifier],
+    *dependency_types: Operand,
     negated: bool = False,
 ) -> Predicate:
     """
@@ -120,16 +149,16 @@ def dependency_type(
     """
     attr = Attribute(_to_identifier(dependant), cfg.deprel)
     if not negated:
-        return Disjunction.of(Comparison(attr, '=', value) for value in values)
+        return Disjunction.of(Comparison(attr, '=', value) for value in dependency_types)
     else:
-        return Conjunction.of(Comparison(attr, '!=', value) for value in values)
+        return Conjunction.of(Comparison(attr, '!=', value) for value in dependency_types)
 
 
 def ud_feature(
     cfg: Configuration,
-    token: Token | Identifier,
+    token: Optional[Token | Identifier],
     feature: str,
-    *strings: str,
+    *values: Operand,
     negated: bool = False,
 ) -> Predicate:
     """
@@ -140,13 +169,19 @@ def ud_feature(
 
     UD feature detection is only performed if `ud_mode` is true in the given configuration.
     """
-    if feature in UD_FEATURES and cfg.ud_mode:
+    if is_ud_feature(cfg, feature):
         attr = Attribute(_to_identifier(token), cfg.feats)
-        return contains(cfg, attr, *strings, negated=negated)
+        try:
+            return contains(cfg, attr, *values, negated=negated)
+        except NotSupported as e:
+            raise NotSupported(
+                'Your search for a UD feature has been converted into a "contains" check '
+                f'for the {cfg.feats} annotation, which is not supported on Sketch Engine. '
+                f'Try disabling UD mode in settings or re-writing your query ({e})'
+            ) from e
 
     else:
         attr = Attribute(_to_identifier(token), feature)
-        values = [Literal(string, represents_regex=False) for string in strings]
         if not negated:
             return Disjunction.of(Comparison(attr, '=', value) for value in values)
         else:
@@ -161,7 +196,15 @@ def is_ud_tag(cfg: Configuration, pos: str) -> bool:
     return cfg.ud_mode and pos in UD_TAGS
 
 
-def _to_identifier(token_or_identifier: Token | Identifier) -> Identifier:
+def is_ud_feature(cfg: Configuration, feature: str) -> bool:
+    """
+    Returns True, if the given feature is one of the UD features and the given
+    configuration has `ud_mode` set to True.
+    """
+    return cfg.ud_mode and feature in UD_FEATURES
+
+
+def _to_identifier(token_or_identifier: Optional[Token | Identifier]) -> Optional[Identifier]:
     if isinstance(token_or_identifier, Token):
         return token_or_identifier.identifier
     return token_or_identifier

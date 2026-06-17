@@ -106,18 +106,6 @@ class QueryBuilder:
         )
         return ct.Recipe.of_query(query)
 
-    def wordform_attribute(self) -> ct.Attribute:
-        return ct.Attribute(None, self.configuration.form)
-
-    def deprel_attribute(self) -> ct.Attribute:
-        return ct.Attribute(None, self.configuration.deprel)
-
-    def lemma_attribute(self) -> ct.Attribute:
-        return ct.Attribute(None, self.configuration.lemma)
-
-    def pos_attribute(self) -> ct.Attribute:
-        return ct.Attribute(None, self.configuration.upos)
-
     def translate_predicate(self, exp: DepsearchTokenContext) -> ct.Predicate:
         if isinstance(exp, WRAPPER_TYPES):
             return self.translate_predicate(exp.exp)
@@ -137,9 +125,11 @@ class QueryBuilder:
             return ct.Negation(res)
 
         elif isinstance(exp, Depsearch.AttributeTokenContext):
-            # TODO: Special case for L=cat (lemma = cat)
             key = string_of_token(exp.key)
-            key_attribute = ct.Attribute(None, key)
+
+            # Special case for L=cat (interpreted as lemma = cat)
+            if key == 'L' and self.configuration.ud_mode:
+                key = self.configuration.lemma or key
 
             if exp.value is not None:
                 value = string_of_token(exp.value)
@@ -149,18 +139,22 @@ class QueryBuilder:
                 regex = string_of_token(exp.regex)
                 value_literal = ct.Literal(regex, represents_regex=True)
 
-            return ct.Comparison(key_attribute, '=', value_literal)
+            return ct.ud_feature(self.configuration, None, key, value_literal)
 
         elif isinstance(exp, Depsearch.WordOrTagTokenContext):
-            # TODO: Detect whether exp.Value() is a part of speech tag (or wordform otherwise)
             value = string_of_token(exp.Value())
             value_literal = ct.Literal(f'"{value}"', represents_regex=False)
-            return ct.Comparison(self.wordform_attribute(), '=', value_literal)
+
+            # See if value is a universal pos tag, otherwise we're looking for a wordform.
+            if ct.is_ud_tag(self.configuration, value):
+                return ct.upos(self.configuration, None, value_literal)
+            else:
+                return ct.wordform(self.configuration, None, value_literal)
 
         elif isinstance(exp, Depsearch.WordformTokenContext):
             value = string_of_token(exp.String())
             value_literal = ct.Literal(value, represents_regex=False)
-            return ct.Comparison(self.wordform_attribute(), '=', value_literal)
+            return ct.wordform(self.configuration, None, value_literal)
 
         else:
             # Should only be called with these types.
@@ -273,10 +267,8 @@ class QueryBuilder:
 
                 deptype_text = string_of_token(dependency_type)
                 deptype_literal = ct.Literal(f'"{deptype_text}"', represents_regex=False)
-                deptype_predicate = ct.Comparison(
-                    self.deprel_attribute(),
-                    '!=' if is_negated else '=',
-                    deptype_literal,
+                deptype_predicate = ct.dependency_type(
+                    self.configuration, None, deptype_literal, negated=is_negated
                 )
                 # Collect predicate for dependency type
                 deprel_types.append(deptype_predicate.raise_from(deprel_bearer))

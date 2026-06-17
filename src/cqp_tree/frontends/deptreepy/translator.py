@@ -104,7 +104,7 @@ class TokenConstraint(Result):
         return DependencyConstraint(token)
 
 
-def operation_constructor_for_field(field) -> Callable[[str], ct.Comparison]:
+def operation_constructor_for_field(field, config: Configuration) -> Callable[[str], ct.Comparison]:
     if not isinstance(field, str):
         raise ct.NotSupported('When matching a field, the field must be a string.')
 
@@ -112,6 +112,16 @@ def operation_constructor_for_field(field) -> Callable[[str], ct.Comparison]:
     if field.endswith('_'):
         field = field[:-1]
         comparison_operator = 'contains'
+
+    if config.ud_mode:
+        translated_fields = {
+            'FORM': config.form,
+            'LEMMA': config.lemma,
+            'POS': config.upos,
+            'DEPREL': config.deprel,
+            'FEATS': config.feats,
+        }
+        field = translated_fields.get(field, field)
 
     def constructor(strpatt) -> ct.Comparison:
         if not isinstance(strpatt, str):
@@ -199,12 +209,12 @@ def translate_deptreepy(deptreepy: str, config: Configuration) -> ct.Recipe:
                 return TokenConstraint(predicate=predicate)
 
             case [field, 'IN', *strpatts]:
-                ctor = operation_constructor_for_field(field)
+                ctor = operation_constructor_for_field(field, config)
                 pred = ct.Disjunction.of(ctor(strpatt) for strpatt in strpatts)
                 return TokenConstraint(predicate=pred)
 
             case [field, strpatt]:
-                pred = operation_constructor_for_field(field)(strpatt)
+                pred = operation_constructor_for_field(field, config)(strpatt)
                 return TokenConstraint(predicate=pred)
 
             case ['TRUE']:
