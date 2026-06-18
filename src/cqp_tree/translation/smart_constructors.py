@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Callable, Iterable, Optional
 
 from cqp_tree.configuration import Configuration
 from cqp_tree.translation.cqp import CQPDialect
@@ -78,24 +78,17 @@ def contains(
     if cfg.dialect == CQPDialect.SKETCH_ENGINE:
         # SketchEngine does not have the "contains" operator, so we have to emulate it.
         # We do so by crafting a regex that searches for value with arbitrary pre/suffix.
-        expected_strings = []
-        for value in values:
-            if isinstance(value, Literal):
-                string_value: str = value.value
-                if string_value[0] == '"' and string_value[-1] == '"':
-                    expected_strings.append(string_value[1:-1])
-                    continue
 
-            raise NotSupported(
-                'In Sketch Engine, you can only use string literals or regular expressions when '
-                'checking whether an annotation contains a certain value.'
-            )
+        def to_contains_regex(value: str) -> str:
+            return f'.*{value}.*'
 
-        contains_regexes = [f'".*{escape_regex_string(string)}.*"' for string in expected_strings]
-        pred = Disjunction.of(
-            Comparison(attr, '=', Literal(regex, represents_regex=True))
-            for regex in contains_regexes
+        values = _string_edit_literals(
+            values,
+            to_contains_regex,
+            'In Sketch Engine, we can only support string literals or regular expressions when '
+            'checking whether an annotation contains a certain value.',
         )
+        pred = Disjunction.of(Comparison(attr, '=', val) for val in values)
 
     else:
         pred = Disjunction.of(Comparison(attr, 'contains', value) for value in values)
@@ -171,14 +164,20 @@ def ud_feature(
     """
     if is_ud_feature(cfg, feature):
         attr = Attribute(_to_identifier(token), cfg.feats)
-        try:
-            return contains(cfg, attr, *values, negated=negated)
-        except NotSupported as e:
-            raise NotSupported(
-                'Your search for a UD feature has been converted into a "contains" check '
-                f'for the {cfg.feats} annotation, which is not supported on Sketch Engine. '
-                f'Try disabling UD mode in settings or re-writing your query ({e})'
-            ) from e
+
+        def prepend_feature(value: str) -> str:
+            return f'{feature}={value}'
+
+        # Convert values to say Feature=Value for contains check.
+        values = _string_edit_literals(
+            values,
+            prepend_feature,
+            f'Your search for a UD feature {feature} has to be converted for a search on the '
+            f'{cfg.feats} annotation layer of the selected corpus. This conversion can only be '
+            f'automated when {feature} is compared to a regular expression or a string literal. '
+            'Try re-writing your query or disabling UD mode.',
+        )
+        return contains(cfg, attr, *values, negated=negated)
 
     else:
         attr = Attribute(_to_identifier(token), feature)
@@ -208,3 +207,26 @@ def _to_identifier(token_or_identifier: Optional[Token | Identifier]) -> Optiona
     if isinstance(token_or_identifier, Token):
         return token_or_identifier.identifier
     return token_or_identifier
+
+
+def _string_edit_literals(
+    maybe_string_literals: Iterable[Operand],
+    edit: Callable[[str], str],
+    explanation: str,
+) -> Iterable[Literal]:
+    edited_strings = []
+    # We can only manipulate Literals that represent a string,
+    # i.e. Operand that are an instance of Literal and whose value starts and ends with "
+    for operand in maybe_string_literals:
+        if not isinstance(operand, Literal):
+            raise NotSupported(explanation)
+
+        string_value: str = operand.value
+        if not (string_value.startswith('"') and string_value.endswith('"')):
+            raise NotSupported(explanation)
+
+        raw_string = string_value[1:-1]
+        edited_strings.append(f'"{edit(raw_string)}"')
+
+    # We use represents_regex=True here, because we already have normalized strings.
+    return (Literal(s, represents_regex=True) for s in edited_strings)
