@@ -15,7 +15,6 @@ from cqp_tree.translation.query import (
     Predicate,
     Token,
 )
-from cqp_tree.translation.regex import escape_regex_string
 
 UD_TAGS = {
     'ADJ',

@@ -131,7 +131,7 @@ class QueryBuilder:
             if key == 'L' and self.configuration.ud_mode:
                 key = self.configuration.lemma or key
             elif key == 'X' and self.configuration.ud_mode:
-                key  = self.configuration.xpos or key
+                key = self.configuration.xpos or key
 
             if exp.value is not None:
                 value = string_of_token(exp.value)
