@@ -23,10 +23,10 @@
             <div>
 
                 <h1 class="my-5">CQP/Tree</h1>
-                <h2>Convert syntactic tree queries into CQL</h2>
+                <h2>What is CQP/Tree?</h2>
 
                 <p>
-                    CQP/Tree converts readable syntactic tree queries into CQL for use in Sketch Engine, Korp, Corpus
+                    CQP/Tree converts human-readable syntactic tree queries into CQL for use in Sketch Engine, Korp, Corpus
                     Workbench and related corpus search systems. This installation is primarily intended to support
                     syntactic searching in
                     {% if cfg.homepage %}
@@ -38,12 +38,43 @@
                     Workbench-compatible corpora and platforms.
                 </p>
 
+                <h2>Getting started</h2>
                 <p>
-                    If you are new to syntactic tree querying, you may want to start with the example queries below or
-                    consult the documentation for the supported input languages, such as
-                    <a href="https://orodja.cjvt.si/drevesnik/help/en/">depsearch</a>
-                    or
-                    <a href="https://universal.grew.fr/?corpus=UD_English-ParTUT@2.18">Grew</a>.
+                    CQP/Tree supports three main input languages:
+                    <a href="https://grew.fr/grew_match/help/">Grew-match</a>,
+                    <a href="https://orodja.cjvt.si/drevesnik/help/en/">depsearch</a> and
+                    <a href="https://github.com/GrammaticalFramework/deptreepy">deptreepy</a> 
+                    (if you are new to syntactic queries, the 
+                    <a href="https://grew.fr/tutorial/top/">Grew tutorial</a>
+                    is a good place to start).
+                    All three languages prioritize making it easy to search for syntactic relations between tokens. 
+                </p>
+
+                <p>
+                    If you wanted to look for <b>ditransitive predicates</b> in a Universal Dependencies treebank, for instance, you could write the Grew query
+
+                    <div class="border rounded bg-light">
+                    <pre>
+pattern {
+    A [upos="VERB"];    % there is a token called "A" whose UPOS tag is "VERB"
+    A -[obj]-> B;       % A has a dependent, B, which is labelled as its direct ("obj")
+    A -[iobj]-> C       % A also has another dependent, C, labelled as indirect object ("iobj")
+}</pre>
+                    </div>
+
+                    In depsearch, you could write the same query as
+
+                    <div class="border rounded bg-light">
+                    <pre>
+VERB >obj _ >iobj _</pre>
+                    </div>
+
+                    whose deptreepy equivalent is
+
+                    <div class="border rounded bg-light">
+                    <pre>
+TREE_ (POS VERB) (DEPREL obj) (DEPREL iobj)</pre>
+                    </div>
                 </p>
 
                 <h2>
