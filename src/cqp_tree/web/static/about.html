@@ -44,9 +44,9 @@
                     <a href="https://grew.fr/grew_match/help/">Grew-match</a>,
                     <a href="https://orodja.cjvt.si/drevesnik/help/en/">depsearch</a> and
                     <a href="https://github.com/GrammaticalFramework/deptreepy">deptreepy</a> 
-                    (if you are new to syntactic queries, the 
+                    <!--(if you are new to syntactic queries, the 
                     <a href="https://grew.fr/tutorial/top/">Grew tutorial</a>
-                    is a good place to start).
+                    is a good place to start).-->
                     All three languages prioritize making it easy to search for syntactic relations between tokens. 
                 </p>
 
@@ -54,7 +54,11 @@
                     If you wanted to look for <b>ditransitive predicates</b> in a Universal Dependencies treebank, for instance, you could write the Grew query
 
                     <div class="border rounded bg-light">
-                    <pre>
+                        <button type="button" id="copy-grew" class="btn btn-outline-primary float-end"
+                            data-clipboard-target="#grew" title="Copy to clipboard">
+                            <i class="bi bi-clipboard"></i>
+                        </button> 
+                        <pre id="grew">
 pattern {
     A [upos="VERB"];    % there is a token called "A" whose UPOS tag is "VERB"
     A -[obj]-> B;       % A has a dependent, B, which is labelled as its direct ("obj")
@@ -65,16 +69,30 @@ pattern {
                     In depsearch, you could write the same query as
 
                     <div class="border rounded bg-light">
-                    <pre>
+                        <button type="button" id="copy-depsearch" class="btn btn-outline-primary float-end"
+                            data-clipboard-target="#depsearch" title="Copy to clipboard">
+                            <i class="bi bi-clipboard"></i>
+                        </button> 
+                        <pre id="depsearch">
 VERB >obj _ >iobj _</pre>
                     </div>
 
                     whose deptreepy equivalent is
 
                     <div class="border rounded bg-light">
-                    <pre>
+                        <button type="button" id="copy-deptreepy" class="btn btn-outline-primary float-end"
+                            data-clipboard-target="#deptreepy" title="Copy to clipboard">
+                            <i class="bi bi-clipboard"></i>
+                        </button> 
+                        <pre id="deptreepy">
 TREE_ (POS VERB) (DEPREL obj) (DEPREL iobj)</pre>
                     </div>
+                </p>
+
+                <p>
+                    CQP/Tree can convert all of these syntaxes to CQL and allows you to run them directly on your corpus of choice. 
+                    To get started, try copying and pasting one of the queries above into the 
+                    <a href="..">web interface</a>!
                 </p>
 
                 <h2>
@@ -97,6 +115,9 @@ TREE_ (POS VERB) (DEPREL obj) (DEPREL iobj)</pre>
                     <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
                     <script>
                         new ClipboardJS('#copy-bibtex');
+                        new ClipboardJS('#copy-grew');
+                        new ClipboardJS('#copy-depsearch');
+                        new ClipboardJS('#copy-deptreepy');
                     </script>
                     <div class="border rounded bg-light">
                         <button type="button" id="copy-bibtex" class="btn btn-outline-primary float-end"
