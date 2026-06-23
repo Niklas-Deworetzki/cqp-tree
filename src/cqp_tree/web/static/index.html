@@ -45,7 +45,12 @@
                                 CQP/Tree
                             </span>
                             <span class="fs-6 text-muted d-block">
-                                Syntactic queries for {{ cfg.system_name }}
+                                Syntactic queries for 
+                                {% if cfg.system_name != "corpus"%} 
+                                {{ cfg.system_name }} 
+                                {% else %}
+                                large-scale corpora
+                                {% endif %}
                             </span>
                         </div>
 
