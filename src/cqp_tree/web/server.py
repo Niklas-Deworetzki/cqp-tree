@@ -153,7 +153,7 @@ def serve_external_search():
     try:
         search_url = make_external_search_url(url, query)
         return redirect(search_url)
-    except Exception:
+    except ValueError:
         return render_template(
             'external_search_not_possible.html',
             url=url,

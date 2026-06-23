@@ -1,26 +1,35 @@
-from urllib.parse import urlparse, urlunparse, parse_qs
+from urllib.parse import parse_qs, urlencode, urlparse, urlunparse, quote
+
+CANNOT_FIND_CORPUS_NAME = 'URL seems to be a SketchEngine URL, but no corpus name can be found.'
+CANNOT_DETECT_CORPUS_SYSTEM = 'URL does not seem to point to a supported corpus system.'
 
 
 def make_external_search_url(corpus_url: str, query: str) -> str:
-    url = urlparse(corpus_url)
-    query_components = parse_qs(url.query)
-    if url.fragment:
-        # SketchEngine has the shape sketchengine.com/#concordance?corpname=korp
-        # which makes the query parameters actually part of the *fragment* and not of the
-        # query, so we'll just parse the fragment with its query parameters as well.
-        query_components |= parse_qs(url.fragment)
-
-    if 'corpname' in query_components:
-        corpus = query_components['corpname'][0]
-        search_url = url._replace(
-            query=f'tab=advanced&queryselector=cql&showresults=1&corpname={corpus}&cql={query}'
+    parsed = urlparse(corpus_url)
+    if parsed.fragment.startswith('concordance') or parsed.fragment.startswith('dashboard'):
+        corpus = _extract_corpus_from_sketchengine_fragment(parsed.fragment)
+        fragment = 'concordance?' + urlencode(
+            {
+                'tab': 'advanced',
+                'queryselector': 'cql',
+                'showresults': '1',
+                'corpname': corpus,
+                'cql': query,
+            },
+            quote_via=quote,
         )
+        parsed = parsed._replace(fragment=fragment)
+        return urlunparse(parsed)
+    raise ValueError(CANNOT_DETECT_CORPUS_SYSTEM)
 
-        if search_url.scheme not in ('http', 'https'):
-            search_url = search_url._replace(
-                scheme='https',
-            )
 
-        return urlunparse(search_url)
+def _extract_corpus_from_sketchengine_fragment(fragment: str) -> str:
+    _, sep, fragment_query = fragment.partition('?')
+    if not sep:
+        raise ValueError(CANNOT_FIND_CORPUS_NAME)
 
-    raise ValueError('Unable to autodetect corpus and corpus system from url.')
+    params = parse_qs(fragment_query)
+    corpnames = params.get('corpname')
+    if not corpnames:
+        raise ValueError(CANNOT_FIND_CORPUS_NAME)
+    return corpnames[0]
