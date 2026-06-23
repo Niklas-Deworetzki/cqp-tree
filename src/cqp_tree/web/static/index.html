@@ -432,6 +432,7 @@
         });
 
         queryInput.addEventListener('beforeinput', () => hide(translationResultArea));
+        corpusSelection.addEventListener('change', () => hide(translationResultArea));
 
         // Make history selection dropdown visible when textarea is clicked.
         queryInput.addEventListener('focus', () => {
