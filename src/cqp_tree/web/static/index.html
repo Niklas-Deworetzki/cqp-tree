@@ -409,7 +409,7 @@
 
         // Make the external search button do a request
         externalSearchButton.addEventListener('click', () => {
-            const url = new URL(location.href + '/external_search');
+            const url = new URL('./external_search', location.href);
             url.searchParams.set('url', encodeURIComponent(externalSearchUrl.value));
             url.searchParams.set('query', encodeURIComponent(queryOutput.value));
             window.open(url, '_blank', 'noopener,noreferrer');
