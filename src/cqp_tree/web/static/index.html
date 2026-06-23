@@ -155,7 +155,7 @@
                 </div>
 
                 <!-- RUN ON CORPUS INTEGRATION -->
-                <div id="translation-result-area" class="mb-3">
+                <div id="translation-result-area" class="mb-3 fade">
                     <div class="mb-3 d-grid col-md-10 mx-auto">
                         <a id="run-on-korp-link" class="btn btn-outline-primary" target="_blank" rel="noopener noreferrer">
                             Run on {{ cfg.system_name }}
@@ -333,6 +333,7 @@
                 option.onclick = () => {
                     queryInput.value = item;
                     queryHistory.classList.remove('show');
+                    hide(translationResultArea);
                 };
                 queryHistory.appendChild(option);
             });
@@ -429,6 +430,8 @@
                 this.selectionStart = this.selectionEnd = start + 1;
             }
         });
+
+        queryInput.addEventListener('beforeinput', () => hide(translationResultArea));
 
         // Make history selection dropdown visible when textarea is clicked.
         queryInput.addEventListener('focus', () => {
