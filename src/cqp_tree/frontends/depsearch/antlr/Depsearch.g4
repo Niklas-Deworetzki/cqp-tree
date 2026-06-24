@@ -34,7 +34,7 @@ atomicToken : '(' exp=tokensExpression ')'  # ParenthesizedToken
             | key=Value '=' (value=Value | regex=String)    # AttributeToken
             ;
 
-dependencyDescription : dependencyExpression dst=tokensExpression
+dependencyDescription : dependencyExpression dst=tokenExpression
                       ;
 
 // one can use OR operator to query dependency relations

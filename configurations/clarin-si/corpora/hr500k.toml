@@ -2,10 +2,6 @@
 display_name = "hr500k v1.0"
 preselected = false
 
-[general]
-span = "s"
-dialect = "Sketch Engine"
-
 [annotation_scheme]
 form = "word"
 lemma = "lemma"

@@ -2,10 +2,6 @@
 display_name = "ParlaMint-UA 4.0.1 (Ukrainian parliament)"
 preselected = false
 
-[general]
-span = "s"
-dialect = "Sketch Engine"
-
 [annotation_scheme]
 form = "word"
 lemma = "lemma"

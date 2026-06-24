@@ -5,6 +5,16 @@ from cqp_tree import frontends
 declare_configuration(
     GENERAL_CONFIG_SECTION,
     DeclaredConfig(
+        key='ud_mode',
+        readable_name='UD Mode',
+        readable_description='Enables auto-discovery of certain features and annotations that '
+        'depend on the UD annotation scheme. If this mode is enabled, queries searching for UD '
+        'features will automatically be mapped to the according annotation layer and UD '
+        'part-of-speech tags will be discovered automatically in supported query languages.',
+        validation_type=bool,
+        default_value=False,
+    ),
+    DeclaredConfig(
         key='translator',
         readable_name='Translator',
         readable_description='The translation unit to use.',

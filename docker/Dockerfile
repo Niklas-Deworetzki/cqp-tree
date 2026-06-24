@@ -1,6 +1,6 @@
 FROM python:3.14
 
-ARG VERSION="clarin-integration"
+ARG VERSION="main"
 
 RUN git clone https://github.com/Niklas-Deworetzki/cqp-tree.git \
     cqp-tree \
