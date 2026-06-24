@@ -94,6 +94,10 @@ def setup_server(config: Configuration) -> Flask:
     @server.route('/about.html', methods=['GET'])
     def about():
         return serve_about(config)
+    
+    @server.route('/slovene_examples.html', methods=['GET'])
+    def slovene_examples():
+        return serve_examples('slovene')
 
     return server
 
@@ -150,6 +154,8 @@ def serve_index(config: Configuration):
 def serve_about(config: Configuration):
     return render_template('about.html', cfg=config)
 
+def serve_examples(lang: str):
+    return render_template('{}_examples.html'.format(lang))
 
 def serve_external_search():
     if 'url' not in request.args or 'query' not in request.args:
