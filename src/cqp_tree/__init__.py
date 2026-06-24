@@ -1,6 +1,9 @@
 from cqp_tree.translation import *
 from cqp_tree.configuration import *
 from cqp_tree import frontends
+from cqp_tree.version import get_version
+
+VERSION = get_version()
 
 declare_configuration(
     GENERAL_CONFIG_SECTION,

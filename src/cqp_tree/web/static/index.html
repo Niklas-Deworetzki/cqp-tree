@@ -31,7 +31,7 @@
                             {% if cfg.homepage %}
                             <a href="{{ cfg.homepage }}">
                                 {% endif %}
-                                <img src="{{ url_for('branding') }}" alt="Institution logo"
+                                <img src="./{{ url_for('branding') }}" alt="Institution logo"
                                     class="d-none d-sm-inline me-2"
                                     style="height: 4rem; width: 7rem; object-fit: contain;">
                                 {% if cfg.homepage %}
@@ -45,14 +45,19 @@
                                 CQP/Tree
                             </span>
                             <span class="fs-6 text-muted d-block">
-                                Syntactic queries for {{ cfg.system_name }}
+                                Syntactic queries for 
+                                {% if cfg.system_name != "corpus"%} 
+                                {{ cfg.system_name }} 
+                                {% else %}
+                                large-scale corpora
+                                {% endif %}
                             </span>
                         </div>
 
                         <div class="me-1">
                             <a title="Show information about this tool"
                                class="btn btn-outline-secondary"
-                               href="/about.html"
+                               href="./about.html"
                                target="_blank"
                                rel="noopener noreferrer">
                                 <i class="bi bi-info"></i>
@@ -150,7 +155,7 @@
                 </div>
 
                 <!-- RUN ON CORPUS INTEGRATION -->
-                <div id="translation-result-area" class="mb-3">
+                <div id="translation-result-area" class="mb-3 fade">
                     <div class="mb-3 d-grid col-md-10 mx-auto">
                         <a id="run-on-korp-link" class="btn btn-outline-primary" target="_blank" rel="noopener noreferrer">
                             Run on {{ cfg.system_name }}
@@ -328,13 +333,14 @@
                 option.onclick = () => {
                     queryInput.value = item;
                     queryHistory.classList.remove('show');
+                    hide(translationResultArea);
                 };
                 queryHistory.appendChild(option);
             });
         }
 
         // Populate list of supported languages.
-        fetch('/translators')
+        fetch('./translators')
             .then(response => {
                 if (!response.ok) throw new Error('Network response was not ok');
                 return response.json();
@@ -361,7 +367,7 @@
                 request['translator'] = translator
             }
 
-            fetch('/translate', {
+            fetch('./translate', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -404,7 +410,7 @@
 
         // Make the external search button do a request
         externalSearchButton.addEventListener('click', () => {
-            const url = new URL(location.href + '/external_search');
+            const url = new URL('./external_search', location.href);
             url.searchParams.set('url', encodeURIComponent(externalSearchUrl.value));
             url.searchParams.set('query', encodeURIComponent(queryOutput.value));
             window.open(url, '_blank', 'noopener,noreferrer');
@@ -424,6 +430,9 @@
                 this.selectionStart = this.selectionEnd = start + 1;
             }
         });
+
+        queryInput.addEventListener('beforeinput', () => hide(translationResultArea));
+        corpusSelection.addEventListener('change', () => hide(translationResultArea));
 
         // Make history selection dropdown visible when textarea is clicked.
         queryInput.addEventListener('focus', () => {

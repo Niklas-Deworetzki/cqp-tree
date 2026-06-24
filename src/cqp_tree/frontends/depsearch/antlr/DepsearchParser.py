@@ -41,7 +41,7 @@ def serializedATN():
         91,5,8,0,0,82,91,5,17,0,0,83,91,5,18,0,0,84,85,5,17,0,0,85,88,5,
         9,0,0,86,89,5,17,0,0,87,89,5,18,0,0,88,86,1,0,0,0,88,87,1,0,0,0,
         89,91,1,0,0,0,90,77,1,0,0,0,90,81,1,0,0,0,90,82,1,0,0,0,90,83,1,
-        0,0,0,90,84,1,0,0,0,91,11,1,0,0,0,92,93,3,14,7,0,93,94,3,4,2,0,94,
+        0,0,0,90,84,1,0,0,0,91,11,1,0,0,0,92,93,3,14,7,0,93,94,3,6,3,0,94,
         13,1,0,0,0,95,96,6,7,-1,0,96,97,5,15,0,0,97,100,3,16,8,0,98,100,
         3,16,8,0,99,95,1,0,0,0,99,98,1,0,0,0,100,106,1,0,0,0,101,102,10,
         3,0,0,102,103,5,5,0,0,103,105,3,14,7,4,104,101,1,0,0,0,105,108,1,
@@ -357,17 +357,15 @@ class DepsearchParser ( Parser ):
                 localctx.src = self.tokenExpression(0)
                 self.state = 51 
                 self._errHandler.sync(self)
-                _alt = 1
-                while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
-                    if _alt == 1:
-                        self.state = 50
-                        self.dependencyDescription()
-
-                    else:
-                        raise NoViableAltException(self)
+                _la = self._input.LA(1)
+                while True:
+                    self.state = 50
+                    self.dependencyDescription()
                     self.state = 53 
                     self._errHandler.sync(self)
-                    _alt = self._interp.adaptivePredict(self._input,3,self._ctx)
+                    _la = self._input.LA(1)
+                    if not ((((_la) & ~0x3f) == 0 and ((1 << _la) & 35904) != 0)):
+                        break
 
                 pass
 
@@ -751,14 +749,14 @@ class DepsearchParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
-            self.dst = None # TokensExpressionContext
+            self.dst = None # TokenExpressionContext
 
         def dependencyExpression(self):
             return self.getTypedRuleContext(DepsearchParser.DependencyExpressionContext,0)
 
 
-        def tokensExpression(self):
-            return self.getTypedRuleContext(DepsearchParser.TokensExpressionContext,0)
+        def tokenExpression(self):
+            return self.getTypedRuleContext(DepsearchParser.TokenExpressionContext,0)
 
 
         def getRuleIndex(self):
@@ -776,7 +774,7 @@ class DepsearchParser ( Parser ):
             self.state = 92
             self.dependencyExpression(0)
             self.state = 93
-            localctx.dst = self.tokensExpression()
+            localctx.dst = self.tokenExpression(0)
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)

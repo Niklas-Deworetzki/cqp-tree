@@ -152,7 +152,7 @@ def serve_index(config: Configuration):
 
 
 def serve_about(config: Configuration):
-    return render_template('about.html', cfg=config)
+    return render_template('about.html', cfg=config, version=cqp_tree.VERSION)
 
 def serve_examples(lang: str):
     return render_template('{}_examples.html'.format(lang))
@@ -166,7 +166,7 @@ def serve_external_search():
     try:
         search_url = make_external_search_url(url, query)
         return redirect(search_url)
-    except Exception:
+    except ValueError:
         return render_template(
             'external_search_not_possible.html',
             url=url,
