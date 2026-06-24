@@ -9,6 +9,7 @@ from cqp_tree.frontends.conll import translate_conll
 
 CONFIG = cqp_tree.default_configuration()
 
+
 class TranslationTests(unittest.TestCase):
     dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -218,7 +219,6 @@ class ExtensionTests(unittest.TestCase):
             res.constraints,
         )
 
-
     def test_anchor_on_last_token(self):
         text = '''
         1	_	_	_	_	_	_	_	_	_
@@ -233,7 +233,6 @@ class ExtensionTests(unittest.TestCase):
             res.constraints,
         )
 
-
     def test_subsequent_tokens(self):
         text = '''
         1	_	_	_	_	_	_	_	_	_
@@ -247,7 +246,6 @@ class ExtensionTests(unittest.TestCase):
             ct.Constraint.distance(pre.identifier, sub.identifier) == 1,
             res.constraints,
         )
-
 
     def test_ordered_tokens(self):
         text = '''
