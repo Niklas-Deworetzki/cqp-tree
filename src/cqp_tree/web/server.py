@@ -56,6 +56,13 @@ cqp_tree.declare_configuration(
         validation_type=bool,
         default_value=False,
     ),
+    DeclaredConfig(
+        key='examples_url',
+        readable_name='Examples URL',
+        readable_description='URL of a page with more advanced examples, possibly system-specific.',
+        validation_type=str,
+        default_value='https://grew.fr/tutorial/top/',
+    )
 )
 
 TEMPLATE_DIR = Path(__file__).parent / 'static'
