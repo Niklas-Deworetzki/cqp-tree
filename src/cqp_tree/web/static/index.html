@@ -31,7 +31,7 @@
                             {% if cfg.homepage %}
                             <a href="{{ cfg.homepage }}">
                                 {% endif %}
-                                <img src="{{ url_for('branding') }}" alt="Institution logo"
+                                <img src="./{{ url_for('branding') }}" alt="Institution logo"
                                     class="d-none d-sm-inline me-2"
                                     style="height: 4rem; width: 7rem; object-fit: contain;">
                                 {% if cfg.homepage %}
@@ -57,7 +57,7 @@
                         <div class="me-1">
                             <a title="Show information about this tool"
                                class="btn btn-outline-secondary"
-                               href="/about.html"
+                               href="./about.html"
                                target="_blank"
                                rel="noopener noreferrer">
                                 <i class="bi bi-info"></i>
@@ -339,7 +339,7 @@
         }
 
         // Populate list of supported languages.
-        fetch('/translators')
+        fetch('./translators')
             .then(response => {
                 if (!response.ok) throw new Error('Network response was not ok');
                 return response.json();
@@ -366,7 +366,7 @@
                 request['translator'] = translator
             }
 
-            fetch('/translate', {
+            fetch('./translate', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -409,7 +409,7 @@
 
         // Make the external search button do a request
         externalSearchButton.addEventListener('click', () => {
-            const url = new URL(location.href + '/external_search');
+            const url = new URL('./external_search', location.href);
             url.searchParams.set('url', encodeURIComponent(externalSearchUrl.value));
             url.searchParams.set('query', encodeURIComponent(queryOutput.value));
             window.open(url, '_blank', 'noopener,noreferrer');
