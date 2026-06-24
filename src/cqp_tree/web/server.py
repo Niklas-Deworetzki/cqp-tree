@@ -156,7 +156,7 @@ def serve_about(config: Configuration):
 
 
 def serve_examples(lang: str):
-    return render_template('{}_examples.html'.format(lang))
+    return render_template(f'{lang}_examples.html'.format())
 
 
 def serve_external_search():
