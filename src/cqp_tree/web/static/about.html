@@ -17,6 +17,7 @@
 </head>
 
 <body>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
 <div class="container">
     <div class="row justify-content-center min-vh-100">
         <div class="col-md-10 col-lg-8 flex-grow-1">
@@ -49,41 +50,25 @@
 
                 <p>
                     If you wanted to look for <b>ditransitive predicates</b> in a Universal Dependencies treebank, for instance, you could write the Grew query
-
-                    <div class="border rounded bg-light">
-                        <button type="button" id="copy-grew" class="btn btn-outline-primary float-end"
-                            data-clipboard-target="#grew" title="Copy to clipboard">
-                            <i class="bi bi-clipboard"></i>
-                        </button> 
-                        <pre id="grew">
-pattern {
-    A [upos="VERB"];    % there is a token called "A" whose UPOS tag is "VERB"
-    A -[obj]-> B;       % A has a dependent, B, which is labelled as its direct ("obj")
-    A -[iobj]-> C       % A also has another dependent, C, labelled as indirect object ("iobj")
-}</pre>
-                    </div>
+                    {% with name="grew", code='''pattern {
+    A [upos=\"VERB\"];    % there is a token called A whose UPOS tag is VERB
+    A -[obj]-> B;       % A has a dependent, B, which is labelled as its direct (obj)
+    A -[iobj]-> C       % A also has another dependent, C, labelled as indirect object (iobj)
+}''' %}
+                        {% include "snippet.html" %}
+                    {% endwith %}
 
                     In depsearch, you could write the same query as
 
-                    <div class="border rounded bg-light">
-                        <button type="button" id="copy-depsearch" class="btn btn-outline-primary float-end"
-                            data-clipboard-target="#depsearch" title="Copy to clipboard">
-                            <i class="bi bi-clipboard"></i>
-                        </button> 
-                        <pre id="depsearch">
-VERB >obj _ >iobj _</pre>
-                    </div>
+                    {% with name="depsearch", code="VERB >obj _ >iobj _" %}
+                        {% include "snippet.html" %}
+                    {% endwith %}
 
                     whose deptreepy equivalent is
 
-                    <div class="border rounded bg-light">
-                        <button type="button" id="copy-deptreepy" class="btn btn-outline-primary float-end"
-                            data-clipboard-target="#deptreepy" title="Copy to clipboard">
-                            <i class="bi bi-clipboard"></i>
-                        </button> 
-                        <pre id="deptreepy">
-TREE_ (POS VERB) (DEPREL obj) (DEPREL iobj)</pre>
-                    </div>
+                    {% with name="deptreepy", code="TREE_ (POS VERB) (DEPREL obj) (DEPREL iobj)" %}
+                        {% include "snippet.html" %}
+                    {% endwith %}                    
                 </p>
 
                 <p>
@@ -113,20 +98,7 @@ TREE_ (POS VERB) (DEPREL obj) (DEPREL iobj)</pre>
                     If you use CQP/Tree in your research, you are welcome to cite
                     <a href="https://doi.org/10.63317/2vfu2ssa33us">Niklas Deworetzki and Arianna Masciolini. <i>Syntactic Sugar for Syntactic Queries: Sequential Representations for Dependency Queries</i>. In Proceedings of the Fifteenth Language Resources and Evaluation Conference (LREC 2026)</a>:
                     
-                    <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
-                    <script>
-                        new ClipboardJS('#copy-bibtex');
-                        new ClipboardJS('#copy-grew');
-                        new ClipboardJS('#copy-depsearch');
-                        new ClipboardJS('#copy-deptreepy');
-                    </script>
-                    <div class="border rounded bg-light">
-                        <button type="button" id="copy-bibtex" class="btn btn-outline-primary float-end"
-                            data-clipboard-target="#bibtex" title="Copy to clipboard">
-                            <i class="bi bi-clipboard"></i>
-                        </button> 
-                        <pre id="bibtex">
-@inproceedings{deworetzki-etal-2026-syntactic,
+                    {% with name="bibtex", code="""@inproceedings{deworetzki-etal-2026-syntactic,
     title = {Syntactic Sugar for Syntactic Queries: Sequential Representations for Dependency Queries},
     author = {Deworetzki, Niklas and Masciolini, Arianna},
     booktitle = {Proceedings of the Fifteenth Language Resources and Evaluation Conference ({LREC} 2026)},
@@ -137,8 +109,9 @@ TREE_ (POS VERB) (DEPREL obj) (DEPREL iobj)</pre>
     publisher = {European Language Resources Association (ELRA)},
     editor = {Piperidis, Stelios and Bel, Núria and van den Heuvel, Henk and Ide, Nancy and Krek, Simon and Toral, Antonio},
     doi = {10.63317/2vfu2ssa33us},
-}</pre>
-                    </div>
+}""" %}
+                        {% include "snippet.html" %}
+                    {% endwith %}
                 </p>
 
                 <h2>
