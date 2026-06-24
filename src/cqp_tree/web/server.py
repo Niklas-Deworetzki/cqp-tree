@@ -56,6 +56,13 @@ cqp_tree.declare_configuration(
         validation_type=bool,
         default_value=False,
     ),
+    DeclaredConfig(
+        key='examples_url',
+        readable_name='Examples URL',
+        readable_description='URL of a page with more advanced examples, possibly system-specific.',
+        validation_type=str,
+        default_value='https://grew.fr/tutorial/top/',
+    ),
 )
 
 TEMPLATE_DIR = Path(__file__).parent / 'static'
@@ -87,6 +94,10 @@ def setup_server(config: Configuration) -> Flask:
     @server.route('/about.html', methods=['GET'])
     def about():
         return serve_about(config)
+
+    @server.route('/slovene_examples.html', methods=['GET'])
+    def slovene_examples():
+        return serve_examples('slovene')
 
     return server
 
@@ -142,6 +153,10 @@ def serve_index(config: Configuration):
 
 def serve_about(config: Configuration):
     return render_template('about.html', cfg=config, version=cqp_tree.VERSION)
+
+
+def serve_examples(lang: str):
+    return render_template(f'{lang}_examples.html'.format())
 
 
 def serve_external_search():
