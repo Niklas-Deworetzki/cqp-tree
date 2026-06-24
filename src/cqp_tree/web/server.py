@@ -141,7 +141,7 @@ def serve_index(config: Configuration):
 
 
 def serve_about(config: Configuration):
-    return render_template('about.html', cfg=config)
+    return render_template('about.html', cfg=config, version=cqp_tree.VERSION)
 
 
 def serve_external_search():
