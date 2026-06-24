@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <title>Examples</title>
+    <title>Examples (Slovene)</title>
 
     <style>
         p {
@@ -17,24 +17,112 @@
 </head>
 
 <body>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
 <div class="container">
     <div class="row justify-content-center min-vh-100">
         <div class="col-md-10 col-lg-8 flex-grow-1">
-                <h1 class="my-5">Examples</h1>
+                <h1 class="my-5">Some more examples</h1>
                 <p>
                     If you have reached this page, you are probably wondering what kind of patterns you can search for with CQP/Tree. 
                     In this page, we have gathered a few examples in
                     <a href="https://orodja.cjvt.si/drevesnik/help/en/">depsearch</a> and
-                    <a href="https://grew.fr/grew_match/help/">Grew-match</a>,
-                    Unless otherwise specified, you can copy-paste each example into the 
+                    <a href="https://grew.fr/grew_match/help/">Grew-match</a>.
+                    You can copy-paste them into the 
                     <a href="..">web interface</a>
-                    and run them on a variety of UD-annotated Slovene corpora, such as  
+                    and run them on  
                     <a href="https://www.clarin.si/ske/#dashboard?corpname=suk11">SUK 1.1</a>.
-                    <a href="https://www.clarin.si/ske/#dashboard?corpname=gfida">Gigafida 2.2</a>.
-                    With some adjustments, you can search for similar structures on any dependency-annotated corpus available on CLARIN.SI noSketch Engine 
+                    <!--<a href="https://www.clarin.si/ske/#dashboard?corpname=gfida">Gigafida 2.2</a>.-->
+                    With some adjustments, you can search for similar structures on any dependency-annotated corpus available on CLARIN.SI noSketch Engine, 
                     or even on other CQL-compatible corpus search systems.
                 </p>
                 
+                <h2>Expletives</h2>
+                <p>
+                    <i>Expletives</i> are nominals that appear in an argument position of a predicate, but do not themselves fill any of the semantic roles of the predicate.
+                    This is a simple depsearch query to search for expletives attached to lexical verbs:
+                    {% with name="expl1-depsearch", code="VERB >expl _" %}
+                        {% include "snippet.html" %}
+                    {% endwith %}
+                </p>
+                <p>
+                    or in Grew-match:
+                    {% with name="expl1-grew", code="""pattern { X -[expl]-> Y;
+        X [ud_pos=VERB];
+}""" %}
+                        {% include "snippet.html" %}
+                    {% endwith %}
+                </p>
+                <p>
+                    These queries will fetch inherently reflective verbs, such as <i>smejati se</i> ('to laugh') but also other, non-reflexive expletives, such as <i>piti ga</i> ('to drink it').
+                    If you are only interested in non-reflexive expletives, you can refine the query.
+                    In depsearch:
+                    {% with name="expl2-depsearch", code="VERB >expl PRON&!L=se" %}
+                        {% include "snippet.html" %}
+                    {% endwith %}
+                </p>
+                <p>
+                    or in Grew-match:
+                    {% with name="expl2-grew", code="""pattern { X -[expl]-> Y;
+    X [ud_pos=VERB];
+    Y [ud_pos=PRON, lemma <> \"se\"];
+}""" %}
+                        {% include "snippet.html" %}
+                    {% endwith %}
+                </p>
+
+                <p>
+                    As you can see in the examples above, one of the reasons why the depsearch queries are more concise is that some things are left implicit. 
+                    In Grew-match, on the other hand, you always (excepts for dependency labels) have to specify the name of the annotation layers you want to search (in this case, <b>lemma</b> and <b>ud_pos</b>).
+                    This means that, if you want to run the Grew queries on a different corpus, you may have to modify these names.
+                    For Gigafida 2.2, for instance, <b>ud_pos</b> should be replaced with <b>pos</b>.
+                    To find out what different annotation layers are called in different corpora, select a corpus and click on <i class="bi bi-gear"></i>.
+                    If your corpus of choice is not listed, select the corpus on noSketch Engine and click on "corpus info" to find out.
+                </p>
+
+                <h2>Case errors in negated sentences</h2>
+                <p>
+                    Let's look at a more complex depsearch query: 
+                    {% with name="caserr-depsearch", code="VERB >obj NOUN&Case=Acc >aux|>advmod Polarity=Neg" %}
+                        {% include "snippet.html" %}
+                    {% endwith %}
+                </p>
+                <p>
+                    This can be used to search for clauses with negative polarity with an object in accusative rather than genitive case, such as <i>to ne vem</i> ('I don't know this'), where <i>to</i> is incorrectly inflected for case.
+                </p>
+                <p>
+                    The Grew-match equivalent is:
+                    {% with name="caserr-grew", code="""pattern {
+    V [ud_pos = VERB];
+    N [ud_pos = NOUN, Case = Acc];
+    P [Polarity = Neg];
+    V -[obj]-> N;
+    V -[aux|advmod]-> P;
+}""" %}
+                        {% include "snippet.html" %}
+                    {% endwith %}
+                </p>
+
+                <h2>Agents, but not subjects</h2>
+                <p>
+                    So far, we have only looked at examples that rely exclusively on UD annotations.
+                    However, you can search for any other token-level attributes, as long as you know how the annotation layer is called for the corpus you want to use.
+                    As mentioned above, you can find out by selecting the corpus on noSketch Engine and clicking on "corpus info".
+                </p>
+                <p>
+                    For instance, on SUK you can easily look for semantic <i>actants</i> (agents) which are syntactically not expressed as subjects:
+                    {% with name="agents-depsearch", code="srl_dep=\"ACT\" <!nsubj _" %}
+                        {% include "snippet.html" %}
+                    {% endwith %}
+                </p>
+
+                <p>
+                    In Grew-match:
+                    {% with name="agents-grew", code="""pattern { X -[^nsubj]-> Y;
+    Y [srl_dep=\"ACT\"];
+}""" %}
+                        {% include "snippet.html" %}
+                    {% endwith %}
+                </p>
         </div>
     </div>
 </div>
