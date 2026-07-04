@@ -72,10 +72,6 @@ def setup_server(config: Configuration) -> Flask:
     def branding():
         return serve_branding(config)
 
-    @server.route('/translators', methods=['GET'])
-    def translators():
-        return jsonify(sorted(cqp_tree.known_translators.keys()))
-
     @server.route('/translate', methods=['POST'])
     def translate():
         return serve_translation(config)
@@ -128,15 +124,20 @@ def get_preconfigured_corpora(cfg: Configuration) -> Iterable[PreconfiguredCorpu
 
 
 def serve_index(config: Configuration):
+    translators = sorted(cqp_tree.known_translators.keys())
+    preconfigured_corpora = sorted(get_preconfigured_corpora(config))
+    settings = cqp_tree.iterate_configurations_by_section(
+        config,
+        hidden_sections={'web'},
+        hidden_entries={cqp_tree.GENERAL_CONFIG_SECTION: {'translator'}},
+    )
+
     return render_template(
         'index.html',
         cfg=config,
-        corpus_configs=sorted(get_preconfigured_corpora(config)),
-        settings=cqp_tree.iterate_configurations_by_section(
-            config,
-            hidden_sections={'web'},
-            hidden_entries={cqp_tree.GENERAL_CONFIG_SECTION: {'translator'}},
-        ),
+        translators=translators,
+        corpus_configs=preconfigured_corpora,
+        settings=settings,
     )
 
 

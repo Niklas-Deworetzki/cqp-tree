@@ -120,8 +120,10 @@
                     </div>
                     <div class="">
                         <select id="query-language-selection" class="form-select">
-                            <option selected value="">Detect automatically
-                            </option>
+                            <option selected value="">Detect automatically</option>
+                            {% for language in translators %}
+                            <option value="{{language}}">{{language}}</option>
+                            {% endfor %}
                         </select>
                     </div>
                 </div>
@@ -338,21 +340,6 @@
                 queryHistory.appendChild(option);
             });
         }
-
-        // Populate list of supported languages.
-        fetch('./translators')
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                data.forEach(lang => {
-                    const option = document.createElement('option');
-                    option.textContent = lang;
-                    option.value = lang;
-                    queryLanguage.appendChild(option);
-                });
-            });
 
         // Make the submit button call the server.
         submitQuery.addEventListener('click', () => {
