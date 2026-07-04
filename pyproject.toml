@@ -1,12 +1,13 @@
 [project]
 name = 'cqp-tree'
-version = '0.2a1'
+version = '1.0'
 description = 'Translate queries from tree-based formats to sequential CQP format used by Corpus Workbench.'
 keywords = ['corpus search', 'query translation', 'corpus workbench', 'korp']
 classifiers = [
-    'Development Status :: 3 - Alpha',
+    'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
     'Intended Audience :: Science/Research',
+    'License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)',
     'Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator',
     'Topic :: Text Processing :: Linguistic',
     'Typing :: Typed'
