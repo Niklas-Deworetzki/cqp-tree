@@ -7,7 +7,6 @@ classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
     'Intended Audience :: Science/Research',
-    'License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)',
     'Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator',
     'Topic :: Text Processing :: Linguistic',
     'Typing :: Typed'
