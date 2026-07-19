@@ -17,16 +17,17 @@
 </head>
 
 <body>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
 <div class="container">
     <div class="row justify-content-center min-vh-100">
         <div class="col-md-10 col-lg-8 flex-grow-1">
             <div>
 
                 <h1 class="my-5">CQP/Tree</h1>
-                <h2>Convert syntactic tree queries into CQL</h2>
+                <h2>What is CQP/Tree?</h2>
 
                 <p>
-                    CQP/Tree converts readable syntactic tree queries into CQL for use in Sketch Engine, Korp, Corpus
+                    CQP/Tree converts human-readable syntactic tree queries into CQL for use in Sketch Engine, Korp, Corpus
                     Workbench and related corpus search systems. This installation is primarily intended to support
                     syntactic searching in
                     {% if cfg.homepage %}
@@ -38,12 +39,46 @@
                     Workbench-compatible corpora and platforms.
                 </p>
 
+                <h2>Getting started</h2>
                 <p>
-                    If you are new to syntactic tree querying, you may want to start with the example queries below or
-                    consult the documentation for the supported input languages, such as
-                    <a href="https://orodja.cjvt.si/drevesnik/help/en/">depsearch</a>
-                    or
-                    <a href="https://universal.grew.fr/?corpus=UD_English-ParTUT@2.18">Grew</a>.
+                    CQP/Tree supports three main input languages:
+                    <a href="https://grew.fr/grew_match/help/">Grew-match</a>,
+                    <a href="https://orodja.cjvt.si/drevesnik/help/en/">depsearch</a> and
+                    <a href="https://github.com/GrammaticalFramework/deptreepy">deptreepy</a> 
+                    All three languages prioritize making it easy to search for syntactic relations between tokens. 
+                </p>
+
+                <p>
+                    If you wanted to look for <b>ditransitive predicates</b> in a Universal Dependencies treebank, for instance, you could write the Grew query
+                    {% with name="grew", code='''pattern {
+    A [upos=\"VERB\"];    % there is a token called A whose UPOS tag is VERB
+    A -[obj]-> B;       % A has a dependent, B, which is labelled as its direct (obj)
+    A -[iobj]-> C       % A also has another dependent, C, labelled as indirect object (iobj)
+}''' %}
+                        {% include "snippet.html" %}
+                    {% endwith %}
+
+                    In depsearch, you could write the same query as
+
+                    {% with name="depsearch", code="VERB >obj _ >iobj _" %}
+                        {% include "snippet.html" %}
+                    {% endwith %}
+
+                    whose deptreepy equivalent is
+
+                    {% with name="deptreepy", code="TREE_ (POS VERB) (DEPREL obj) (DEPREL iobj)" %}
+                        {% include "snippet.html" %}
+                    {% endwith %}                    
+                </p>
+
+                <p>
+                    CQP/Tree can convert all of these syntaxes to CQL and allows you to run them directly on your corpus of choice. 
+                    To get started, try copying and pasting one of the queries above into the 
+                    <a href="..">web interface</a>!
+                </p>
+                
+                <p>
+                    For some more advanced examples, follow <a href="{{ cfg.examples_url }}">this link</a>.
                 </p>
 
                 <h2>
@@ -52,8 +87,31 @@
                 <p>
                     Translated queries may differ from native syntactic search tools in terms of precision and recall,
                     especially for complex multi-token queries. For details on the translation approach, evaluation and
-                    known limitations, see the
-                    <a href="https://lrec.elra.info/lrec2026-main-914">accompanying paper</a>.
+                    known limitations, see Section 7 of the
+                    <a href="https://doi.org/10.63317/2vfu2ssa33us">accompanying paper</a>.
+                </p>
+
+                <h2>
+                    How to cite
+                </h2>
+                <p>
+                    If you use CQP/Tree in your research, you are welcome to cite
+                    <a href="https://doi.org/10.63317/2vfu2ssa33us">Niklas Deworetzki and Arianna Masciolini. <i>Syntactic Sugar for Syntactic Queries: Sequential Representations for Dependency Queries</i>. In Proceedings of the Fifteenth Language Resources and Evaluation Conference (LREC 2026)</a>:
+                    
+                    {% with name="bibtex", code="""@inproceedings{deworetzki-etal-2026-syntactic,
+    title = {Syntactic Sugar for Syntactic Queries: Sequential Representations for Dependency Queries},
+    author = {Deworetzki, Niklas and Masciolini, Arianna},
+    booktitle = {Proceedings of the Fifteenth Language Resources and Evaluation Conference ({LREC} 2026)},
+    month = {May},
+    year = {2026},
+    pages = {11669--11678},
+    address = {Palma, Mallorca, Spain},
+    publisher = {European Language Resources Association (ELRA)},
+    editor = {Piperidis, Stelios and Bel, Núria and van den Heuvel, Henk and Ide, Nancy and Krek, Simon and Toral, Antonio},
+    doi = {10.63317/2vfu2ssa33us},
+}""" %}
+                        {% include "snippet.html" %}
+                    {% endwith %}
                 </p>
 
                 <h2>
@@ -63,9 +121,9 @@
                     This service is based on the CQP/Tree tool developed by Niklas Deworetzki and Arianna Masciolini,
                     with the support of Språkbanken – jointly funded by its 10 partner institutions and the Swedish
                     Research Council (2025–2028; project id 2023-00161).
-                    The CLARIN integration was supported by a CLARIN Mobility Grant and the ARIS-funded projects
-                    GC-0002 (LLM4DH: Large Language Models for Digital Humanities) and J6-70213 (MAPCASE: Mapping
-                    case architectures in Slovenian and across languages).
+                    The CLARIN integration was coordinated by Kaja Dobrovoljc Zor with the support of a CLARIN Mobility 
+                    Grant and the ARIS-funded projects GC-0002 (LLM4DH: Large Language Models for Digital Humanities) 
+                    and J6-70213 (MAPCASE: Mapping case architectures in Slovenian and across languages).
                 </p>
             </div>
         </div>

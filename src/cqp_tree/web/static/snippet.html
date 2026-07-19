@@ -1,0 +1,12 @@
+<script>
+    new ClipboardJS('#copy-{{name}}');
+</script>
+
+<div class="border rounded bg-light">
+    <button type="button" id="copy-{{name}}" class="btn btn-outline-primary float-end"
+        data-clipboard-target="#{{name}}" title="Copy to clipboard">
+        <i class="bi bi-clipboard"></i>
+    </button> 
+    <pre id="{{name}}">
+{{code}}</pre>
+</div>
