@@ -81,8 +81,13 @@ TEMPLATE_DIR = Path(__file__).parent / 'static'
 
 def setup_logger(config: Configuration) -> Optional[logging.Logger]:
     if log_path := config.log_path:
-        logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
         logger = logging.getLogger(__name__)
+        logger.setLevel(logging.INFO)
+
+        formatter = logging.Formatter("%(asctime)s:\t%(message)s")
+        for handler in logger.handlers:
+            handler.setFormatter(formatter)
+
 
         try:
             log_path = Path(log_path)
@@ -93,6 +98,7 @@ def setup_logger(config: Configuration) -> Optional[logging.Logger]:
                 maxBytes=5 * 1024 * 1024,
                 encoding='utf-8',
             )
+            handler.setFormatter(formatter)
             logger.addHandler(handler)
             return logger
 
@@ -227,10 +233,8 @@ def serve_translation(config: Configuration, logger: Optional[logging.Logger]):
         text, configuration = extract_request_data(config)
         if logger is not None:
             logger.info(
-                '%s %s %s | %s',
+                '[%s] %s',
                 request.remote_addr,
-                request.method,
-                request.full_path,
                 json.dumps(text),
             )
 
