@@ -1,8 +1,10 @@
+import json
 from dataclasses import dataclass
 from functools import total_ordering
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Iterable, Optional
 from urllib.parse import unquote, urlparse
+import logging
 
 from flask import Flask, jsonify, redirect, render_template, request, send_file
 
@@ -63,6 +65,13 @@ cqp_tree.declare_configuration(
         validation_type=str,
         default_value='https://grew.fr/tutorial/top/',
     ),
+    DeclaredConfig(
+        key='logging_enabled',
+        readable_name='Enable Logging',
+        readable_description='Switch to enable or disable logging of translation requests.',
+        validation_type=bool,
+        default_value=True,
+    ),
 )
 
 TEMPLATE_DIR = Path(__file__).parent / 'static'
@@ -70,6 +79,12 @@ TEMPLATE_DIR = Path(__file__).parent / 'static'
 
 def setup_server(config: Configuration) -> Flask:
     server = Flask(__name__, template_folder=str(TEMPLATE_DIR))
+    logging_enabled = config.logging_enabled
+    if logging_enabled:
+        logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+        logger = logging.getLogger(server.name)
+    else:
+        logger = None
 
     @server.route('/', methods=['GET'])
     def index():
@@ -81,7 +96,7 @@ def setup_server(config: Configuration) -> Flask:
 
     @server.route('/translate', methods=['POST'])
     def translate():
-        return serve_translation(config)
+        return serve_translation(config, logger)
 
     @server.route('/external_search', methods=['GET'])
     def external_search():
@@ -185,9 +200,18 @@ def serve_branding(config: Configuration):
     return '', 404
 
 
-def serve_translation(config: Configuration):
+def serve_translation(config: Configuration, logger: Optional[logging.Logger]):
     try:
         text, configuration = extract_request_data(config)
+        if logger is not None:
+            logger.info(
+                '%s %s %s | %s',
+                request.remote_addr,
+                request.method,
+                request.full_path,
+                json.dumps(text),
+            )
+
         plan = cqp_tree.translate_input(text, configuration)
 
         if is_too_complex(plan):
