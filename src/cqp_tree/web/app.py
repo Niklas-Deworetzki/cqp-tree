@@ -41,6 +41,12 @@ def argument_parser() -> argparse.ArgumentParser:
         action='store_true',
         help='Enable debug mode.',
     )
+    parser.add_argument(
+        '--quiet',
+        '-q',
+        action='store_true',
+        help='Disable logging.',
+    )
     cqp_tree.add_config_flag_to_parser(parser)
     cqp_tree.add_config_flags_group_to_parser(parser)
     return parser
@@ -57,6 +63,8 @@ def main():
     port = args.port or DEFAULT_PORT
 
     config = cqp_tree.configuration_from_args(args, cqp_tree.default_configuration())
+    if args.quiet:
+        config.logging_enabled = False
     server = setup_server(config)
     if args.debug:
         server.run(host=host, port=port, debug=True)
