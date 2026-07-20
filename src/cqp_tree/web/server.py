@@ -50,6 +50,13 @@ cqp_tree.declare_configuration(
         validation_type=str,
     ),
     DeclaredConfig(
+        key='examples_url',
+        readable_name='Examples URL',
+        readable_description='URL of a page with more advanced examples, possibly system-specific.',
+        validation_type=str,
+        default_value='https://grew.fr/tutorial/top/',
+    ),
+    DeclaredConfig(
         key='allow_external_search',
         readable_name='Allow External Search',
         readable_description='Allows to run the translated query on another not '
@@ -57,13 +64,6 @@ cqp_tree.declare_configuration(
         'analyzed and transformed into a proper format.',
         validation_type=bool,
         default_value=False,
-    ),
-    DeclaredConfig(
-        key='examples_url',
-        readable_name='Examples URL',
-        readable_description='URL of a page with more advanced examples, possibly system-specific.',
-        validation_type=str,
-        default_value='https://grew.fr/tutorial/top/',
     ),
     DeclaredConfig(
         key='logging_enabled',
