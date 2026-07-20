@@ -1,7 +1,10 @@
+import json
+import logging
 from dataclasses import dataclass
 from functools import total_ordering
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Iterable, Optional
 from urllib.parse import unquote, urlparse
 
 from flask import Flask, jsonify, redirect, render_template, request, send_file
@@ -48,6 +51,13 @@ cqp_tree.declare_configuration(
         validation_type=str,
     ),
     DeclaredConfig(
+        key='examples_url',
+        readable_name='Examples URL',
+        readable_description='URL of a page with more advanced examples, possibly system-specific.',
+        validation_type=str,
+        default_value='https://grew.fr/tutorial/top/',
+    ),
+    DeclaredConfig(
         key='allow_external_search',
         readable_name='Allow External Search',
         readable_description='Allows to run the translated query on another not '
@@ -57,19 +67,50 @@ cqp_tree.declare_configuration(
         default_value=False,
     ),
     DeclaredConfig(
-        key='examples_url',
-        readable_name='Examples URL',
-        readable_description='URL of a page with more advanced examples, possibly system-specific.',
+        key='log_path',
+        readable_name='Log File Path',
+        readable_description='Path where log files are written to.',
         validation_type=str,
-        default_value='https://grew.fr/tutorial/top/',
+        default_value='',
     ),
 )
 
 TEMPLATE_DIR = Path(__file__).parent / 'static'
 
 
+def setup_logger(config: Configuration) -> Optional[logging.Logger]:
+    if log_path := config.log_path:
+        logger = logging.getLogger(__name__)
+        logger.setLevel(logging.INFO)
+
+        formatter = logging.Formatter("%(asctime)s:\t%(message)s")
+        for handler in logger.handlers:
+            handler.setFormatter(formatter)
+
+        try:
+            log_path = Path(log_path)
+            log_path.parent.mkdir(parents=True, exist_ok=True)
+
+            handler = RotatingFileHandler(
+                log_path,
+                maxBytes=5 * 1024 * 1024,
+                encoding='utf-8',
+            )
+            handler.setFormatter(formatter)
+            logger.addHandler(handler)
+            return logger
+
+        except PermissionError:
+            logger.warning('Could not create logging directory! Logs are not persisted.')
+            return logger
+
+    else:
+        return None
+
+
 def setup_server(config: Configuration) -> Flask:
     server = Flask(__name__, template_folder=str(TEMPLATE_DIR))
+    logger = setup_logger(config)
 
     @server.route('/', methods=['GET'])
     def index():
@@ -81,7 +122,7 @@ def setup_server(config: Configuration) -> Flask:
 
     @server.route('/translate', methods=['POST'])
     def translate():
-        return serve_translation(config)
+        return serve_translation(config, logger)
 
     @server.route('/external_search', methods=['GET'])
     def external_search():
@@ -157,7 +198,7 @@ def serve_about(config: Configuration):
 
 
 def serve_examples(lang: str):
-    return render_template(f'{lang}_examples.html'.format())
+    return render_template(f'{lang}_examples.html')
 
 
 def serve_external_search():
@@ -185,9 +226,16 @@ def serve_branding(config: Configuration):
     return '', 404
 
 
-def serve_translation(config: Configuration):
+def serve_translation(config: Configuration, logger: Optional[logging.Logger]):
     try:
         text, configuration = extract_request_data(config)
+        if logger is not None:
+            logger.info(
+                '[%s] %s',
+                request.remote_addr,
+                json.dumps(text),
+            )
+
         plan = cqp_tree.translate_input(text, configuration)
 
         if is_too_complex(plan):
