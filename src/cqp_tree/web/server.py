@@ -1,12 +1,11 @@
 import json
-import sys
+import logging
 from dataclasses import dataclass
 from functools import total_ordering
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from typing import Any, Iterable, Optional
 from urllib.parse import unquote, urlparse
-import logging
 
 from flask import Flask, jsonify, redirect, render_template, request, send_file
 
@@ -87,7 +86,6 @@ def setup_logger(config: Configuration) -> Optional[logging.Logger]:
         formatter = logging.Formatter("%(asctime)s:\t%(message)s")
         for handler in logger.handlers:
             handler.setFormatter(formatter)
-
 
         try:
             log_path = Path(log_path)
