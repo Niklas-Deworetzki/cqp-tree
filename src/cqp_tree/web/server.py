@@ -1,6 +1,8 @@
 import json
+import sys
 from dataclasses import dataclass
 from functools import total_ordering
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from typing import Any, Iterable, Optional
 from urllib.parse import unquote, urlparse
@@ -66,25 +68,45 @@ cqp_tree.declare_configuration(
         default_value=False,
     ),
     DeclaredConfig(
-        key='logging_enabled',
-        readable_name='Enable Logging',
-        readable_description='Switch to enable or disable logging of translation requests.',
-        validation_type=bool,
-        default_value=True,
+        key='log_path',
+        readable_name='Log File Path',
+        readable_description='Path where log files are written to.',
+        validation_type=str,
+        default_value='',
     ),
 )
 
 TEMPLATE_DIR = Path(__file__).parent / 'static'
 
 
+def setup_logger(config: Configuration) -> Optional[logging.Logger]:
+    if log_path := config.log_path:
+        logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+        logger = logging.getLogger(__name__)
+
+        try:
+            log_path = Path(log_path)
+            log_path.parent.mkdir(parents=True, exist_ok=True)
+
+            handler = RotatingFileHandler(
+                log_path,
+                maxBytes=5 * 1024 * 1024,
+                encoding='utf-8',
+            )
+            logger.addHandler(handler)
+            return logger
+
+        except PermissionError:
+            logger.warning('Could not create logging directory! Logs are not persisted.')
+            return logger
+
+    else:
+        return None
+
+
 def setup_server(config: Configuration) -> Flask:
     server = Flask(__name__, template_folder=str(TEMPLATE_DIR))
-    logging_enabled = config.logging_enabled
-    if logging_enabled:
-        logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-        logger = logging.getLogger(server.name)
-    else:
-        logger = None
+    logger = setup_logger(config)
 
     @server.route('/', methods=['GET'])
     def index():
