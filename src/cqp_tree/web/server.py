@@ -172,7 +172,7 @@ def serve_about(config: Configuration):
 
 
 def serve_examples(lang: str):
-    return render_template(f'{lang}_examples.html'.format())
+    return render_template(f'{lang}_examples.html')
 
 
 def serve_external_search():
