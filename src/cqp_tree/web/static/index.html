@@ -31,7 +31,7 @@
                             {% if cfg.homepage %}
                             <a href="{{ cfg.homepage }}">
                                 {% endif %}
-                                <img src="./{{ url_for('branding') }}" alt="Institution logo"
+                                <img src="{{ url_for('branding') }}" alt="Institution logo"
                                     class="d-none d-sm-inline me-2"
                                     style="height: 4rem; width: 7rem; object-fit: contain;">
                                 {% if cfg.homepage %}
@@ -57,7 +57,7 @@
                         <div class="me-1">
                             <a title="Show information about this tool"
                                class="btn btn-outline-secondary"
-                               href="./about.html"
+                               href="{{ url_for('about.html') }}"
                                target="_blank"
                                rel="noopener noreferrer">
                                 <i class="bi bi-info"></i>
@@ -103,7 +103,7 @@
 
                 <!-- QUERY INPUT -->
                 <div class="mb-3 position-relative">
-                    <label for="query-input-field" class="form-label">Your query (click <a href="./about.html" target="_blank">here</a> for examples):</label>
+                    <label for="query-input-field" class="form-label">Your query (click <a href="{{ url_for('about.html') }}" target="_blank">here</a> for examples):</label>
                     <textarea id="query-input-field" class="form-control font-monospace border" rows="5"
                         placeholder="Write your query here..."></textarea>
                     <div id="history-dropdown" class="dropdown-menu"
@@ -354,7 +354,7 @@
                 request['translator'] = translator
             }
 
-            fetch('./translate', {
+            fetch('{{ url_for("translate") }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -397,7 +397,7 @@
 
         // Make the external search button do a request
         externalSearchButton.addEventListener('click', () => {
-            const url = new URL('./external_search', location.href);
+            const url = new URL('{{ url_for("external_search") }}', location.href);
             url.searchParams.set('url', encodeURIComponent(externalSearchUrl.value));
             url.searchParams.set('query', encodeURIComponent(queryOutput.value));
             window.open(url, '_blank', 'noopener,noreferrer');

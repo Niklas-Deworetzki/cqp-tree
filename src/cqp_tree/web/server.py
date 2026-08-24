@@ -152,6 +152,7 @@ def setup_server(config: Configuration) -> Flask:
             'script_root': request.script_root,
             'url_for_branding': url_for('branding'),
             'proxy_fix_active': config.proxy,
+            'request_route': request.url,
         }
 
     return server
