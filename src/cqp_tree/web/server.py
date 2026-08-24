@@ -73,6 +73,13 @@ cqp_tree.declare_configuration(
         validation_type=str,
         default_value='',
     ),
+    DeclaredConfig(
+        key='proxy',
+        readable_name='Reverse Proxy',
+        readable_description='Application runs behind a reverse proxy.',
+        validation_type=bool,
+        default_value=False,
+    ),
 )
 
 TEMPLATE_DIR = Path(__file__).parent / 'static'
