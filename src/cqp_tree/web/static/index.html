@@ -57,7 +57,7 @@
                         <div class="me-1">
                             <a title="Show information about this tool"
                                class="btn btn-outline-secondary"
-                               href="{{ url_for('about.html') }}"
+                               href="{{ url_for('', filename='about.html') }}"
                                target="_blank"
                                rel="noopener noreferrer">
                                 <i class="bi bi-info"></i>
@@ -103,7 +103,9 @@
 
                 <!-- QUERY INPUT -->
                 <div class="mb-3 position-relative">
-                    <label for="query-input-field" class="form-label">Your query (click <a href="{{ url_for('about.html') }}" target="_blank">here</a> for examples):</label>
+                    <label for="query-input-field" class="form-label">
+                        Your query (click <a href="{{ url_for('', filename='about.html') }}" target="_blank">here</a> for examples):
+                    </label>
                     <textarea id="query-input-field" class="form-control font-monospace border" rows="5"
                         placeholder="Write your query here..."></textarea>
                     <div id="history-dropdown" class="dropdown-menu"
