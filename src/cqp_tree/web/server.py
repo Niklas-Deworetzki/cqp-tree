@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any, Iterable, Optional
 from urllib.parse import unquote, urlparse
 
-from flask import Flask, jsonify, redirect, render_template, request, send_file, url_for
+from flask import Flask, jsonify, redirect, render_template, request, send_file
 
 import cqp_tree
 from cqp_tree import Configuration, DeclaredConfig, Recipe
@@ -142,18 +142,6 @@ def setup_server(config: Configuration) -> Flask:
     @server.route('/slovene_examples.html', methods=['GET'])
     def slovene_examples():
         return serve_examples('slovene')
-
-    @server.route('/debug-proxy')
-    def debug_proxy():
-        return {
-            'x_forwarded_prefix': request.headers.get('X-Forwarded-Prefix'),
-            'script_name': request.environ.get('SCRIPT_NAME'),
-            'path_info': request.environ.get('PATH_INFO'),
-            'script_root': request.script_root,
-            'url_for_branding': url_for('branding'),
-            'proxy_fix_active': config.proxy,
-            'request_route': request.url,
-        }
 
     return server
 
