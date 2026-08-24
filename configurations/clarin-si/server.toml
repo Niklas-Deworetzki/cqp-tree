@@ -7,6 +7,7 @@ corpus_configs = "configurations/clarin-si/corpora"
 examples_url = "./slovene_examples.html"
 allow_external_search = true
 log_path = "/app/logs/cqp-tree-web.log"
+proxy = true
 
 [general]
 ud_mode = true
