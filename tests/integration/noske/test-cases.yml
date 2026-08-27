@@ -1,0 +1,26 @@
+- description: Regular expressions are escaped properly.
+  input: |
+    pattern { X [upos=re"."]; }
+  expected: 64
+
+- description: Regular expressions are escaped properly.
+  input: |
+    _ >nsubj _
+  expected: 1127
+
+- description: Chain of 3 tokens.
+  input: |
+    pattern { 
+    	T -[nsubj]-> U;
+    	U -[amod]-> V;
+    }
+  expected: 67
+
+- description: Combination of on-token and dependency attributes.
+  input: |
+    pattern { 
+      V [upos<>ADJ];
+      T -[nsubj]-> U;
+      U -[amod]-> V;
+    }
+  expected: 1

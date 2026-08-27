@@ -1,0 +1,49 @@
+name: Integration Tests
+
+# Only run when changes are made to merge into main
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+
+jobs:
+  noske:
+    name: test:noske
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+
+      - name: Install tools and dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test]"
+          python -m pip install pytest pytest-playwright
+          playwright install --with-deps chromium
+
+      - name: Compile corpus
+        run: |
+          docker run --rm \
+            --volume "${{ github.workspace }}/resources/testing:/corpora" \
+            eltedh/nosketch-engine:latest \
+            compilecorp \
+            --no-ske \
+            --recompile-corpus \
+            /corpora/registry/cqptree
+
+      - name: Start NoSketch Engine
+        run: |
+          docker run --detach \
+            --name noske \
+            --rm \
+            --publish 10070:10070 \
+            --volume "${{ github.workspace }}/resources/testing:/corpora" \
+            eltedh/nosketch-engine:latest
+
+      - name: Run NoSketch Engine integration tests
+        run: |
+          python -m unittest discover -s test/integration/noske
