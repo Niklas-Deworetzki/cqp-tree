@@ -46,4 +46,4 @@ jobs:
 
       - name: Run NoSketch Engine integration tests
         run: |
-          python -m unittest discover -s test/integration/noske
+          python -m unittest discover -s tests/integration/noske
