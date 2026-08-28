@@ -6,7 +6,7 @@
 - description: Regular expressions are escaped properly.
   input: |
     _ >nsubj _
-  expected: 1127
+  expected: [363, 343]
 
 - description: Chain of 3 tokens.
   input: |
@@ -14,7 +14,7 @@
     	T -[nsubj]-> U;
     	U -[amod]-> V;
     }
-  expected: 67
+  expected: [34, 38]
 
 - description: Combination of on-token and dependency attributes.
   input: |
@@ -24,3 +24,8 @@
       U -[amod]-> V;
     }
   expected: 1
+
+- description: Tag name in depsearch searches for pos.
+  input: |
+    ADJ
+  expected: 798

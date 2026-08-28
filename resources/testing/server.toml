@@ -1,0 +1,10 @@
+[web]
+baseurl = "http://localhost:10070/#concordance?tab=advanced&queryselector=cql&showresults=1&corpname=cqptree&cql={query}"
+system_name = "Integration Test"
+corpus_configs = "resources/testing/configurations"
+examples_url = "./slovene_examples.html"
+
+[general]
+ud_mode = true
+span = "s"
+dialect = "Sketch Engine"

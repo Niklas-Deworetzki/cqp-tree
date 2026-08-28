@@ -40,10 +40,11 @@ jobs:
           docker run --detach \
             --name noske \
             --rm \
-            --publish 10070:10070 \
+            --publish 10070:80 \
             --volume "${{ github.workspace }}/resources/testing:/corpora" \
             eltedh/nosketch-engine:latest
 
       - name: Run NoSketch Engine integration tests
         run: |
+          cqp-tree-web --config resources/testing/server.toml &
           python -m unittest discover -s tests/integration/noske
