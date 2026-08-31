@@ -80,7 +80,7 @@ def format_recipe(plan: query.Recipe, configuration: Configuration) -> Iterable[
             query_text = parsed_to_cqp(part, configuration).to_string(configuration)
             formatted = query_text + ';'
 
-        if i <= len(flattened_plan):
+        if i < len(flattened_plan):
             formatted = f'{environment[part.identifier]} = {formatted}'
 
         yield formatted
