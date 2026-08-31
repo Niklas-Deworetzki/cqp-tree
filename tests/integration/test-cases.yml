@@ -4,11 +4,11 @@
   noske: 64
   cwb: 64
 
-- description: Regular expressions are escaped properly
+- description: Dependency relation is resolved properly.
   input: |
     _ >nsubj _
   noske: [363, 343]
-  cwb: 1
+  cwb: 1129
 
 - description: Chain of 3 tokens
   input: |
@@ -17,7 +17,7 @@
     	U -[amod]-> V;
     }
   noske: [34, 36, 38]
-  cwb: 1
+  cwb: 64
 
 - description: Combination of on-token and dependency attributes
   input: |
@@ -33,4 +33,4 @@
   input: |
     ADJ
   noske: 798
-  cwb: 1
+  cwb: 798
