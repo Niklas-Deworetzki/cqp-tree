@@ -23,6 +23,7 @@ def run_cqp_query(query: str) -> int:
             query,
         ],
         stdout=subprocess.PIPE,
+        text=True,
     )
 
     count = 0
@@ -38,6 +39,10 @@ def convert_query(query: str, translator: Optional[str] = None) -> str:
         'resources/testing/configurations/testcorpus.toml',
         '--general.dialect',
         'Corpus Workbench',
+        '--general.ud_mode',
+        'true',
+        '--span',
+        's',
         '--query',
         query,
     ]

@@ -2,7 +2,7 @@
   input: |
     pattern { X [upos=re"."]; }
   noske: 64
-  cwb: 1
+  cwb: 64
 
 - description: Regular expressions are escaped properly
   input: |
