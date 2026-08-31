@@ -25,9 +25,11 @@ def run_cqp_query(query: str) -> int:
         stdout=subprocess.PIPE,
     )
 
+    print(query)
+
     count = 0
-    for count, _ in enumerate(result.stdout, start=1):
-        pass
+    for line in result.stdout:
+        print(line)
     return count
 
 
