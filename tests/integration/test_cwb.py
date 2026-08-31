@@ -9,7 +9,7 @@ CORPUS_PATH = Path('resources/cwb').resolve()
 
 
 def run_cqp_query(query: str) -> int:
-    cqp = subprocess.run(
+    cqp = subprocess.Popen(
         [
             'docker',
             'run',
@@ -24,14 +24,13 @@ def run_cqp_query(query: str) -> int:
         ],
         stdout=subprocess.PIPE,
     )
-    wc = subprocess.run(
+    wc = subprocess.Popen(
         ['wc', '-l'],
         stdin=cqp.stdout,
-        capture_output=True,
-        text=True,
-        check=True,
+        stdout=subprocess.PIPE,
     )
-    return int(wc.stdout)
+
+    return int(wc.stdout.readline())
 
 
 def convert_query(query: str, translator: Optional[str] = None) -> str:
