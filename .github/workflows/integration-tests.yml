@@ -17,6 +17,7 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.14'
+          cache: pip
 
       - name: Install tools and dependencies
         run: |
@@ -47,4 +48,56 @@ jobs:
       - name: Run NoSketch Engine integration tests
         run: |
           cqp-tree-web --config resources/testing/server.toml &
-          python -m unittest discover -s tests/integration/noske
+          python -m unittest tests/integration/test_noske.py
+
+  cwb:
+    name: test:cwb
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+          cache: pip
+
+      - name: Install tools and dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test]"
+          python -m pip install pytest pytest-playwright
+          playwright install --with-deps chromium
+
+      - name: Compile corpus
+        run: |
+          mkdir -p "${{ github.workspace }}/resources/cwb/registry" "${{ github.workspace }}/resources/cwb/data/cqptree" 
+          docker run --rm \
+            --volume "${{ github.workspace }}/resources/testing:/input" \
+            --volume "${{ github.workspace }}/resources/cwb:/corpora" \
+            ghcr.io/niklas-deworetzki/cwb:3.5 \
+            cwb-encode \
+            -F /input/cqptree/vertical/ \
+            -d /corpora/data/cqptree \
+            -R /corpora/registry/cqptree \
+            -c utf8 \
+            -p id \
+            -P word \
+            -P lemma \
+            -P upos \
+            -P xpos \
+            -P feats \
+            -P head \
+            -P deprel \
+            -P deps \
+            -P misc \
+            -S doc+id \
+            -S s+sent_id+text+genre+dialect_group+location+source
+          docker run --rm \
+            --volume "${{ github.workspace }}/resources/cwb:/corpora" \
+            ghcr.io/niklas-deworetzki/cwb:3.5 \
+            cwb-make -V CQPTREE
+          
+      - name: Run NoSketch Engine integration tests
+        run: |
+          python -m unittest tests/integration/test_cwb.py
+
