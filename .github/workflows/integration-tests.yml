@@ -1,0 +1,102 @@
+name: Integration Tests
+
+# Only run when changes are made to merge into main
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  noske:
+    name: NoSketch Engine
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+          cache: pip
+
+      - name: Install tools and dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test]"
+          python -m pip install pytest pytest-playwright
+          playwright install --with-deps chromium
+
+      - name: Compile corpus
+        run: |
+          docker run --rm \
+            --volume "${{ github.workspace }}/resources/testing:/corpora" \
+            eltedh/nosketch-engine:latest \
+            compilecorp \
+            --no-ske \
+            --recompile-corpus \
+            /corpora/registry/cqptree
+
+      - name: Start NoSketch Engine
+        run: |
+          docker run --detach \
+            --name noske \
+            --rm \
+            --publish 10070:80 \
+            --volume "${{ github.workspace }}/resources/testing:/corpora" \
+            eltedh/nosketch-engine:latest
+
+      - name: Run NoSketch Engine integration tests
+        run: |
+          cqp-tree-web --config resources/testing/server.toml &
+          python -m unittest tests/integration/test_noske.py
+
+  cwb:
+    name: Corpus Workbench
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+          cache: pip
+
+      - name: Install tools and dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test]"
+          python -m pip install pytest pytest-playwright
+          playwright install --with-deps chromium
+
+      - name: Compile corpus
+        run: |
+          mkdir -p "${{ github.workspace }}/resources/cwb/registry" "${{ github.workspace }}/resources/cwb/data/cqptree" 
+          docker run --rm \
+            --volume "${{ github.workspace }}/resources/testing:/input" \
+            --volume "${{ github.workspace }}/resources/cwb:/corpora" \
+            ghcr.io/niklas-deworetzki/cwb:3.5 \
+            cwb-encode \
+            -F /input/cqptree/vertical/ \
+            -d /corpora/data/cqptree \
+            -R /corpora/registry/cqptree \
+            -c utf8 \
+            -p id \
+            -P word \
+            -P lemma \
+            -P upos \
+            -P xpos \
+            -P feats \
+            -P head \
+            -P deprel \
+            -P deps \
+            -P misc \
+            -S doc+id \
+            -S s+sent_id+text+genre+dialect_group+location+source
+          docker run --rm \
+            --volume "${{ github.workspace }}/resources/cwb:/corpora" \
+            ghcr.io/niklas-deworetzki/cwb:3.5 \
+            cwb-make -V CQPTREE
+          
+      - name: Run NoSketch Engine integration tests
+        run: |
+          python -m unittest tests/integration/test_cwb.py
+

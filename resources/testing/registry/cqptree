@@ -1,0 +1,49 @@
+MAINTAINER "https://github.com/Niklas-Deworetzki/cqp-tree"
+INFO "cqptree"
+NAME "CQP-Tree Integration Test Corpus"
+PATH cqptree
+ENCODING "UTF-8"
+LANGUAGE "Bavarian"
+
+PATH   '/corpora/cqptree/indexed/'
+VERTICAL  '/corpora/cqptree/vertical/UD_Bavarian-MaiBaam.vrt'
+
+
+INFOHREF "https://github.com/Niklas-Deworetzki/cqp-tree/tree/main/resources/testing"
+TAGSETDOC "https://universaldependencies.org/u/pos/index.html"
+
+FULLREF "doc.id"
+
+ATTRIBUTE   id
+
+ATTRIBUTE   word
+
+ATTRIBUTE   lemma
+
+ATTRIBUTE   upos
+
+ATTRIBUTE   xpos
+
+ATTRIBUTE   feats
+
+ATTRIBUTE   head
+
+ATTRIBUTE   deprel
+
+ATTRIBUTE   deps
+
+ATTRIBUTE   misc
+
+
+STRUCTURE doc {
+	ATTRIBUTE id
+}
+
+STRUCTURE s {
+	ATTRIBUTE sent_id
+	ATTRIBUTE text
+	ATTRIBUTE genre
+	ATTRIBUTE dialect_group
+	ATTRIBUTE location
+	ATTRIBUTE source
+}

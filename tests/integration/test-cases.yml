@@ -1,0 +1,36 @@
+- description: Regular expressions are escaped properly
+  input: |
+    pattern { X [upos=re"."]; }
+  noske: 64
+  cwb: 64
+
+- description: Dependency relation is resolved properly.
+  input: |
+    _ >nsubj _
+  noske: [363, 343]
+  cwb: 1129
+
+- description: Chain of 3 tokens
+  input: |
+    pattern { 
+    	T -[nsubj]-> U;
+    	U -[amod]-> V;
+    }
+  noske: [34, 36, 38]
+  cwb: 64
+
+- description: Combination of on-token and dependency attributes
+  input: |
+    pattern { 
+      V [upos<>ADJ];
+      T -[nsubj]-> U;
+      U -[amod]-> V;
+    }
+  noske: 1
+  cwb: 1
+
+- description: Tag name in depsearch searches for pos
+  input: |
+    ADJ
+  noske: 798
+  cwb: 798
