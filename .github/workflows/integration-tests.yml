@@ -1,8 +1,11 @@
 name: Integration Tests
 
-# Only run when changes are made to merge into main
+# Only run when changes are made to merge into main or when a change on main is made.
 on:
   pull_request:
+    branches:
+      - main
+  push:
     branches:
       - main
 
