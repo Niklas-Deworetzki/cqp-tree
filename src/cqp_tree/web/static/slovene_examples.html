@@ -79,24 +79,24 @@
                     If your corpus of choice is not listed, select the corpus on noSketch Engine and click on "corpus info" to find out.
                 </p>
 
-                <h2>Case errors in negated sentences</h2>
+                <h2>Reflexive verbs with objects</h2>
                 <p>
-                    Let's look at a more complex depsearch query: 
-                    {% with name="caserr-depsearch", code="VERB >obj NOUN&Case=Acc >aux|>advmod Polarity=Neg" %}
+                    We can now make the query a little more complex by looking for reflexive verbs that also have an object: 
+                    {% with name="reflobj-depsearch", code="VERB >expl PRON&L=se >obj NOUN" %}
                         {% include "snippet.html" %}
                     {% endwith %}
                 </p>
                 <p>
-                    This can be used to search for clauses with negative polarity with an object in accusative rather than genitive case, such as <i>to ne vem</i> ('I don't know this'), where <i>to</i> is incorrectly inflected for case.
+                    This query searches for verbs with the reflexive expletive <i>se</i> and a nominal object, for example constructions such as <i>učiti se matematiko</i> ('to learn maths'). It can be used to explore which reflexive verbs occur with objects and what kinds of objects they take.
                 </p>
                 <p>
                     The Grew-match equivalent is:
-                    {% with name="caserr-grew", code="""pattern {
+                    {% with name="reflobj-grew", code="""pattern {
     V [ud_pos = VERB];
-    N [ud_pos = NOUN, Case = Acc];
-    P [Polarity = Neg];
-    V -[obj]-> N;
-    V -[aux|advmod]-> P;
+    R [ud_pos = PRON, lemma = "se"];
+    O [ud_pos = NOUN];
+    V -[expl]-> R;
+    V -[obj]-> O;
 }""" %}
                         {% include "snippet.html" %}
                     {% endwith %}
