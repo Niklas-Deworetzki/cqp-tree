@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Any, Iterable, Optional, overload, override
+from typing import Any, Callable, Iterable, Optional, overload, override
 
 from cqp_tree.configuration import Configuration
 from cqp_tree.translation import query
@@ -140,11 +140,10 @@ def add_anchors(q: Query, anchors: Iterable[query.Constraint.Anchor], span: str)
     return q
 
 
-def arrangements(
+def _expand_constraints(
     identifiers: set[query.Identifier],
     constraints: Iterable[query.Constraint],
-) -> Iterable[list[query.Identifier]]:
-    """Arrange a set of Identifiers into all sequences allowed by the given Constraints"""
+) -> dict[query.Identifier, set[query.Identifier]]:
     cannot_be_after = {i: set() for i in identifiers}
     for constraint in constraints:
         if isinstance(constraint, query.Constraint.Order):
@@ -158,6 +157,15 @@ def arrangements(
             if constraint.is_last():  # No other cannot be after id.
                 for other in other_identifiers:
                     cannot_be_after[other].add(id)
+    return cannot_be_after
+
+
+def arrangements(
+    identifiers: set[query.Identifier],
+    constraints: Iterable[query.Constraint],
+) -> Iterable[list[query.Identifier]]:
+    """Arrange a set of Identifiers into all sequences allowed by the given Constraints"""
+    cannot_be_after = _expand_constraints(identifiers, constraints)
 
     # Buffer with space for all identifiers.
     arrangement: list[query.Identifier] = [None] * len(identifiers)
@@ -173,6 +181,41 @@ def arrangements(
                 yield from arrange(index + 1, (remaining_identifiers - restricted) - {identifier})
 
     yield from arrange(0, identifiers)
+
+
+def prefix_compact_arrangements(
+    identifiers: set[query.Identifier],
+    constraints: Iterable[query.Constraint],
+    ctor: Callable[[query.Identifier], Token],
+) -> Optional[query.Query]:
+    """Arrange a set of Identifiers into all sequences allowed by the given Constraints.
+    Merges common prefixes into a Query, using the given constructor (ctor) to create
+    Queries from Identifiers.
+
+    If no valid arrangement exists, returns None."""
+    cannot_be_after = _expand_constraints(identifiers, constraints)
+
+    def build(remaining_identifiers: set[query.Identifier]) -> Optional[Query]:
+        tails = list(rec(remaining_identifiers))
+        if len(tails) == 1:
+            return next(iter(tails))
+        return Operator('|', tails)
+
+    def rec(remaining_identifiers: set[query.Identifier]):
+        if len(remaining_identifiers) == 1:
+            el, = remaining_identifiers
+            yield ctor(el)
+        else:
+            for identifier in remaining_identifiers:
+                restricted = cannot_be_after[identifier]
+                remaining = remaining_identifiers - {identifier}
+
+                head = ctor(identifier)
+                if not restricted & remaining:
+                    if tail := build(remaining):
+                        yield Sequence(head, tail)
+
+    return build(identifiers)
 
 
 class QueryFormatter(ABC):
@@ -227,7 +270,7 @@ class QueryFormatter(ABC):
             parts = []
             for q_ in q.queries:
                 part = self.format(q_)
-                part = self._parens_if(part, q_, (Token, Sequence))
+                part = self._parens_if(part, q_, (Operator, Sequence, WithinConstraint))
                 parts.append(part)
             return self.format_operator(q.operator, parts)
 

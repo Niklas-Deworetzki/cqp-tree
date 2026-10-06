@@ -7,14 +7,14 @@ from cqp_tree.translation.backends.common import (
     Operator,
     Query,
     QueryFormatter,
-    Sequence,
+    Span,
     Token,
     add_within_and_anchors,
-    arrangements,
+    prefix_compact_arrangements,
     query,
 )
 from cqp_tree.translation.errors import NotSupported
-from cqp_tree.utils import flatmap
+from cqp_tree.utils import filter_is_instance, flatmap, flatmap_set
 
 # manatee does weird things when "0" is included as an identifier.
 # The identifier appears to not be resolved properly.
@@ -77,6 +77,11 @@ def unfold_predicate(predicate: query.Predicate) -> Iterable[query.Predicate]:
 def associate_predicates(
     q: query.Query,
 ) -> tuple[dict[query.Identifier, Token], set[query.Predicate]]:
+    """
+    Given an unprocessed query, partitions predicates into those that can
+    be placed on a token and global predicates.
+    """
+
     # Collect all the predicates
     predicates = collect_predicates(q)
 
@@ -97,18 +102,74 @@ def associate_predicates(
     return tokens, global_predicates
 
 
+def get_ordered_fragment(
+    q: query.Query,
+    tokens: dict[query.Identifier, query.Token],
+) -> Optional[tuple[Query, set[query.Identifier]]]:
+    order_constraints = filter_is_instance(
+        q.constraints, query.OrderConstraint | query.AnchorConstraint
+    )
+    order_constraints = list(order_constraints)
+    if not order_constraints:
+        return None
+
+    ordered_token_ids = flatmap_set(order_constraints, lambda x: x)
+    ordered_fragment = prefix_compact_arrangements(ordered_token_ids, order_constraints, tokens.get)
+    if ordered_fragment is not None:
+        return ordered_fragment, ordered_token_ids
+    return None
+
+
+def build_linear_query(
+    parts: list[Query],
+    configuration: Configuration,
+) -> Query:
+    span = configuration.span or 's'
+    span += '/'
+
+    def f(rhs: Query, lhs: Query) -> Query:
+        containing = Operator('containing', [Span(span, query.Position.FIRST), rhs])
+        return Operator('within', [lhs, containing])
+
+    return reduce(f, reversed(parts))
+
+
 def sketchengine_from_query(q: query.Query, configuration: Configuration) -> Query:
+    """
+    Translates into special linearized and order-agnostic query representation for SketchEngine.
+
+    This uses nested within and containing operators, matching the whole sentence as a result:
+    (1:[] within (<s/> containing 2:[] within (<s/> containing 3:[]))) & 1.head=2.id & 3.head=2.id
+
+
+    Any tokens that express a token order are collected as an ordered fragment within
+    this linearization:
+    (1:[] within (<s/> containing (2:[] []* 3:[]))) & 1.head = 2.id & 3.head = 2.id
+
+    Thanks to Jakob Lenardič for pointing out that it is possible to combine operators in this way
+    (against what the SketchEngine documentation states).
+    """
     for constraint in q.constraints:
         if isinstance(constraint, query.Constraint.Distance):
             raise NotSupported('Cannot encode distance constraints for (No)Sketch Engine, yet.')
 
     tokens, global_predicates = associate_predicates(q)
-    alternatives: list[Query] = []
-    for arrangement in arrangements(set(tokens.keys()), q.constraints):
-        alternative = reduce(Sequence, (tokens[i] for i in arrangement))
-        alternatives.append(alternative)
+    token_ids = set(tokens.keys())
 
-    result = Operator('|', alternatives)
+    ordered_fragment = get_ordered_fragment(q, tokens)
+    unordered_parts: list[Query] = []
+
+    if ordered_fragment is not None:
+        # Include ordered fragment
+        fragment, included_ids = ordered_fragment
+        unordered_parts.append(fragment)
+        token_ids -= included_ids
+
+    # Include all unordered fragments
+    for i in token_ids:
+        unordered_parts.insert(0, tokens[i])
+
+    result = build_linear_query(unordered_parts, configuration)
     if global_predicates or q.dependencies:
         result = GlobalConstraint(result, global_predicates, set(q.dependencies))
 
