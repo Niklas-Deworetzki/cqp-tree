@@ -8,7 +8,7 @@ from cqp_tree.translation.backends.common import (
     QueryFormatter,
     Span,
     Token,
-    add_within_and_anchors,
+    add_anchors,
     prefix_compact_arrangements,
     query,
 )
@@ -119,14 +119,8 @@ def get_ordered_fragment(
     return None
 
 
-def build_linear_query(
-    parts: list[Query],
-    configuration: Configuration,
-) -> Query:
-    span = configuration.span or 's'
-    span += '/'
-
-    containing = [Span(span, query.Position.FIRST)]
+def build_linear_query(parts: list[Query], span: str) -> Query:
+    containing = [Span(span + '/', query.Position.FIRST)]
     head, *tail = parts
     containing.extend(tail)
 
@@ -134,7 +128,7 @@ def build_linear_query(
         'within',
         [
             head,
-            Operator('containing', tail),
+            Operator('containing', containing),
         ],
     )
 
@@ -149,6 +143,8 @@ def sketchengine_from_query(q: query.Query, configuration: Configuration) -> Que
 
     (1:[] within (<s/> containing (2:[] []* 3:[]) containing 4:[])) & 1.head = 2.id & 3.head = 2.id
     """
+    span = configuration.span or 's'
+
     for constraint in q.constraints:
         if isinstance(constraint, query.Constraint.Distance):
             raise NotSupported('Cannot encode distance constraints for (No)Sketch Engine, yet.')
@@ -162,18 +158,18 @@ def sketchengine_from_query(q: query.Query, configuration: Configuration) -> Que
     if ordered_fragment is not None:
         # Include ordered fragment
         fragment, included_ids = ordered_fragment
+        fragment = add_anchors(fragment, q, span)
         unordered_parts.append(fragment)
         token_ids -= included_ids
 
     # Include all unordered fragments
-    for i in token_ids:
-        unordered_parts.insert(0, tokens[i])
+    unordered_parts.extend(tokens[i] for i in token_ids)
 
-    result = build_linear_query(unordered_parts, configuration)
+    result = build_linear_query(unordered_parts, span)
     if global_predicates or q.dependencies:
         result = GlobalConstraint(result, global_predicates, set(q.dependencies))
 
-    return add_within_and_anchors(result, q, configuration)
+    return result
 
 
 class SketchEngineFormatter(QueryFormatter):

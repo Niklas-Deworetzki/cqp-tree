@@ -121,23 +121,25 @@ def add_within_and_anchors(
     if configuration.span:
         span = configuration.span
 
-        anchors = list(filter_is_instance(original.constraints, query.Constraint.Anchor))
-        if anchors:
-            translated = add_anchors(translated, anchors, span)
-
+        translated = add_anchors(translated, original, span)
         translated = WithinConstraint(translated, span)
     return translated
 
 
-def add_anchors(q: Query, anchors: Iterable[query.Constraint.Anchor], span: str) -> Query:
+def add_anchors(
+    translated: Query,
+    original: query.Query,
+    span: str,
+) -> Query:
+    anchors = list(filter_is_instance(original.constraints, query.Constraint.Anchor))
     has_last = any(anchor.is_last() for anchor in anchors)
     if has_last:
-        q = Sequence(q, Span(span, query.Position.LAST), tokens_between=False)
+        translated = Sequence(translated, Span(span, query.Position.LAST), tokens_between=False)
 
     has_first = any(anchor.is_first() for anchor in anchors)
     if has_first:
-        q = Sequence(Span(span, query.Position.FIRST), q, tokens_between=False)
-    return q
+        translated = Sequence(Span(span, query.Position.FIRST), translated, tokens_between=False)
+    return translated
 
 
 def _expand_constraints(
