@@ -1,4 +1,3 @@
-from functools import reduce
 from typing import Iterable, Optional, override
 
 from cqp_tree.translation.backends.common import (
@@ -127,27 +126,28 @@ def build_linear_query(
     span = configuration.span or 's'
     span += '/'
 
-    def f(rhs: Query, lhs: Query) -> Query:
-        containing = Operator('containing', [Span(span, query.Position.FIRST), rhs])
-        return Operator('within', [lhs, containing])
+    containing = [Span(span, query.Position.FIRST)]
+    head, *tail = parts
+    containing.extend(tail)
 
-    return reduce(f, reversed(parts))
+    return Operator(
+        'within',
+        [
+            head,
+            Operator('containing', tail),
+        ],
+    )
 
 
 def sketchengine_from_query(q: query.Query, configuration: Configuration) -> Query:
     """
     Translates into special linearized and order-agnostic query representation for SketchEngine.
 
-    This uses nested within and containing operators, matching the whole sentence as a result:
-    (1:[] within (<s/> containing 2:[] within (<s/> containing 3:[]))) & 1.head=2.id & 3.head=2.id
-
-
+    This uses nested within and containing operators, matching the whole sentence as a result.
     Any tokens that express a token order are collected as an ordered fragment within
     this linearization:
-    (1:[] within (<s/> containing (2:[] []* 3:[]))) & 1.head = 2.id & 3.head = 2.id
 
-    Thanks to Jakob Lenardič for pointing out that it is possible to combine operators in this way
-    (against what the SketchEngine documentation states).
+    (1:[] within (<s/> containing (2:[] []* 3:[]) containing 4:[])) & 1.head = 2.id & 3.head = 2.id
     """
     for constraint in q.constraints:
         if isinstance(constraint, query.Constraint.Distance):

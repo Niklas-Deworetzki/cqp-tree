@@ -203,7 +203,7 @@ def prefix_compact_arrangements(
 
     def rec(remaining_identifiers: set[query.Identifier]):
         if len(remaining_identifiers) == 1:
-            el, = remaining_identifiers
+            (el,) = remaining_identifiers
             yield ctor(el)
         else:
             for identifier in remaining_identifiers:
