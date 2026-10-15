@@ -10,6 +10,8 @@ import cqp_tree
 from docker import Container
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
+RESULTS_ROOT = PROJECT_ROOT / 'resources' / 'evaluation' / 'results'
+RESULTS_ROOT.mkdir(parents=True, exist_ok=True)
 
 
 def make_translator(dialect: cqp_tree.CQPDialect) -> Callable[[str], str]:
@@ -17,6 +19,7 @@ def make_translator(dialect: cqp_tree.CQPDialect) -> Callable[[str], str]:
 
     def translator(query: str) -> str:
         recipe = cqp_tree.translate_input(query, config)
+        # All queries in the evaluation set can be translated into a single CQP query.
         translated = cqp_tree.parsed_to_cqp(recipe.simple_representation(), config)
         return translated.to_string(config)
 
@@ -33,6 +36,10 @@ def get_config(dialect: cqp_tree.CQPDialect) -> cqp_tree.Configuration:
 
 
 class CWBDocker(Container):
+    """
+    Docker container configuration for Corpus Workbench on the evaluation corpus.
+    """
+
     def __init__(self):
         super().__init__(
             'ghcr.io/niklas-deworetzki/cwb:3.5',
@@ -51,6 +58,10 @@ class CWBDocker(Container):
 
 
 class NoSkeDocker(Container):
+    """
+    Docker container configuration for No Sketch Engine on the evaluation corpus.
+    """
+
     def __init__(self):
         super().__init__(
             'eltedh/nosketch-engine:latest',
@@ -67,6 +78,7 @@ class NoSkeDocker(Container):
         return int(result.strip())
 
 
+# Backend specific variables.
 TRANSLATORS = {dialect: make_translator(dialect) for dialect in cqp_tree.CQPDialect}
 DOCKER_CONTAINERS = {
     cqp_tree.CQPDialect.CWB: CWBDocker,
@@ -74,7 +86,9 @@ DOCKER_CONTAINERS = {
 }
 
 
-def main(dialect: cqp_tree.CQPDialect, tag: str, number: Optional[int], limit: Optional[int]) -> None:
+def run_evaluation(
+    dialect: cqp_tree.CQPDialect, tag: str, number: Optional[int], cutoff: Optional[int]
+) -> None:
     with open('queries-Talbanken-2.17.json') as f:
         queries = json.load(f)
     if number is not None:
@@ -91,35 +105,46 @@ def main(dialect: cqp_tree.CQPDialect, tag: str, number: Optional[int], limit: O
     try:
         with container() as docker:
             for data in tqdm(queries, desc='Executing'):
-                if limit is None or data['meta']['permutations'] <= limit:
+                if cutoff is None or data['meta']['permutations'] <= cutoff:
                     before = time.perf_counter_ns()
                     data['results'] = docker.get_result_count(data['translation'])
                     data['result_time'] = time.perf_counter_ns() - before
     finally:
-        results_dir = PROJECT_ROOT / 'resources' / 'evaluation' / 'results'
-        results_dir.mkdir(parents=True, exist_ok=True)
-        with (results_dir / f'{tag}-{dialect.name.lower()}.json').open('w') as f:
+        with (RESULTS_ROOT / f'{tag}-{dialect.name.lower()}.json').open('w') as f:
             json.dump(queries, f, indent=2)
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(
-
+        description="""
+Evaluate performance of CQP/Tree backends.
+This is done by running a fixed test set of queries, measuring translation time, execution time
+and number of results in comparison with the expected number of results.
+        """.strip(),
     )
     parser.add_argument(
         'tag',
+        help='A tag used to identify the generated dataset.',
     )
     parser.add_argument(
         'dialect',
+        help='The CQP dialect (backend) to be evaluated.',
     )
     parser.add_argument(
         '--number',
         type=int,
+        help='The number of queries to be evaluated. If none is given, the entire query set will be used.',
     )
     parser.add_argument(
-        '--limit',
+        '--cutoff',
         type=int,
+        help='A limit on how complex the evaluated queries are. Queries resulting in more than CUTOFF '
+        'permutations will be skipped from evaluation.',
     )
 
     args = parser.parse_args()
-    main(cqp_tree.CQPDialect(args.dialect), args.tag, args.number, args.limit)
+    run_evaluation(cqp_tree.CQPDialect(args.dialect), args.tag, args.number, args.cutoff)
+
+
+if __name__ == '__main__':
+    main()
