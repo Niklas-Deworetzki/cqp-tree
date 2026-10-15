@@ -188,7 +188,7 @@ def arrangements(
 def prefix_compact_arrangements(
     identifiers: set[query.Identifier],
     constraints: Iterable[query.Constraint],
-    ctor: Callable[[query.Identifier], Token],
+    ctor: Callable[[query.Identifier, frozenset[query.Identifier]], Token],
 ) -> Optional[query.Query]:
     """Arrange a set of Identifiers into all sequences allowed by the given Constraints.
     Merges common prefixes into a Query, using the given constructor (ctor) to create
@@ -206,13 +206,13 @@ def prefix_compact_arrangements(
     def rec(remaining_identifiers: set[query.Identifier]):
         if len(remaining_identifiers) == 1:
             (el,) = remaining_identifiers
-            yield ctor(el)
+            yield ctor(el, frozenset(identifiers) - remaining_identifiers)
         else:
             for identifier in remaining_identifiers:
                 restricted = cannot_be_after[identifier]
                 remaining = remaining_identifiers - {identifier}
 
-                head = ctor(identifier)
+                head = ctor(identifier, frozenset(identifiers) - remaining_identifiers)
                 if not restricted & remaining:
                     if tail := build(remaining):
                         yield Sequence(head, tail)
@@ -241,11 +241,11 @@ class QueryFormatter(ABC):
     def to_str(cls, q: Query, configuration: Configuration) -> str:
         return cls(configuration, q).format(q)
 
-    @staticmethod
-    def _parens_if(s: str, o: Any, cls: type | tuple) -> str:
+    def _format_parens_if(self, o: Any, cls: type | tuple) -> str:
+        s = self.format(o)
         return f'({s})' if isinstance(o, cls) else s
 
-    def format(self, q: query.Query) -> str:
+    def format(self, q: Query) -> str:
         if isinstance(q, GlobalConstraint):
             base_repr = self.format(q.base)
             predicate_reprs = [self.format_predicate(p) for p in q.associated_predicates]
@@ -262,17 +262,14 @@ class QueryFormatter(ABC):
             return self.format_span(q.span, q.position)
 
         elif isinstance(q, Sequence):
-            lhs_repr = self.format(q.lhs)
-            rhs_repr = self.format(q.rhs)
-            lhs_repr = self._parens_if(lhs_repr, q.lhs, Operator)
-            rhs_repr = self._parens_if(rhs_repr, q.lhs, Operator)
+            lhs_repr = self._format_parens_if(q.lhs, Operator)
+            rhs_repr = self._format_parens_if(q.rhs, Operator)
             return self.format_sequence(lhs_repr, rhs_repr, q.tokens_between)
 
         elif isinstance(q, Operator):
             parts = []
             for q_ in q.queries:
-                part = self.format(q_)
-                part = self._parens_if(part, q_, (Operator, Sequence, WithinConstraint))
+                part = self._format_parens_if(q_, (Operator, Sequence, WithinConstraint))
                 parts.append(part)
             return self.format_operator(q.operator, parts)
 

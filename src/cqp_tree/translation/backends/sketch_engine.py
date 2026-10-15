@@ -113,7 +113,8 @@ def get_ordered_fragment(
         return None
 
     ordered_token_ids = flatmap_set(order_constraints, lambda x: x)
-    ordered_fragment = prefix_compact_arrangements(ordered_token_ids, order_constraints, tokens.get)
+    mk_token = lambda k, _: tokens[k]
+    ordered_fragment = prefix_compact_arrangements(ordered_token_ids, order_constraints, mk_token)
     if ordered_fragment is not None:
         return ordered_fragment, ordered_token_ids
     return None
