@@ -1,0 +1,45 @@
+MAINTAINER "https://github.com/Niklas-Deworetzki/cqp-tree"
+INFO "evalcorpus"
+NAME "CQP-Tree Evaluation Corpus"
+PATH evalcorpus
+ENCODING "UTF-8"
+LANGUAGE "Swedish"
+
+PATH   '/corpora/evalcorpus/indexed/'
+VERTICAL  '/corpora/evalcorpus/vertical/UD_Swedish-Talbanken.vrt'
+
+
+INFOHREF "https://github.com/Niklas-Deworetzki/cqp-tree/tree/main/resources/evaluation"
+TAGSETDOC "https://universaldependencies.org/u/pos/index.html"
+
+FULLREF "doc.id"
+
+ATTRIBUTE   id
+
+ATTRIBUTE   word
+
+ATTRIBUTE   lemma
+
+ATTRIBUTE   upos
+
+ATTRIBUTE   xpos
+
+ATTRIBUTE   feats
+
+ATTRIBUTE   head
+
+ATTRIBUTE   deprel
+
+ATTRIBUTE   deps
+
+ATTRIBUTE   misc
+
+
+STRUCTURE doc {
+	ATTRIBUTE id
+}
+
+STRUCTURE s {
+	ATTRIBUTE sent_id
+	ATTRIBUTE text
+}
