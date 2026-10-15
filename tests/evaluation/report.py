@@ -115,14 +115,23 @@ def plot_recall_vs_speedup(d1: list[DataPoint], d2: list[DataPoint], description
     plt.show()
 
 
+def _filter(ds: list[DataPoint]) -> list[DataPoint]:
+    return [
+        i for i in ds
+        if i['meta']['permutations'] < 10
+    ]
+
 def generate_difference_report(dialect: cqp_tree.CQPDialect, *tags: str):
     for t1, t2 in itertools.combinations(tags, 2):
         t1_file = RESULTS_ROOT / f'{t1}-{dialect.name.lower()}.json'
         t2_file = RESULTS_ROOT / f'{t2}-{dialect.name.lower()}.json'
 
         with t1_file.open('r') as f1, t2_file.open('r') as f2:
-            d1 = json.load(f1)
-            d2 = json.load(f2)
+            d1 = _filter(json.load(f1))
+            d2 = _filter(json.load(f2))
+
+            limit = min(len(d1), len(d2))
+            d1, d2 = d1[:limit], d2[:limit]
 
             description = Description(t1, t2, dialect)
             plot_translation_time(d1, d2, description)

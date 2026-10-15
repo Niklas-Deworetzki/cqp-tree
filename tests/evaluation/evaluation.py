@@ -77,7 +77,6 @@ def main(dialect: cqp_tree.CQPDialect, tag: str) -> None:
     with open('queries-Talbanken-2.17.json') as f:
         queries = json.load(f)
 
-    queries = queries[121+162:]
     translator = TRANSLATORS[dialect]
     container = DOCKER_CONTAINERS[dialect]
 
