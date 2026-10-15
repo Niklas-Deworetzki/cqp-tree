@@ -115,11 +115,14 @@ def plot_recall_vs_speedup(d1: list[DataPoint], d2: list[DataPoint], description
     plt.show()
 
 
-def _filter(ds: list[DataPoint]) -> list[DataPoint]:
-    return [
-        i for i in ds
-        if i['meta']['permutations'] < 10
-    ]
+def _filter(d1: list[DataPoint], d2: list[DataPoint]) -> tuple[list[DataPoint], list[DataPoint]]:
+    r1, r2 = [], []
+    for i1, i2 in zip(d1, d2):
+        if 'result_time' in i1 and 'result_time' in i2:
+            r1.append(i1)
+            r2.append(i2)
+    return r1, r2
+
 
 def generate_difference_report(dialect: cqp_tree.CQPDialect, *tags: str):
     for t1, t2 in itertools.combinations(tags, 2):
@@ -127,8 +130,7 @@ def generate_difference_report(dialect: cqp_tree.CQPDialect, *tags: str):
         t2_file = RESULTS_ROOT / f'{t2}-{dialect.name.lower()}.json'
 
         with t1_file.open('r') as f1, t2_file.open('r') as f2:
-            d1 = _filter(json.load(f1))
-            d2 = _filter(json.load(f2))
+            d1, d2 = _filter(json.load(f1), json.load(f2))
 
             limit = min(len(d1), len(d2))
             d1, d2 = d1[:limit], d2[:limit]
@@ -139,4 +141,4 @@ def generate_difference_report(dialect: cqp_tree.CQPDialect, *tags: str):
             plot_recall_vs_speedup(d1, d2, description)
 
 
-generate_difference_report(cqp_tree.CQPDialect.SKETCH_ENGINE, 'permutations', 'prefix')
+generate_difference_report(cqp_tree.CQPDialect.SKETCH_ENGINE, 'permutations', 'linear')

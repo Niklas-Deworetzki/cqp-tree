@@ -2,7 +2,7 @@ import argparse
 import json
 import time
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Optional
 
 from tqdm import tqdm
 
@@ -28,6 +28,7 @@ def get_config(dialect: cqp_tree.CQPDialect) -> cqp_tree.Configuration:
     config = cqp_tree.configuration_from_file(config_file)
     config.ud_mode = True
     config.dialect = dialect
+    config.span = 's'
     return config
 
 
@@ -73,9 +74,11 @@ DOCKER_CONTAINERS = {
 }
 
 
-def main(dialect: cqp_tree.CQPDialect, tag: str) -> None:
+def main(dialect: cqp_tree.CQPDialect, tag: str, number: Optional[int], limit: Optional[int]) -> None:
     with open('queries-Talbanken-2.17.json') as f:
         queries = json.load(f)
+    if number is not None:
+        queries = queries[:number]
 
     translator = TRANSLATORS[dialect]
     container = DOCKER_CONTAINERS[dialect]
@@ -88,13 +91,10 @@ def main(dialect: cqp_tree.CQPDialect, tag: str) -> None:
     try:
         with container() as docker:
             for data in tqdm(queries, desc='Executing'):
-                if data['meta']['permutations'] < 10:
+                if limit is None or data['meta']['permutations'] <= limit:
                     before = time.perf_counter_ns()
                     data['results'] = docker.get_result_count(data['translation'])
                     data['result_time'] = time.perf_counter_ns() - before
-                else:
-                    data['results'] = 1
-                    data['result_time'] = 987654321
     finally:
         results_dir = PROJECT_ROOT / 'resources' / 'evaluation' / 'results'
         results_dir.mkdir(parents=True, exist_ok=True)
@@ -107,11 +107,19 @@ if __name__ == '__main__':
 
     )
     parser.add_argument(
-        'tag'
+        'tag',
     )
     parser.add_argument(
-        'dialect'
+        'dialect',
+    )
+    parser.add_argument(
+        '--number',
+        type=int,
+    )
+    parser.add_argument(
+        '--limit',
+        type=int,
     )
 
     args = parser.parse_args()
-    main(cqp_tree.CQPDialect(args.dialect), args.tag)
+    main(cqp_tree.CQPDialect(args.dialect), args.tag, args.number, args.limit)
