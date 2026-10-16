@@ -60,7 +60,7 @@ def _plot_scatter(
         if v1 == v2:
             equal_X.append(v1)
             equal_Y.append(v2)
-        elif v1 < v2:
+        elif v1 > v2:
             d1_better_X.append(v1)
             d1_better_Y.append(v2)
         else:
@@ -219,6 +219,7 @@ def generate_difference_report(dialect: cqp_tree.CQPDialect, *tags: str):
             plot_recall_vs_speedup(d1, d2, description)
 
 
+generate_difference_report(cqp_tree.CQPDialect.CWB, 'permutations', 'prefix')
 generate_difference_report(cqp_tree.CQPDialect.SKETCH_ENGINE, 'permutations', 'linear')
 
 def main():
