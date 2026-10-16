@@ -7,7 +7,7 @@
 - description: Dependency relation is resolved properly.
   input: |
     _ >nsubj _
-  noske: [363, 343]
+  noske: [31, 785]
   cwb: 1129
 
 - description: Chain of 3 tokens
@@ -16,7 +16,7 @@
     	T -[nsubj]-> U;
     	U -[amod]-> V;
     }
-  noske: [34, 36, 38]
+  noske: [0, 45]
   cwb: 64
 
 - description: Combination of on-token and dependency attributes
@@ -26,7 +26,7 @@
       T -[nsubj]-> U;
       U -[amod]-> V;
     }
-  noske: 1
+  noske: 0
   cwb: 1
 
 - description: Tag name in depsearch searches for pos

@@ -1,15 +1,12 @@
-from functools import reduce
-from typing import Iterable, override
+from typing import Callable, Iterable, override
 
 from cqp_tree.translation.backends.common import (
     Configuration,
-    Operator,
     Query,
     QueryFormatter,
-    Sequence,
     Token,
     add_within_and_anchors,
-    arrangements,
+    prefix_compact_arrangements,
     query,
 )
 from cqp_tree.utils import LOWERCASE_ALPHABET, partition_set
@@ -17,36 +14,41 @@ from cqp_tree.utils import LOWERCASE_ALPHABET, partition_set
 TOKEN_ALPHABET = LOWERCASE_ALPHABET
 
 
-def from_arrangement(
-    arrangement: list[query.Identifier],
+def _token_constructor(
     dependencies: set[query.Dependency],
     predicates: set[query.Predicate],
-) -> Query:
-    """Build a CWB Query for a sequence of Identifiers."""
-    visited_tokens: set[query.Identifier] = set()
-    remaining_dependencies = dependencies
-    remaining_predicates = predicates
+) -> Callable[[query.Identifier, set[query.Identifier]], Token]:
 
-    converted_tokens = [Token(i) for i in arrangement]
-    for token in converted_tokens:
-        visited_tokens.add(token.identifier)
+    def token_constructor(
+        identifier: query.Identifier,
+        visited_identifiers: set[query.Identifier],
+    ) -> Token:
+        _, remaining_dependencies = partition_set(
+            dependencies,
+            lambda rel: rel.referenced_identifiers().issubset(visited_identifiers),
+        )
+        _, remaining_predicates = partition_set(
+            predicates,
+            lambda pred: pred.referenced_identifiers().issubset(visited_identifiers),
+        )
 
-        committable_dependencies, remaining_dependencies = partition_set(
+        committable_dependencies, _ = partition_set(
             remaining_dependencies,
-            lambda rel: rel.referenced_identifiers().issubset(visited_tokens),
+            lambda rel: rel.referenced_identifiers().issubset(visited_identifiers | {identifier}),
         )
-        committable_predicates, remaining_predicates = partition_set(
+        committable_predicates, _ = partition_set(
             remaining_predicates,
-            lambda pred: pred.referenced_identifiers().issubset(visited_tokens),
+            lambda pred: pred.referenced_identifiers().issubset(visited_identifiers | {identifier}),
         )
 
+        token = Token(identifier)
         token.associated_dependencies.update(committable_dependencies)
         token.associated_predicates.update(  # Lower predicates when associating with token.
             p.lower_onto(token.identifier) for p in committable_predicates
         )
+        return token
 
-    # Build all tokens into a sequence.
-    return reduce(Sequence, converted_tokens)
+    return token_constructor
 
 
 def from_all_arrangements(
@@ -56,11 +58,8 @@ def from_all_arrangements(
     predicates: set[query.Predicate],
 ) -> Query:
     """Build a query over all sequences of Identifiers."""
-    all_arrangements = [
-        from_arrangement(arrangement, dependencies, predicates)
-        for arrangement in arrangements(identifiers, constraints)
-    ]
-    return Operator('|', all_arrangements)
+    ctor = _token_constructor(dependencies, predicates)
+    return prefix_compact_arrangements(identifiers, constraints, ctor)
 
 
 ORDER_TO_OPERATOR = {
