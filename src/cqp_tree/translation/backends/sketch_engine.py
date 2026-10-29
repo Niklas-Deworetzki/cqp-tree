@@ -1,3 +1,4 @@
+from itertools import permutations
 from typing import Iterable, Optional, override
 
 from cqp_tree.translation.backends.common import (
@@ -7,13 +8,14 @@ from cqp_tree.translation.backends.common import (
     Query,
     QueryFormatter,
     Span,
+    SpanMode,
     Token,
     add_anchors,
     prefix_compact_arrangements,
     query,
 )
 from cqp_tree.translation.errors import NotSupported
-from cqp_tree.utils import filter_is_instance, flatmap, flatmap_set
+from cqp_tree.utils import filter_is_instance, flatmap, flatmap_set, partition_set
 
 # manatee does weird things when "0" is included as an identifier.
 # The identifier appears to not be resolved properly.
@@ -104,7 +106,7 @@ def associate_predicates(
 def get_ordered_fragment(
     q: query.Query,
     tokens: dict[query.Identifier, query.Token],
-) -> Optional[tuple[Query, set[query.Identifier]]]:
+) -> Optional[Query]:
     order_constraints = filter_is_instance(
         q.constraints, query.OrderConstraint | query.AnchorConstraint
     )
@@ -114,36 +116,147 @@ def get_ordered_fragment(
 
     ordered_token_ids = flatmap_set(order_constraints, lambda x: x)
     mk_token = lambda k, _: tokens[k]
-    ordered_fragment = prefix_compact_arrangements(ordered_token_ids, order_constraints, mk_token)
-    if ordered_fragment is not None:
-        return ordered_fragment, ordered_token_ids
-    return None
+    return prefix_compact_arrangements(ordered_token_ids, order_constraints, mk_token)
 
 
-def build_linear_query(parts: list[Query], span: str) -> Query:
-    containing = [Span(span + '/', query.Position.FIRST)]
-    head, *tail = parts
-    containing.extend(tail)
+def build_linear_query(
+    fragments: list[Query],
+    predicates: list[set[query.Predicate]],
+    dependencies: list[set[query.Dependency]],
+    span: str,
+) -> Query:
+    """
+    Builds a linearized query of the following shape, where Fi is fragment i and constraints(i)
+    is both predicates and dependencies at i:
 
-    return Operator(
-        'within',
-        [
-            head,
-            Operator('containing', containing),
-        ],
-    )
+    F0 & constraints(0)
+    Fn within (<s/> containing F(n-1)) & constraints(n) within <s/>
+    """
+    s = Span(span, SpanMode.FULL)
+
+    def within(q: Query, other: Query) -> Query:
+        return Operator('within', [q, other])
+
+    def s_containing(other: Query) -> Query:
+        return Operator('containing', [s, other])
+
+    (q, pred, deps), *tail = zip(fragments, predicates, dependencies)
+    result = q
+    if not tail:
+        # Restrict to span, if requested.
+        result = within(result, s)
+
+    if pred or deps:
+        result = GlobalConstraint(result, pred, deps)
+
+    for q, pred, deps in tail:
+        if isinstance(result, GlobalConstraint):
+            # Add 'within <s/>' to allow for global constraints in inner query.
+            # But only if necessary.
+            result = within(result, s)
+
+        # Add 'within (<s/> containing F(n-1))'
+        result = within(result, s_containing(q))
+
+        if pred or deps:
+            # Don't emit constraints, if there is nothing to constraint.
+            result = GlobalConstraint(result, pred, deps)
+    return result
+
+
+def get_fragments(q: query.Query, span: str, tokens: dict[query.Identifier, Token]) -> list[Query]:
+    """
+    Returns all query fragments. Fragments are either individual tokens in free order
+    or a sequence of tokens in constrained order.
+
+    The span parameter is required to add anchors, if relevant constraints exist.
+    """
+    token_ids = set(tokens.keys())
+    fragments: list[Query] = []
+
+    if ordered_fragment := get_ordered_fragment(q, tokens):
+        # Include ordered fragment
+        ordered_fragment = add_anchors(ordered_fragment, q, span)
+        fragments.append(ordered_fragment)
+        token_ids -= ordered_fragment.defined_identifiers()
+
+    # Include all free order fragments
+    fragments.extend(tokens[i] for i in token_ids)
+
+    def heuristic_score_order(fragments_to_score: list[Query]) -> float:
+        score = 0.0
+        available = set()
+
+        for i, fragment in enumerate(fragments_to_score):
+            defined_ids = fragment.defined_identifiers()
+
+            # Does this fragment connect to something already bound?
+            has_connection = any(
+                (d.src in defined_ids and d.dst in available)
+                or (d.dst in defined_ids and d.src in available)
+                for d in q.dependencies
+            )
+
+            if i == 0:
+                # This fragment is only matched once and has to be compatible with everything else.
+                # Prefer a token with constraints or a complex sequence.
+                if isinstance(fragment, Token):
+                    score += len(fragment.associated_predicates)
+                else:
+                    score += 3
+
+            elif i == len(fragments) - 1:
+                # The final fragment is fully enumerated.
+                # Prefer one that can complete dependencies.
+                if has_connection:
+                    score += 8
+
+            else:
+                # Filter for dependencies as early as possible.
+                if has_connection:
+                    score += 3
+                else:
+                    score -= 2
+
+            available.update(fragment.defined_identifiers())
+        return score
+
+    # Find the best way of ordering fragments, according to heuristics.
+    best_order = max(permutations(fragments), key=heuristic_score_order)
+    return list(best_order)
+
+
+def schedule_predicates(
+    order: list[Query],
+    predicates: set[query.Predicate],
+    dependencies: set[query.Dependency],
+) -> tuple[list[set[query.Predicate]], list[set[query.Dependency]]]:
+    """
+    Given an ordered list of fragments, returns associated predicates and dependencies.
+    """
+    available: set[query.Identifier] = set()
+    remaining_predicates: set[query.Predicate] = predicates
+    remaining_dependencies: set[query.Dependency] = dependencies
+    scheduled_predicates, scheduled_dependencies = [], []
+
+    for fragment in order:
+        available |= fragment.defined_identifiers()
+
+        def can_be_committed(p: query.Predicate | query.Dependency) -> bool:
+            return p.referenced_identifiers() <= available
+
+        # See which predicates are ready and keep the remainder around for the next iteration.
+        ready, remaining_predicates = partition_set(remaining_predicates, can_be_committed)
+        scheduled_predicates.append(ready)
+
+        # See which dependencies are ready and keep the remainder around for the next iteration.
+        ready, remaining_dependencies = partition_set(remaining_dependencies, can_be_committed)
+        scheduled_dependencies.append(ready)
+
+    return scheduled_predicates, scheduled_dependencies
 
 
 def sketchengine_from_query(q: query.Query, configuration: Configuration) -> Query:
-    """
-    Translates into special linearized and order-agnostic query representation for SketchEngine.
-
-    This uses nested within and containing operators, matching the whole sentence as a result.
-    Any tokens that express a token order are collected as an ordered fragment within
-    this linearization:
-
-    (1:[] within (<s/> containing (2:[] []* 3:[]) containing 4:[])) & 1.head = 2.id & 3.head = 2.id
-    """
     span = configuration.span or 's'
 
     for constraint in q.constraints:
@@ -151,26 +264,11 @@ def sketchengine_from_query(q: query.Query, configuration: Configuration) -> Que
             raise NotSupported('Cannot encode distance constraints for (No)Sketch Engine, yet.')
 
     tokens, global_predicates = associate_predicates(q)
-    token_ids = set(tokens.keys())
-
-    ordered_fragment = get_ordered_fragment(q, tokens)
-    unordered_parts: list[Query] = []
-
-    if ordered_fragment is not None:
-        # Include ordered fragment
-        fragment, included_ids = ordered_fragment
-        fragment = add_anchors(fragment, q, span)
-        unordered_parts.append(fragment)
-        token_ids -= included_ids
-
-    # Include all unordered fragments
-    unordered_parts.extend(tokens[i] for i in token_ids)
-
-    result = build_linear_query(unordered_parts, span)
-    if global_predicates or q.dependencies:
-        result = GlobalConstraint(result, global_predicates, set(q.dependencies))
-
-    return result
+    fragments = get_fragments(q, span, tokens)
+    predicates, dependencies = schedule_predicates(
+        fragments, global_predicates, set(q.dependencies)
+    )
+    return build_linear_query(fragments, predicates, dependencies, span)
 
 
 class SketchEngineFormatter(QueryFormatter):

@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from enum import StrEnum, auto
 from typing import Any, Callable, Iterable, Optional, overload, override
 
 from cqp_tree.configuration import Configuration
@@ -21,6 +22,9 @@ class Query(ABC):
 
     @abstractmethod
     def referenced_identifiers(self) -> set[query.Identifier]: ...
+
+    @abstractmethod
+    def defined_identifiers(self) -> set[query.Identifier]: ...
 
     # This is bound in cqp.py after knowing all the backend formatters
     @overload
@@ -47,6 +51,10 @@ class GlobalConstraint(Query):
         )
         return identifiers
 
+    @override
+    def defined_identifiers(self) -> set[query.Identifier]:
+        return self.base.defined_identifiers()
+
 
 @dataclass
 class WithinConstraint(Query):
@@ -55,6 +63,10 @@ class WithinConstraint(Query):
 
     def referenced_identifiers(self) -> set[query.Identifier]:
         return self.base.referenced_identifiers()
+
+    @override
+    def defined_identifiers(self) -> set[query.Identifier]:
+        return self.base.defined_identifiers()
 
 
 @dataclass
@@ -69,6 +81,10 @@ class Sequence(Query):
     def referenced_identifiers(self) -> set[query.Identifier]:
         return self.lhs.referenced_identifiers() | self.rhs.referenced_identifiers()
 
+    @override
+    def defined_identifiers(self) -> set[query.Identifier]:
+        return self.lhs.defined_identifiers() | self.rhs.defined_identifiers()
+
 
 @dataclass
 class Operator(Query):
@@ -77,9 +93,17 @@ class Operator(Query):
     operator: str
     queries: list[Query]
 
+    @staticmethod
+    def build(name: str, *args: Query) -> 'Operator':
+        return Operator(name, list(args))
+
     @override
     def referenced_identifiers(self) -> set[query.Identifier]:
         return flatmap_set(self.queries, lambda q: q.referenced_identifiers())
+
+    @override
+    def defined_identifiers(self) -> set[query.Identifier]:
+        return flatmap_set(self.queries, lambda q: q.defined_identifiers())
 
 
 @dataclass
@@ -100,16 +124,28 @@ class Token(Query):
         identifiers -= {self.identifier}
         return identifiers
 
+    def defined_identifiers(self) -> set[query.Identifier]:
+        return {self.identifier}
+
+
+class SpanMode(StrEnum):
+    OPEN = auto()
+    CLOSE = auto()
+    FULL = auto()
+
 
 @dataclass
 class Span(Query):
     """Class representing begin or end of a text span in the corpus."""
 
     span: str
-    position: query.Position
+    mode: SpanMode
 
     @override
     def referenced_identifiers(self) -> set[query.Identifier]:
+        return set()
+
+    def defined_identifiers(self) -> set[query.Identifier]:
         return set()
 
 
@@ -134,11 +170,11 @@ def add_anchors(
     anchors = list(filter_is_instance(original.constraints, query.Constraint.Anchor))
     has_last = any(anchor.is_last() for anchor in anchors)
     if has_last:
-        translated = Sequence(translated, Span(span, query.Position.LAST), tokens_between=False)
+        translated = Sequence(translated, Span(span, SpanMode.CLOSE), tokens_between=False)
 
     has_first = any(anchor.is_first() for anchor in anchors)
     if has_first:
-        translated = Sequence(Span(span, query.Position.FIRST), translated, tokens_between=False)
+        translated = Sequence(Span(span, SpanMode.OPEN), translated, tokens_between=False)
     return translated
 
 
@@ -259,7 +295,7 @@ class QueryFormatter(ABC):
             return self.format_within_constraint(base_repr, q.span)
 
         elif isinstance(q, Span):
-            return self.format_span(q.span, q.position)
+            return self.format_span(q.span, q.mode)
 
         elif isinstance(q, Sequence):
             lhs_repr = self._format_parens_if(q.lhs, Operator)
@@ -329,8 +365,14 @@ class QueryFormatter(ABC):
         else:
             return f'{lhs} {rhs}'
 
-    def format_span(self, span: str, position: query.Position):
-        return f'<{span}>' if position == query.Position.FIRST else f'</{span}>'
+    def format_span(self, span: str, mode: SpanMode):
+        match mode:
+            case SpanMode.OPEN:
+                return f'<{span}>'
+            case SpanMode.CLOSE:
+                return f'</{span}>'
+            case SpanMode.FULL:
+                return f'<{span}/>'
 
     def format_dependency(
         self,
