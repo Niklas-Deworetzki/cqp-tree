@@ -7,7 +7,7 @@
 - description: Dependency relation is resolved properly.
   input: |
     _ >nsubj _
-  noske: [31, 785]
+  noske: 31
   cwb: 1129
 
 - description: Chain of 3 tokens
@@ -16,7 +16,7 @@
     	T -[nsubj]-> U;
     	U -[amod]-> V;
     }
-  noske: [0, 45]
+  noske: 0
   cwb: 64
 
 - description: Combination of on-token and dependency attributes

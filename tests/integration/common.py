@@ -40,8 +40,8 @@ def _make_test_case(case: TestCase, backend: TestedBackend):
             )
         else:
             self.assertEqual(
-                actual_results,
                 expected_results,
+                actual_results,
                 f'Query expected to produce {expected_results} but got {actual_results} instead.',
             )
 
