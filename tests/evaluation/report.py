@@ -145,7 +145,7 @@ def plot_recall_vs_speedup(d1: list[DataPoint], d2: list[DataPoint], description
     recall_a = [res / ex for res, ex in zip(results_a, expected)]
     recall_b = [res / ex for res, ex in zip(results_b, expected)]
 
-    recall_diff = [a - b for a, b in zip(recall_a, recall_b)]
+    recall_diff = [max(min(a - b, 1.1), -1.1) for a, b in zip(recall_a, recall_b)]
 
     fig, ax = plt.subplots(figsize=(10, 7))
 
@@ -191,7 +191,6 @@ def plot_recall_vs_speedup(d1: list[DataPoint], d2: list[DataPoint], description
     plt.tight_layout()
     plt.show()
 
-
 def _filter(d1: list[DataPoint], d2: list[DataPoint]) -> tuple[list[DataPoint], list[DataPoint]]:
     r1, r2 = [], []
     for i1, i2 in zip(d1, d2):
@@ -202,12 +201,14 @@ def _filter(d1: list[DataPoint], d2: list[DataPoint]) -> tuple[list[DataPoint], 
 
 
 def generate_difference_report(dialect: cqp_tree.CQPDialect, *tags: str):
-    for t1, t2 in itertools.combinations(tags, 2):
-        t1_file = RESULTS_ROOT / f'{t1}-{dialect.name.lower()}.json'
-        t2_file = RESULTS_ROOT / f'{t2}-{dialect.name.lower()}.json'
+    datasets = {}
+    for tag in tags:
+        file = RESULTS_ROOT / f'{tag}-{dialect.name.lower()}.json'
+        with file.open('r') as f:
+            datasets[tag] = json.load(f)
 
-        with t1_file.open('r') as f1, t2_file.open('r') as f2:
-            d1, d2 = _filter(json.load(f1), json.load(f2))
+    for t1, t2 in itertools.combinations(tags, 2):
+            d1, d2 = _filter(datasets[t1], datasets[t2])
 
             limit = min(len(d1), len(d2))
             d1, d2 = d1[:limit], d2[:limit]
@@ -219,8 +220,6 @@ def generate_difference_report(dialect: cqp_tree.CQPDialect, *tags: str):
             plot_recall_vs_speedup(d1, d2, description)
 
 
-generate_difference_report(cqp_tree.CQPDialect.CWB, 'permutations', 'prefix')
-generate_difference_report(cqp_tree.CQPDialect.SKETCH_ENGINE, 'permutations', 'linear')
 
 def main():
     parser = argparse.ArgumentParser(
