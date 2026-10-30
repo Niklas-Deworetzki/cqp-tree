@@ -176,7 +176,7 @@ def get_preconfigured_corpora(cfg: Configuration) -> Iterable[PreconfiguredCorpu
 
     path = Path(cfg.corpus_configs)
     for configuration_file in path.iterdir():
-        config = cqp_tree.configuration_from_file(configuration_file)
+        config = cqp_tree.configuration_from_file(configuration_file, inherit_from_default=False)
         corpus_id = configuration_file.stem
         display_name = config.display_name or cfg.system_name or 'corpus'
         yield PreconfiguredCorpus(corpus_id, display_name, config)

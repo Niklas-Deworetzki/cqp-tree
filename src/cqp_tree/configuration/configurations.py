@@ -193,15 +193,11 @@ def default_configuration() -> Configuration:
 def configuration_from_file(
     file: Path,
     inherited: Optional[Configuration] = None,
-    inherit_from_default: bool = False,
+    inherit_from_default: bool = True,
 ) -> Configuration:
     """
     Load Configuration from TOML file.
     """
-    assert not (
-        inherited and inherit_from_default
-    ), 'Configuration can only inherit from either default or another configuration.'
-
     try:
         with file.open('rb') as f:
             data = tomllib.load(f)
@@ -219,7 +215,7 @@ def configuration_from_file(
                     parsed_section[key] = unparsed_value
         loaded_config[section] = parsed_section
 
-    if not inherited and inherit_from_default:
+    if inherited is None and inherit_from_default:
         inherited = default_configuration()
     return Configuration(inherited=inherited, sections=loaded_config)
 
