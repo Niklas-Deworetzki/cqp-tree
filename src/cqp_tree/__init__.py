@@ -115,8 +115,8 @@ def translate(
     translator to use. If no translator is given in the configuration, a translator is automatically
     selected.
 
-    If `allow_recipes` is True (default), the result will be an iterable over all steps of the recipe.
-    Otherwise, only a single string query is returned.
+    If `prohibit_recipes` is False (default), the result will be an iterable over all steps
+    of the recipe. Otherwise, only a single string query is returned.
 
     :param query_str: The query string to translate.
     :param config: The config defining the translation.
@@ -124,8 +124,8 @@ def translate(
     :return: If translation into recipes is permitted, all steps of the recipe are returned.
     Otherwise, just a single query is returned.
 
-    :raises UnableToGuessTranslatorError: If no translator or multiple translators accept the input query
-    and no translator is defined in the configuration.
+    :raises UnableToGuessTranslatorError: If no translator or multiple translators accept the input
+    query and no translator is defined in the configuration.
     :raises KeyError: If a translator is defined in the configuration that does not exist.
     :raises ValueError: If translation into recipes is prohibited but the translated query requires
     a recipe to be expressed.
