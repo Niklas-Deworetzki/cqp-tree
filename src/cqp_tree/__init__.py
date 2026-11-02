@@ -1,3 +1,5 @@
+from typing import Iterable
+
 from cqp_tree.translation import *
 from cqp_tree.configuration import *
 from cqp_tree import frontends
@@ -100,3 +102,39 @@ declare_configuration(
         default_value='deprel',
     ),
 )
+
+
+def translate(
+    query_str: str,
+    config: Configuration,
+    prohibit_recipes: bool = False,
+) -> Iterable[str] | str:
+    """
+    Translates a given query input string into a string-formatted recipe or CQP query.
+    Uses the given configuration to determine formatting, dialect, translation properties and
+    translator to use. If no translator is given in the configuration, a translator is automatically
+    selected.
+
+    If `allow_recipes` is True (default), the result will be an iterable over all steps of the recipe.
+    Otherwise, only a single string query is returned.
+
+    :param query_str: The query string to translate.
+    :param config: The config defining the translation.
+    :param prohibit_recipes: Whether to translate into recipes.
+    :return: If translation into recipes is permitted, all steps of the recipe are returned.
+    Otherwise, just a single query is returned.
+
+    :raises UnableToGuessTranslatorError: If no translator or multiple translators accept the input query
+    and no translator is defined in the configuration.
+    :raises KeyError: If a translator is defined in the configuration that does not exist.
+    :raises ValueError: If translation into recipes is prohibited but the translated query requires
+    a recipe to be expressed.
+    """
+
+    recipe = translate_input(query_str, config)
+    if prohibit_recipes:
+        parsed = recipe.simple_representation()
+        if parsed is None:
+            raise ValueError('Translated query is only expressible as recipe!')
+        return parsed_to_cqp(parsed, config).to_string(config)
+    return format_recipe(recipe, config)
