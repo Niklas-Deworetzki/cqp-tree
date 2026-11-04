@@ -1,0 +1,7192 @@
+[
+  {
+    "query": "pattern {\n  P [word <> finns, xpos = AB];\n  C [upos = PROPN];\n  C << P;\n}",
+    "expected": 394,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  J [lemma = men, upos = NOUN];\n  Q [upos <> ADJ];\n  P [];\n  R [xpos = \"VB|PRS|AKT\"]|[upos = ADP, lemma = re\".*e\"];\n  P << R;\n}",
+    "expected": 157,
+    "meta": {
+      "regexes": 1,
+      "tokens": 4,
+      "edges": 0,
+      "permutations": 12
+    }
+  },
+  {
+    "query": "pattern {\n  J [lemma = betala];\n  T [];\n  T -> J;\n}",
+    "expected": 32,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  W [lemma = per];\n  V [];\n  V << W;\n}",
+    "expected": 830,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  T [word = De];\n}",
+    "expected": 209,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  O [word = och];\n  X [upos <> NOUN];\n  O -> X;\n}",
+    "expected": 1,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  L [word = \"fr\u00e5n\"];\n}",
+    "expected": 304,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  M [lemma = bli];\n  E [lemma = \"f\u00e5\"];\n}",
+    "expected": 33,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  F [lemma = de];\n  Y [];\n  F -> Y;\n}",
+    "expected": 438,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  I [upos = re\".*N\"];\n  B [];\n  I << B;\n  H [xpos = \"NN|UTR|SIN|DEF|GEN\", upos = NOUN];\n  H -> I;\n}",
+    "expected": 109,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  S [lemma = \"r\u00f6str\u00e4tt\"]|[upos = ADJ, xpos = re\".*T.*\"];\n  V [upos = DET];\n  I [lemma <> \".\"];\n  V -> I;\n  V << I;\n}",
+    "expected": 69,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  M [lemma = eller];\n}",
+    "expected": 467,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  J [word = skulle];\n  I [];\n  I -> J;\n}",
+    "expected": 280,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  D [lemma = befolkning];\n}",
+    "expected": 30,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  O [];\n  B [upos = PUNCT];\n  B -> O;\n}",
+    "expected": 5,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Q [];\n  L [word = \"'\"];\n  F [];\n  F -[nsubj]-> Q;\n}",
+    "expected": 905,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  X [word = med];\n}",
+    "expected": 893,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Y [word <> vars];\n  V [word <> re\".*e.*\", lemma <> kunna, upos <> re\"U.*\"];\n  O [lemma = \"ifr\u00e5ga\"];\n  O << Y;\n}",
+    "expected": 860,
+    "meta": {
+      "regexes": 2,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  B [xpos = \"HP|-|-|-\"];\n  C [];\n  B -> C;\n  B << C;\n}",
+    "expected": 78,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  C [word = sen];\n}",
+    "expected": 11,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  E [lemma = \"utk\u00f6rning\", xpos <> \"VB|INF|AKT\"];\n}",
+    "expected": 8,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  R [];\n  Q [word <> re\"b.*\"];\n  R -> Q;\n  I [lemma = kunna];\n  R -[^acl:relcl]-> I;\n  I -> Q;\n}",
+    "expected": 14,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  T [lemma = relativt];\n  W [];\n  W -> T;\n}",
+    "expected": 38,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  R [lemma = \"'\"];\n}",
+    "expected": 519,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  G [xpos <> SN, lemma = \"beh\u00f6va\"];\n  N [xpos = \"VB|PRS|AKT\"];\n  I [lemma = men];\n}",
+    "expected": 32,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  I [lemma = invandrare, upos <> AUX];\n}",
+    "expected": 20,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  A [word = re\".*p\"];\n}",
+    "expected": 553,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  L [lemma = han];\n}",
+    "expected": 135,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  R [xpos = AB];\n  F [word = roll, upos <> re\".*C.*\"];\n  R << F;\n  Y [];\n}",
+    "expected": 670,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  E [word = detta];\n}",
+    "expected": 153,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  N [];\n  B [lemma = \"f\u00f6r\"];\n  B -[punct]-> N;\n}",
+    "expected": 5,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  M [upos = NOUN];\n  V [lemma = beskriva];\n  N [xpos = \"JJ|POS|UTR/NEU|PLU|IND/DEF|NOM\"];\n}",
+    "expected": 10,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  M [];\n  U [xpos = \"AB|AN\", lemma <> re\".*e.*\"];\n  M -> U;\n  U << M;\n}",
+    "expected": 324,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  L [word = re\"y.*\"];\n  M [upos = VERB, word <> den];\n  V [lemma <> barn, xpos = MID];\n  Q [];\n  F [lemma = en];\n  F -> M;\n}",
+    "expected": 36,
+    "meta": {
+      "regexes": 1,
+      "tokens": 5,
+      "edges": 1,
+      "permutations": 120
+    }
+  },
+  {
+    "query": "pattern {\n  D [lemma = \"forts\u00e4tta\"];\n  J [];\n}",
+    "expected": 377,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  W [lemma = kunna];\n  Q [];\n  W -> Q;\n  Z [xpos = \"NN|UTR|SIN|IND|NOM\"];\n  W -[^compound:prt]-> Z;\n  Z -> Q;\n}",
+    "expected": 1,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  B [];\n  M [word = olika];\n  B -> M;\n}",
+    "expected": 380,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Q [lemma = hyreslag];\n  S [lemma = vara];\n  D [xpos = IE];\n}",
+    "expected": 1,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  R [upos = CCONJ];\n  W [upos = re\".*N.*\", lemma <> \"fr\u00e5n\"];\n  R -> W;\n  F [xpos = PP];\n}",
+    "expected": 63,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  T [];\n  J [];\n  J -[nmod:poss]-> T;\n  Z [];\n  T -> Z;\n  J -> Z;\n}",
+    "expected": 26,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  P [word = Hur, xpos = re\".*O.*\"]|[word = det, lemma <> billig];\n  C [];\n  P -> C;\n}",
+    "expected": 185,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  G [lemma = \"mots\u00e4ttning\"];\n}",
+    "expected": 7,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Q [lemma = bil];\n  R [xpos <> \"NN|UTR|PLU|DEF|GEN\", upos <> NOUN];\n}",
+    "expected": 803,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  O [lemma = \"f\u00e5\"];\n}",
+    "expected": 526,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  C [];\n  H [word = ord];\n  H << C;\n  T [];\n  T << C;\n  T << H;\n}",
+    "expected": 639,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Q [xpos = \"JJ|POS|NEU|SIN|IND|NOM\", upos <> NOUN];\n}",
+    "expected": 891,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Z [lemma = grupp];\n}",
+    "expected": 101,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  E [];\n  X [word = barn];\n  Q [xpos <> \"NN|UTR|PLU|DEF|NOM\"];\n  Q -> X;\n  E -[re\".*n\"]-> Q;\n}",
+    "expected": 18,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  C [lemma = barn];\n}",
+    "expected": 436,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  J [word = man, upos <> NOUN];\n  U [lemma = \"m\u00e4nniska\"];\n}",
+    "expected": 13,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  J [lemma = lika];\n}",
+    "expected": 57,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  F [xpos <> \"PC|PRF|UTR/NEU|PLU|IND/DEF|NOM\"];\n  M [upos = PRON, word = ett];\n  F -> M;\n  B [];\n  F -> B;\n}",
+    "expected": 87,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  S [lemma = bostadsmarknad];\n  B [];\n  S -> B;\n  B << S;\n}",
+    "expected": 14,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  D [word = re\"n.*\"];\n  L [word = att];\n  D << L;\n}",
+    "expected": 321,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  W [word = \"n\u00e4r\"];\n}",
+    "expected": 138,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Y [word = med, xpos = PP];\n}",
+    "expected": 841,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  B [];\n  T [lemma = \"\u00e5r\"];\n  T -> B;\n}",
+    "expected": 980,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  U [xpos = PP, word = re\".*a\"];\n}",
+    "expected": 11,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Y [lemma <> att];\n  S [lemma = make];\n  S -> Y;\n  S << Y;\n}",
+    "expected": 51,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  D [lemma = barn];\n  S [word = som, lemma = ske]|[word <> den]|[xpos = \"NN|UTR|PLU|IND|NOM\"];\n  D -> S;\n  S << D;\n}",
+    "expected": 722,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Q [upos = VERB];\n  N [word = re\"r.*\"]|[xpos <> \"NN|NEU|PLU|IND|NOM\"];\n  N -[re\".*b.*\"]-> Q;\n}",
+    "expected": 755,
+    "meta": {
+      "regexes": 2,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  T [];\n  D [];\n  T -[nmod:poss]-> D;\n  T.upos = D.upos;\n}",
+    "expected": 915,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  I [lemma = re\".*o\"];\n  F [upos = CCONJ, lemma <> \".\"];\n  D [upos = ADJ];\n}",
+    "expected": 810,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  P [word <> till, lemma = lek];\n  L [];\n}",
+    "expected": 327,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Y [lemma = \"'\", upos <> PRON];\n}",
+    "expected": 519,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  H [upos = DET];\n  C [];\n  H -[re\".*n.*\"]-> C;\n}",
+    "expected": 39,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  A [word = dag];\n}",
+    "expected": 59,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  T [xpos <> \"VB|SUP|AKT\", word = om];\n}",
+    "expected": 655,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  W [];\n  H [];\n  W -> H;\n  B [];\n  B -> H;\n  B -> W;\n  M [upos = re\".*N\"];\n  B -> M;\n  W -> M;\n  H -> M;\n}",
+    "expected": 442,
+    "meta": {
+      "regexes": 1,
+      "tokens": 4,
+      "edges": 6,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  B [];\n  O [];\n  U [xpos <> re\".*|.*\"];\n  U -> B;\n  U << B;\n  Q [];\n  U -[nmod:poss]-> Q;\n}",
+    "expected": 96,
+    "meta": {
+      "regexes": 1,
+      "tokens": 4,
+      "edges": 2,
+      "permutations": 12
+    }
+  },
+  {
+    "query": "pattern {\n  B [];\n  S [lemma <> re\".*d\"];\n  J [word = mer];\n  S -> J;\n  J -> B;\n}",
+    "expected": 338,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  L [word = den];\n}",
+    "expected": 852,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  M [word = kommer];\n}",
+    "expected": 186,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  X [word = \"F\u00f6r\"];\n  T [upos <> ADV];\n  T -> X;\n}",
+    "expected": 224,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  W [lemma = exempelvis];\n  L [upos = ADP];\n  C [xpos = KN];\n}",
+    "expected": 22,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  P [];\n  B [];\n  P -> B;\n  L [lemma = var];\n  P -> L;\n  B -> L;\n}",
+    "expected": 23,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  J [];\n  K [lemma <> re\"m.*\"];\n  K -> J;\n  J.lemma = K.lemma;\n}",
+    "expected": 498,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Y [lemma = ny];\n}",
+    "expected": 177,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  C [];\n  P [word = re\".*o\"];\n  P -> C;\n}",
+    "expected": 427,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  B [xpos = \"JJ|SUV|UTR/NEU|SIN/PLU|DEF|NOM\"];\n}",
+    "expected": 195,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  H [word = hela];\n}",
+    "expected": 73,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  D [upos <> PUNCT];\n  P [xpos = KN];\n  P -> D;\n  J [];\n  D -[re\".*o.*\"]-> J;\n}",
+    "expected": 4,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  I [lemma = \"h\u00f6g\"];\n}",
+    "expected": 136,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  I [lemma = personlig];\n}",
+    "expected": 26,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  O [];\n  Y [word = om]|[word = blir];\n  Y -[compound:prt]-> O;\n}",
+    "expected": 6,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  A [upos <> ADV]|[upos = NOUN];\n  F [lemma = re\".*r\"];\n  A << F;\n  Y [word = \"f\u00f6rs\u00f6ka\"];\n  F << Y;\n}",
+    "expected": 152,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  N [word <> om, xpos = PL];\n  B [];\n  N -> B;\n  V [word = \",\"];\n  B << V;\n}",
+    "expected": 34,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  Y [lemma = svensk]|[word = alltid, lemma = vald, upos = ADJ, xpos = \"PC|PRS|UTR/NEU|SIN/PLU|IND/DEF|NOM\"];\n  Q [upos <> re\".*A.*\"];\n  Q << Y;\n  H [];\n  Q -[obl]-> H;\n  Q << H;\n}",
+    "expected": 41,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  K [word = re\".*m.*\"];\n  A [word = ute];\n}",
+    "expected": 25,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Q [word = har];\n}",
+    "expected": 917,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  U [word = re\".*H.*\"];\n}",
+    "expected": 383,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  B [word = \"m\u00e5ste\"];\n}",
+    "expected": 208,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  R [word <> \"sv\u00e5rt\", xpos = re\".*A.*\"];\n  I [xpos = \"PN|UTR|SIN|DEF|SUB/OBJ\"];\n  R -[re\".*o.*\"]-> I;\n}",
+    "expected": 108,
+    "meta": {
+      "regexes": 2,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  E [lemma = \"g\u00e4lla\"];\n  K [xpos = \"DT|UTR|SIN|IND\", upos <> ADV];\n  D [xpos <> PP];\n  P [xpos = re\".*F\"];\n  J [];\n  J -[re\"n.*\"]-> D;\n}",
+    "expected": 56,
+    "meta": {
+      "regexes": 2,
+      "tokens": 5,
+      "edges": 1,
+      "permutations": 120
+    }
+  },
+  {
+    "query": "pattern {\n  H [lemma = krona];\n}",
+    "expected": 141,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  D [upos = NOUN];\n  K [lemma = de];\n  A [word = re\".*\u00e5.*\"];\n  A -[re\".*v.*\"]-> D;\n}",
+    "expected": 39,
+    "meta": {
+      "regexes": 2,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  H [upos = ADV, word = ur];\n}",
+    "expected": 7,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  P [lemma = \"n\u00e4r\"];\n}",
+    "expected": 206,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  L [];\n  N [];\n  L << N;\n  H [lemma = \"n\u00e4ra\"];\n  L -[^nsubj:pass]-> H;\n  E [];\n  H -> E;\n}",
+    "expected": 616,
+    "meta": {
+      "regexes": 0,
+      "tokens": 4,
+      "edges": 2,
+      "permutations": 12
+    }
+  },
+  {
+    "query": "pattern {\n  T [word = re\".*n.*\", xpos = \"JJ|POS|UTR/NEU|SIN|DEF|NOM\"];\n}",
+    "expected": 430,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  F [upos = ADV];\n  X [word = Ty];\n  D [word = re\".*i.*\"];\n}",
+    "expected": 51,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  E [];\n  F [xpos = \"VB|PRS|AKT\"];\n  E -[re\".*e.*\"]-> F;\n  S [word <> re\".*t\"];\n  E -[re\".*n\"]-> S;\n  F -> S;\n}",
+    "expected": 5,
+    "meta": {
+      "regexes": 3,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  O [lemma = \"p\u00e5\"];\n  F [];\n  O -> F;\n  F << O;\n}",
+    "expected": 15,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  G [word = ha];\n}",
+    "expected": 143,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  E [word = hyreslagen];\n  V [];\n}",
+    "expected": 114,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Q [word = inte];\n}",
+    "expected": 704,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Z [word = re\".*y\"];\n  R [lemma = re\".*b\"];\n  V [];\n}",
+    "expected": 38,
+    "meta": {
+      "regexes": 2,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  C [word = vill]|[word = Detta, upos <> PUNCT];\n}",
+    "expected": 147,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  G [word = plus];\n}",
+    "expected": 7,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  X [upos = ADJ, xpos <> \"PN|UTR/NEU|SIN/PLU|DEF|OBJ\"];\n  G [xpos = \"NN|UTR|SIN|DEF|NOM\"];\n  X -> G;\n}",
+    "expected": 650,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  X [lemma = \"till_och_med\"];\n}",
+    "expected": 14,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  U [upos = PUNCT];\n  N [upos = re\"A.*\"];\n  U -[re\".*o.*\"]-> N;\n}",
+    "expected": 1,
+    "meta": {
+      "regexes": 2,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Q [upos = AUX];\n  K [];\n  Q -> K;\n  K << Q;\n}",
+    "expected": 38,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  M [lemma = expert];\n}",
+    "expected": 10,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  A [word = \"tj\u00e4nster\"];\n}",
+    "expected": 6,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Z [xpos = re\".*J\", word <> utveckling, lemma = re\".*a\"];\n}",
+    "expected": 303,
+    "meta": {
+      "regexes": 2,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Y [xpos = \"VB|INF|SFO\"];\n  R [];\n  R -> Y;\n}",
+    "expected": 525,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  X [xpos = \"NN|UTR|SIN|DEF|NOM\", upos = ADV]|[word = \"v\u00e4g\"];\n  E [];\n  E -> X;\n  E << X;\n}",
+    "expected": 26,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  B [word = och];\n  T [];\n  B -> T;\n}",
+    "expected": 1,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  J [lemma <> re\".*r\", xpos = \"JJ|POS|UTR/NEU|SIN|DEF|NOM\"];\n  X [lemma = ha];\n}",
+    "expected": 241,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Y [lemma <> re\"t.*\"];\n  H [lemma = kollektivfil];\n}",
+    "expected": 57,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Q [];\n  F [xpos = re\"D.*\"];\n  F -> Q;\n  F.word <> Q.word;\n}",
+    "expected": 155,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  W [word = till];\n}",
+    "expected": 977,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  L [];\n  T [xpos = \"PN|UTR/NEU|PLU|DEF|SUB\", word <> Ett];\n  T -> L;\n}",
+    "expected": 181,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  P [word = experter];\n  X [xpos = \"NN|NEU|SIN|IND|NOM\"];\n  Z [];\n  H [xpos <> \"NN|UTR|SIN|IND|NOM\"];\n  H -> Z;\n  V [];\n  P -> V;\n}",
+    "expected": 339,
+    "meta": {
+      "regexes": 0,
+      "tokens": 5,
+      "edges": 2,
+      "permutations": 120
+    }
+  },
+  {
+    "query": "pattern {\n  V [];\n  N [];\n  V -[compound:prt]-> N;\n}",
+    "expected": 801,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  O [word = vanligare, xpos = re\".*S.*\"];\n}",
+    "expected": 9,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  A [lemma = bli];\n  T [word = re\".*\u00e4\"];\n  R [];\n  R -> A;\n  D [upos = VERB];\n  D -> T;\n}",
+    "expected": 4,
+    "meta": {
+      "regexes": 1,
+      "tokens": 4,
+      "edges": 2,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  Y [word = i];\n  G [word = re\"l.*\", xpos <> \"HP|-|-|-\"];\n  K [xpos = \"PM|NOM\"];\n  K -> Y;\n  U [];\n  W [];\n  W -> U;\n  K -[re\"c.*\"]-> W;\n  W -> G;\n}",
+    "expected": 24,
+    "meta": {
+      "regexes": 2,
+      "tokens": 5,
+      "edges": 4,
+      "permutations": 120
+    }
+  },
+  {
+    "query": "pattern {\n  I [upos = NOUN, word = re\"r.*\"];\n  X [xpos = \"RG|NOM\"];\n}",
+    "expected": 204,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  P [];\n  R [];\n  P -> R;\n  H [word = re\"\u00e4.*\"];\n  H -> R;\n  P -> H;\n}",
+    "expected": 160,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  H [];\n  E [word = tyder];\n}",
+    "expected": 240,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  U [word = re\".*\u00e4\"];\n  V [xpos <> PL];\n  F [xpos = \"VB|PRS|AKT\"];\n}",
+    "expected": 182,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  Y [lemma = man];\n}",
+    "expected": 903,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  E [xpos = MAD];\n  S [upos = CCONJ];\n  T [xpos = \"JJ|POS|UTR|SIN|IND|NOM\"];\n  E << T;\n}",
+    "expected": 28,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  P [lemma = om];\n}",
+    "expected": 753,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  H [xpos = \"DT|NEU|SIN|IND\"];\n}",
+    "expected": 705,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  H [];\n  U [];\n  U -> H;\n  L [word = individuell];\n  U -> L;\n}",
+    "expected": 56,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  Q [lemma = \"uppt\u00e4cka\"];\n  A [upos = VERB];\n  A -> Q;\n  Y [];\n  A -[re\".*a.*\"]-> Y;\n}",
+    "expected": 8,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  K [lemma = inkomst];\n}",
+    "expected": 69,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  J [word <> re\".*g.*\"];\n  R [word <> var, xpos = re\".*|.*\"];\n  J -> R;\n  K [word <> blir];\n  K -> J;\n  K -[conj]-> R;\n  K.xpos <> J.xpos;\n}",
+    "expected": 105,
+    "meta": {
+      "regexes": 2,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  H [word <> re\".*v.*\", xpos = MID, upos = re\".*U.*\"];\n  B [xpos = \"VB|PRS|AKT\"];\n  B -[punct]-> H;\n}",
+    "expected": 491,
+    "meta": {
+      "regexes": 2,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  X [word = svar];\n  S [upos = re\"P.*\"];\n  H [lemma <> re\".*o.*\"];\n}",
+    "expected": 851,
+    "meta": {
+      "regexes": 2,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  K [word = \"ocks\u00e5\", xpos <> \"HD|UTR|SIN|IND\"];\n  Z [];\n  Z -> K;\n}",
+    "expected": 622,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  K [lemma = ha];\n  A [];\n  S [lemma = \"l\u00e4ra\"];\n}",
+    "expected": 188,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  T [lemma = ut];\n  G [upos <> ADV];\n  G -> T;\n  I [];\n  I -> T;\n}",
+    "expected": 3,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  S [];\n  K [word = vattnet];\n  L [xpos = \"RG|NOM\"];\n}",
+    "expected": 25,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  K [lemma = viss]|[lemma = och];\n  E [lemma = belopp];\n  E << K;\n}",
+    "expected": 7,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  S [];\n  W [upos = CCONJ];\n  S -[re\".*o.*\"]-> W;\n}",
+    "expected": 114,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  M [];\n  K [word = skillnad];\n}",
+    "expected": 271,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Q [word <> \"(\", xpos <> re\".*|.*\"];\n  M [xpos = PP];\n  Q -> M;\n}",
+    "expected": 118,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  F [word = skall];\n}",
+    "expected": 180,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  U [lemma = \"k\u00f6pa\"];\n}",
+    "expected": 22,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  I [lemma = \"beg\u00e4ra\"];\n  N [lemma <> \"k\u00e4rlek\", word = re\".*n.*\"];\n  I -> N;\n  S [];\n  S << I;\n}",
+    "expected": 275,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  S [word = Det];\n}",
+    "expected": 452,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  P [upos = AUX];\n  H [];\n  P -> H;\n}",
+    "expected": 74,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  X [];\n  E [];\n  E -> X;\n  T [lemma = \"g\u00e4rna\"];\n  X -> T;\n  T << E;\n}",
+    "expected": 4,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  B [lemma = \"n\u00e5gon\"];\n}",
+    "expected": 276,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  V [xpos = \"NN|NEU|SIN|DEF|NOM\"];\n  Z [];\n  Y [];\n  Z << Y;\n  T [lemma = re\".*a.*\", word = \"samh\u00e4llets\"];\n  T << V;\n}",
+    "expected": 105,
+    "meta": {
+      "regexes": 1,
+      "tokens": 4,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  A [word = \".\", lemma = \"*\"];\n  S [lemma = \"\u00e4ktenskap\"];\n}",
+    "expected": 208,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Y [xpos = \"VB|PRT|AKT\"];\n}",
+    "expected": 925,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Z [lemma = fast];\n}",
+    "expected": 28,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Z [];\n  G [xpos = \"NN|UTR|SIN|DEF|NOM\", lemma = re\".*o\"];\n}",
+    "expected": 488,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Q [upos = PRON, xpos <> KN, lemma = de];\n  I [xpos = \"NN|UTR|SIN|IND|NOM\"];\n}",
+    "expected": 792,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  F [xpos = AB];\n  V [word = re\".*a.*\"];\n  V << F;\n  R [];\n  R -[obj]-> F;\n  R << F;\n}",
+    "expected": 8,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  L [];\n  U [upos = ADP];\n  U -[^punct]-> L;\n  I [upos = ADJ];\n}",
+    "expected": 384,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  Z [xpos = \"JJ|POS|UTR/NEU|PLU|IND/DEF|NOM\"];\n  H [xpos = re\"P.*\"];\n  Z -> H;\n}",
+    "expected": 352,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  K [xpos = \"NN|AN\"];\n  T [xpos = \"NN|NEU|SIN|IND|NOM\"];\n  U [word = De];\n  Z [];\n  K -> Z;\n}",
+    "expected": 6,
+    "meta": {
+      "regexes": 0,
+      "tokens": 4,
+      "edges": 1,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  Z [];\n  W [lemma = den];\n  Q [];\n  W -> Q;\n  Z -[conj]-> Q;\n}",
+    "expected": 11,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  H [lemma = \"r\u00e5dande\"];\n}",
+    "expected": 5,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Q [lemma = 10];\n  A [word <> re\".*a.*\"];\n  Q -> A;\n  A << Q;\n}",
+    "expected": 20,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  M [upos = ADJ];\n  E [lemma = \"f\u00f6rr\", upos <> ADP];\n  E << M;\n}",
+    "expected": 22,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  J [lemma = att];\n  Y [lemma = ha];\n}",
+    "expected": 705,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  P [word = \"\u00e4r\"];\n  Z [];\n  P -> Z;\n  G [];\n  G -> P;\n}",
+    "expected": 198,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  M [lemma = \"st\u00e4lla\", xpos = re\".*O.*\"];\n}",
+    "expected": 5,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  D [word = \":\"];\n}",
+    "expected": 266,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  D [lemma = \"f\u00f6rs\u00f6ka\"];\n}",
+    "expected": 41,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Z [xpos = \"VB|SUP|AKT\"];\n}",
+    "expected": 705,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  N [lemma = \"tj\u00e4na\"];\n}",
+    "expected": 12,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  A [word = \"tillr\u00e4ckligt\"];\n}",
+    "expected": 20,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  B [];\n  Y [xpos = \"RG|NOM\"];\n  Y -> B;\n  C [word = re\".*s.*\"];\n  B -> C;\n}",
+    "expected": 181,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  S [xpos = re\"S.*\"];\n  W [lemma = re\"/.*\"];\n  W << S;\n}",
+    "expected": 2,
+    "meta": {
+      "regexes": 2,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  B [word = \"'\"];\n}",
+    "expected": 519,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  O [xpos = \"DT|UTR|SIN|IND\", upos <> VERB];\n  F [lemma <> biologisk, xpos = \"JJ|SUV|UTR/NEU|SIN/PLU|DEF|NOM\"];\n}",
+    "expected": 40,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  P [word = \"b\u00f6rja\"];\n  O [];\n}",
+    "expected": 317,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  R [];\n  Q [word = psykiska];\n  M [];\n  Q -> M;\n}",
+    "expected": 82,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  E [xpos = \"VB|PRS|AKT\"];\n  K [lemma = re\".*v.*\"];\n  E -> K;\n  J [lemma = du];\n}",
+    "expected": 209,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  J [word = man];\n}",
+    "expected": 612,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  B [word = Samtidigt];\n}",
+    "expected": 15,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  G [lemma = en, upos = re\".*O.*\"];\n}",
+    "expected": 27,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  A [lemma = ned];\n  J [upos <> ADP];\n  A -> J;\n}",
+    "expected": 19,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  E [xpos = \"NN|UTR|SIN|IND|NOM\"];\n  W [upos = ADJ];\n  H [word = om];\n  H -[^nmod]-> E;\n}",
+    "expected": 2,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  A [];\n  K [xpos = \"NN|AN\"];\n  K -> A;\n  K << A;\n}",
+    "expected": 272,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  F [upos = ADJ];\n  V [];\n  F -[re\".*a.*\"]-> V;\n  F << V;\n}",
+    "expected": 862,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  C [xpos = SN];\n  G [];\n  C -> G;\n  G << C;\n}",
+    "expected": 8,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  S [xpos = \"VB|PRS|AKT\", lemma <> man, upos = SCONJ]|[word = enstaka]|[xpos = \"NN|UTR|SIN|DEF|NOM\"]|[lemma = doktor, upos = AUX]|[upos = ADJ, xpos <> \"PN|UTR|SIN|IND|SUB\"]|[lemma = re\".*n.*\", xpos = \"VB|INF|AKT\"];\n  C [word <> Vi];\n  C -[acl:relcl]-> S;\n  Z [];\n  S -> Z;\n  C -> Z;\n}",
+    "expected": 118,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  U [lemma = praktisk];\n  N [];\n}",
+    "expected": 585,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  S [lemma = men];\n}",
+    "expected": 368,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  G [lemma <> anlag];\n  Z [word = heller];\n  G -> Z;\n}",
+    "expected": 44,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  D [word = folk];\n}",
+    "expected": 19,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  V [lemma <> bakgrund];\n  G [];\n  V -> G;\n  F [word = EEC];\n  F -> V;\n}",
+    "expected": 68,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  V [word = re\".*\u00e4\"]|[upos = DET, lemma = \"g\u00f6ra\"];\n}",
+    "expected": 3,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  G [xpos = \"RG|NOM\"];\n  E [];\n  G -> E;\n  G << E;\n  U [];\n  E -> U;\n  G -[^nsubj:pass]-> U;\n}",
+    "expected": 30,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  G [lemma = heller];\n}",
+    "expected": 22,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  P [xpos = \"PN|UTR|SIN|DEF|SUB\"];\n}",
+    "expected": 495,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  X [word = \"n\u00e5got\"];\n}",
+    "expected": 95,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  H [];\n  G [word = re\".*\u00e4\"];\n}",
+    "expected": 85,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  V [word = trygghet];\n}",
+    "expected": 19,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  V [lemma = \"h\u00e4r\"];\n}",
+    "expected": 141,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  E [lemma = \"\u00f6ka\"];\n}",
+    "expected": 88,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  D [xpos = \"VB|PRS|AKT\", upos = ADV]|[lemma <> vara];\n  Z [lemma = re\".*n.*\"];\n  Z << D;\n  N [];\n  D -[re\".*m.*\"]-> N;\n  J [xpos = \"PC|PRS|UTR/NEU|SIN/PLU|IND/DEF|NOM\"];\n  J -> N;\n  N << J;\n}",
+    "expected": 8,
+    "meta": {
+      "regexes": 2,
+      "tokens": 4,
+      "edges": 2,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  H [];\n  L [lemma = korsning];\n  H << L;\n}",
+    "expected": 75,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  C [lemma <> re\"/.*\", xpos <> MID];\n  R [upos = NOUN];\n  G [];\n  G -[nmod:poss]-> C;\n  R -> G;\n  Y [lemma = till];\n}",
+    "expected": 251,
+    "meta": {
+      "regexes": 1,
+      "tokens": 4,
+      "edges": 2,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  P [word = praktiskt];\n}",
+    "expected": 8,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  R [xpos = \"JJ|POS|NEU|SIN|IND|NOM\"];\n}",
+    "expected": 891,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  I [];\n  V [upos = re\".*E.*\"];\n  V << I;\n  W [lemma <> ofta];\n  D [xpos = \"VB|INF|AKT\"];\n  D.lemma = W.lemma;\n}",
+    "expected": 384,
+    "meta": {
+      "regexes": 1,
+      "tokens": 4,
+      "edges": 0,
+      "permutations": 12
+    }
+  },
+  {
+    "query": "pattern {\n  K [xpos = \"NN|NEU|PLU|DEF|NOM\"];\n}",
+    "expected": 517,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Y [word = \"\u00e4ktenskapet\"];\n}",
+    "expected": 112,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  H [xpos = \"JJ|POS|UTR|-|-|SMS\"];\n}",
+    "expected": 5,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  F [lemma = kamrat];\n}",
+    "expected": 13,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  H [];\n  G [xpos = \"PC|PRS|UTR/NEU|SIN/PLU|IND/DEF|NOM\", word = re\".*m\"]|[upos = AUX];\n  G.word = H.word;\n}",
+    "expected": 645,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  C [upos = NOUN];\n  U [word = gifter];\n  U -> C;\n}",
+    "expected": 10,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  S [word = \"\u00e4r\"];\n  Q [];\n  S -[re\".*c.*\"]-> Q;\n}",
+    "expected": 61,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  M [word = re\"l.*\", xpos = MAD]|[upos = ADV];\n  R [];\n  M -> R;\n  A [];\n  A -> R;\n  A -> M;\n}",
+    "expected": 321,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  G [xpos = AB];\n  V [word = re\".*e\"];\n  J [xpos = \"NN|UTR|SIN|IND|NOM\"];\n  J -> G;\n  W [];\n  W -> V;\n}",
+    "expected": 976,
+    "meta": {
+      "regexes": 1,
+      "tokens": 4,
+      "edges": 2,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  J [xpos = \"JJ|POS|UTR|SIN|IND|NOM\"];\n  Z [word = totala];\n  Z << J;\n}",
+    "expected": 1,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  N [word = \"allts\u00e5\"];\n}",
+    "expected": 70,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  O [upos = ADJ, word <> skapar];\n  G [xpos = \"NN|UTR|SIN|IND|NOM\"];\n  P [upos = PUNCT];\n  P -> O;\n}",
+    "expected": 2,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  K [lemma = miljon];\n  F [word = re\"d.*\"];\n  E [upos <> ADP];\n  E.word = K.word;\n}",
+    "expected": 30,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  F [];\n  O [word <> \"allts\u00e5\"];\n  O -[compound:prt]-> F;\n}",
+    "expected": 801,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Y [xpos = \"VB|INF|AKT\"];\n  F [];\n  F -> Y;\n  G [];\n  G -> F;\n  G -> Y;\n}",
+    "expected": 470,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  H [word = betydligt];\n}",
+    "expected": 22,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  P [word = gifta];\n  I [];\n  C [lemma = \"f\u00f6rh\u00e5llande\"];\n}",
+    "expected": 30,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  P [word = alltmer];\n}",
+    "expected": 8,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  F [xpos = \"VB|PRS|AKT\"];\n  Y [upos <> re\".*R\"];\n  F -[re\".*v.*\"]-> Y;\n  F.lemma = Y.lemma;\n  Y << F;\n}",
+    "expected": 8,
+    "meta": {
+      "regexes": 2,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  G [lemma = yrke];\n}",
+    "expected": 31,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  C [upos = NOUN];\n  F [word = \"m\u00e4n\"];\n  B [xpos = \"VB|PRS|SFO\"];\n}",
+    "expected": 36,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  H [];\n  T [xpos = AB];\n  T -> H;\n  L [];\n  L -> H;\n}",
+    "expected": 106,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  E [lemma = stad, xpos <> re\".*T\", upos <> PUNCT, word = re\".*e.*\"];\n}",
+    "expected": 51,
+    "meta": {
+      "regexes": 2,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  J [word = har];\n  M [];\n  M.xpos = J.xpos;\n}",
+    "expected": 863,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  C [word = re\".*o\"];\n}",
+    "expected": 163,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Z [word = \"g\u00e4rna\"];\n}",
+    "expected": 12,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Q [lemma = \"s\u00e4ga\"];\n  D [word = re\".*v\"];\n  D -> Q;\n}",
+    "expected": 4,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  K [];\n  C [word = Tidigare];\n  C -> K;\n}",
+    "expected": 2,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Y [lemma = bli];\n}",
+    "expected": 363,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  R [lemma = eftersom];\n  A [word <> re\".*i.*\", lemma = \".\", upos <> DET];\n}",
+    "expected": 43,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  K [word = nu];\n}",
+    "expected": 110,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Q [word = vi, xpos <> AB];\n  X [upos = AUX, lemma <> obetydlig];\n  K [xpos <> KN];\n  K -> Q;\n}",
+    "expected": 628,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  C [upos <> ADP, word = \"g\u00e5r\"];\n}",
+    "expected": 84,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  E [upos <> re\".*N.*\"];\n  Q [xpos <> \"VB|INF|AKT\"]|[word = \"p\u00e5\"];\n  L [];\n  Q -[conj]-> L;\n  D [xpos = re\".*|.*\", upos <> NOUN];\n  D -> E;\n  D -[compound:prt]-> Q;\n}",
+    "expected": 10,
+    "meta": {
+      "regexes": 2,
+      "tokens": 4,
+      "edges": 3,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  J [xpos = \"JJ|POS|UTR/NEU|SIN|DEF|NOM\"];\n}",
+    "expected": 974,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Z [];\n  C [];\n  C -> Z;\n  Q [lemma = re\".*n.*\"];\n  Q -> Z;\n  I [upos = DET]|[lemma <> liten];\n  I -[re\".*u.*\"]-> Q;\n  I -> Z;\n}",
+    "expected": 99,
+    "meta": {
+      "regexes": 2,
+      "tokens": 4,
+      "edges": 4,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  P [];\n  B [word = luften];\n  T [upos = ADJ];\n}",
+    "expected": 229,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  Q [xpos = \"DT|UTR|SIN|IND\"]|[xpos = HA];\n  R [];\n  Q -> R;\n}",
+    "expected": 252,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Y [lemma = mycket];\n}",
+    "expected": 352,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  M [lemma = annan];\n  T [];\n  M -> T;\n}",
+    "expected": 276,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Z [word <> re\".*e.*\", upos <> VERB];\n  X [xpos = \"PN|UTR|SIN|IND|SUB\"];\n  X.lemma = Z.lemma;\n}",
+    "expected": 211,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  T [lemma = \"s\u00e5_kallad\"];\n}",
+    "expected": 45,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  L [];\n  W [word = \"r\u00e4kna\"];\n}",
+    "expected": 432,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  M [lemma = re\"r.*\"];\n  R [word = val];\n  I [word <> den, lemma = och];\n  O [];\n  O -[^punct]-> I;\n}",
+    "expected": 62,
+    "meta": {
+      "regexes": 1,
+      "tokens": 4,
+      "edges": 1,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  W [word = \"f\u00f6rst\"];\n}",
+    "expected": 27,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  P [upos = ADP];\n  M [word <> \".\"];\n  P -> M;\n  M << P;\n}",
+    "expected": 68,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  O [upos <> ADJ, lemma = hus];\n}",
+    "expected": 24,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  H [word <> re\".*r.*\"];\n  Z [];\n  H -> Z;\n  U [upos = PRON];\n  U -> Z;\n  H -[acl:relcl]-> U;\n  H << U;\n}",
+    "expected": 2,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  E [];\n  L [lemma = att];\n  V [];\n  E -> V;\n  D [lemma = betyda];\n}",
+    "expected": 933,
+    "meta": {
+      "regexes": 0,
+      "tokens": 4,
+      "edges": 1,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  A [xpos <> re\".*I.*\"];\n  V [upos = ADJ];\n  F [lemma = se];\n  A << F;\n  H [word = sitt];\n  Z [upos = VERB];\n}",
+    "expected": 966,
+    "meta": {
+      "regexes": 1,
+      "tokens": 5,
+      "edges": 0,
+      "permutations": 60
+    }
+  },
+  {
+    "query": "pattern {\n  B [];\n  Z [xpos = \"VB|INF|AKT\"];\n  Z -[re\"e.*\"]-> B;\n}",
+    "expected": 18,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  E [upos = VERB, word <> som];\n  N [word <> att];\n  N -[re\".*m.*\"]-> E;\n  E << N;\n}",
+    "expected": 160,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  K [word = honom];\n}",
+    "expected": 12,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  B [upos = re\".*R.*\"];\n  U [];\n  B -[^conj]-> U;\n  S [lemma = bil];\n  U -> S;\n  B -> S;\n}",
+    "expected": 10,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  G [word = de];\n  W [lemma <> en];\n  G -> W;\n}",
+    "expected": 152,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  A [word = \"\u00e4r\"];\n  D [word = och];\n  A -> D;\n  D << A;\n}",
+    "expected": 4,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  W [lemma = re\".*e\", upos = ADP];\n  L [];\n  D [upos = re\".*N\"];\n  W -> D;\n}",
+    "expected": 98,
+    "meta": {
+      "regexes": 2,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  F [lemma = \"underl\u00e4tta\"];\n}",
+    "expected": 14,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  F [lemma = till];\n  G [];\n  G -[mark]-> F;\n  I [word = land];\n}",
+    "expected": 1,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  Q [word = \"hush\u00e5ll\"];\n}",
+    "expected": 8,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  T [lemma = under];\n}",
+    "expected": 256,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Q [xpos = \"VB|PRT|SFO\"];\n}",
+    "expected": 115,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  M [];\n  K [word = Vid];\n  M.upos <> K.upos;\n}",
+    "expected": 474,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  M [word = \"fr\u00e4mst\"];\n}",
+    "expected": 28,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  U [upos = PRON, lemma = en];\n}",
+    "expected": 27,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  V [];\n  G [word = roll];\n  G -> V;\n}",
+    "expected": 146,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Z [xpos = \"NN|UTR|SIN|IND|NOM\"];\n  E [xpos = \"VB|PRS|AKT\"];\n  E << Z;\n  N [upos = PROPN];\n  N -> Z;\n}",
+    "expected": 87,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  Q [xpos = \"JJ|POS|UTR|SIN|IND|NOM\", lemma = re\"a.*\"];\n  R [word = ibland]|[word <> re\"\\?.*\"];\n  N [xpos = re\".*E\"];\n}",
+    "expected": 971,
+    "meta": {
+      "regexes": 3,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  A [word = patient];\n}",
+    "expected": 5,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  G [word = sexuella];\n}",
+    "expected": 24,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  R [];\n  C [];\n  R -[nmod:poss]-> C;\n  K [word = som];\n}",
+    "expected": 684,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  G [upos <> AUX];\n  X [];\n  X -> G;\n  R [word = re\"c.*\"];\n  G -> R;\n  X -> R;\n  X << R;\n}",
+    "expected": 40,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  O [xpos = \"VB|PRS|SFO\"];\n  Q [word = ha];\n  O << Q;\n}",
+    "expected": 9,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  S [word = \"m\u00e5nad\"];\n}",
+    "expected": 10,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Y [lemma = en];\n  B [xpos = \"VB|PRT|AKT\"];\n  B -> Y;\n}",
+    "expected": 4,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  G [upos = NOUN];\n  L [xpos = \"NN|UTR|SIN|DEF|NOM\"];\n  L << G;\n  M [word = vallokalen];\n}",
+    "expected": 2,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  N [];\n  U [upos = ADJ];\n  U -> N;\n  M [word = re\".*r.*\"];\n  M -> N;\n  M -> U;\n  S [];\n  S -> N;\n}",
+    "expected": 413,
+    "meta": {
+      "regexes": 1,
+      "tokens": 4,
+      "edges": 4,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  G [];\n  X [word = \"p\u00e5\"];\n  X -[re\".*b.*\"]-> G;\n  G << X;\n}",
+    "expected": 7,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  I [word = skulle];\n}",
+    "expected": 140,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  W [];\n  Q [];\n  Q -> W;\n  W << Q;\n  N [upos = re\".*D.*\"];\n  N -> Q;\n  N -> W;\n}",
+    "expected": 541,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  T [lemma = \"p\u00e5\"];\n  C [word = undantagsfall];\n  Y [xpos = KN];\n  T << Y;\n}",
+    "expected": 3,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  Y [lemma = man];\n  V [];\n  X [];\n  V -[re\".*c.*\"]-> X;\n  Y -> X;\n}",
+    "expected": 7,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  R [];\n  I [word = oberoende];\n  R -> I;\n}",
+    "expected": 20,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  H [];\n  I [xpos = \"PN|UTR/NEU|PLU|IND|SUB/OBJ\"];\n  H -> I;\n  S [];\n  S -> H;\n}",
+    "expected": 371,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  I [lemma = man, xpos = \"NN|UTR|SIN|IND|NOM\"];\n}",
+    "expected": 53,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  C [lemma = i];\n  D [];\n  C -> D;\n  D << C;\n}",
+    "expected": 4,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  S [];\n  X [upos = NOUN];\n  V [word = \"\u00e4r\"];\n  A [lemma = hus];\n}",
+    "expected": 751,
+    "meta": {
+      "regexes": 0,
+      "tokens": 4,
+      "edges": 0,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  M [];\n  R [xpos = \"NN|UTR|PLU|DEF|GEN\"];\n  R -> M;\n  M << R;\n}",
+    "expected": 72,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  N [lemma = yrkesutbildning];\n}",
+    "expected": 7,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  V [lemma = om, upos = re\".*C.*\"];\n}",
+    "expected": 319,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  J [word = re\".*b\"];\n}",
+    "expected": 39,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  X [lemma = \"kr\u00e4vande\"];\n}",
+    "expected": 9,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  O [lemma = grepp];\n}",
+    "expected": 5,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  C [word = \"m\u00e4n\"];\n  L [];\n  C -> L;\n}",
+    "expected": 121,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  S [lemma = de];\n  Q [upos = DET];\n  X [lemma = 1970];\n  A [xpos = \"RG|NOM\"];\n}",
+    "expected": 3,
+    "meta": {
+      "regexes": 0,
+      "tokens": 4,
+      "edges": 0,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  U [];\n  X [lemma = \"l\u00e4ge\"];\n}",
+    "expected": 350,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  R [xpos = \"DT|UTR|SIN|IND\"];\n  E [xpos <> re\".*J\"];\n  G [];\n  R -> G;\n  G << R;\n}",
+    "expected": 418,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  C [word = av];\n  B [xpos <> \"VB|PRS|AKT\"];\n  C -> B;\n}",
+    "expected": 5,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  N [word = \"f\u00f6rlossningen\"];\n}",
+    "expected": 9,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  N [];\n  S [];\n  N -> S;\n  W [word = vi, xpos <> re\".*J.*\"];\n  W -> N;\n}",
+    "expected": 24,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  W [xpos = \"VB|PRT|AKT\", word = re\".*\u00e4.*\"];\n  C [lemma = re\"d.*\", upos = PRON];\n}",
+    "expected": 30,
+    "meta": {
+      "regexes": 2,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  L [];\n  T [lemma = \"sjukf\u00f6rs\u00e4kring\"];\n}",
+    "expected": 63,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  D [word = situationer];\n}",
+    "expected": 8,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Q [word = \"arbetsf\u00f6rdelning\"];\n  G [];\n  E [word = re\"m.*\", xpos = re\".*D.*\"];\n  G -> E;\n}",
+    "expected": 15,
+    "meta": {
+      "regexes": 2,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  C [word = re\"n.*\", upos <> NOUN];\n  Q [upos = ADV];\n  C -> Q;\n  C << Q;\n}",
+    "expected": 47,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  F [word = som];\n  N [lemma = med];\n  F -> N;\n}",
+    "expected": 8,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  R [word = ur];\n  Y [];\n  Y << R;\n  X [upos = AUX];\n  Y << X;\n  R << X;\n}",
+    "expected": 51,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  I [xpos <> \"NN|NEU|SIN|IND|NOM\", lemma = barn];\n}",
+    "expected": 365,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  N [xpos = \"VB|PRS|AKT\"];\n  M [word = \"m\u00e4ngd\"];\n  M << N;\n}",
+    "expected": 3,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Z [word = \"utanf\u00f6r\"];\n}",
+    "expected": 28,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  R [];\n  D [word = den, upos <> CCONJ];\n  D -[re\".*k\"]-> R;\n  R << D;\n}",
+    "expected": 4,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  F [word <> re\".*\u00e4\"];\n  C [word = av];\n  N [lemma = re\".*..*\"];\n  N -> C;\n  N -> F;\n  N << C;\n}",
+    "expected": 274,
+    "meta": {
+      "regexes": 2,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  Z [word = \"N\u00e4r\"];\n}",
+    "expected": 68,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  W [word = \".\"];\n  A [upos = re\".*P\"];\n  W << A;\n  Q [lemma = re\"\u00f6.*\"]|[word = \"f\u00f6r\"];\n  A << Q;\n  W << Q;\n}",
+    "expected": 46,
+    "meta": {
+      "regexes": 2,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  I [word = skillnad];\n}",
+    "expected": 13,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  D [];\n  S [lemma = i]|[lemma = \"fr\u00e5n\"];\n  S -[^nsubj:pass]-> D;\n}",
+    "expected": 93,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Z [word = beror];\n}",
+    "expected": 44,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  A [xpos = \"NN|NEU|SIN|IND|NOM\"];\n  Q [xpos = re\".*N.*\", word = hitta];\n}",
+    "expected": 1,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Y [];\n  W [];\n  V [lemma = re\".*n.*\", word = re\".*a\"];\n  Q [];\n  E [xpos = MAD];\n}",
+    "expected": 504,
+    "meta": {
+      "regexes": 2,
+      "tokens": 5,
+      "edges": 0,
+      "permutations": 120
+    }
+  },
+  {
+    "query": "pattern {\n  U [upos <> VERB];\n  L [lemma = sedan];\n  U -> L;\n}",
+    "expected": 72,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  U [lemma = som];\n  G [lemma = ske];\n  F [];\n  F -> U;\n}",
+    "expected": 46,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  G [lemma <> standard, word = i];\n  V [];\n  V -> G;\n  V << G;\n}",
+    "expected": 51,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  I [xpos = \"PC|PRF|UTR|SIN|IND|NOM\"];\n}",
+    "expected": 374,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  P [xpos = \"VB|PRS|AKT\"];\n  H [word = re\".*\u00f6\", lemma = re\".*l.*\"];\n  V [xpos = \"NN|UTR|SIN|DEF|NOM\"];\n  H -> V;\n  C [];\n}",
+    "expected": 80,
+    "meta": {
+      "regexes": 2,
+      "tokens": 4,
+      "edges": 1,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  M [lemma = med];\n}",
+    "expected": 922,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  V [lemma = re\".*d\"];\n  G [upos = NOUN];\n  M [];\n  V -[re\".*t\"]-> M;\n  M -[nsubj:pass]-> G;\n}",
+    "expected": 6,
+    "meta": {
+      "regexes": 2,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  Q [word = sjukdom];\n  W [lemma <> re\".*d.*\", upos = NUM];\n}",
+    "expected": 2,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  V [upos = ADJ];\n  G [word = den];\n  G -> V;\n}",
+    "expected": 11,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  G [word = vilka];\n}",
+    "expected": 42,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  R [];\n  S [word = av];\n  S -> R;\n  R.word <> S.word;\n}",
+    "expected": 5,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  T [];\n  P [xpos = \"RG|NOM\", word = re\"s.*\"];\n  Y [word = sig];\n}",
+    "expected": 73,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  Z [];\n  N [word = \"F\u00f6r\"];\n  Z << N;\n}",
+    "expected": 2,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  P [upos = NUM];\n  R [upos <> NOUN];\n  R -> P;\n}",
+    "expected": 925,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  W [lemma = re\"\u00e5.*\"];\n}",
+    "expected": 639,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  M [lemma = resa];\n}",
+    "expected": 24,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  F [lemma <> \",\"];\n  Z [xpos = \"JJ|POS|UTR|SIN|IND|NOM\"];\n  U [];\n  C [upos = re\".*N.*\"];\n  F -[nsubj:pass]-> C;\n  U -> C;\n  C << F;\n  C << U;\n}",
+    "expected": 75,
+    "meta": {
+      "regexes": 1,
+      "tokens": 4,
+      "edges": 2,
+      "permutations": 8
+    }
+  },
+  {
+    "query": "pattern {\n  S [];\n  Z [];\n  V [lemma = \"l\u00e4genhet\"];\n  Z -> V;\n  V << S;\n}",
+    "expected": 802,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  E [lemma <> skola, xpos <> PP, word = minuter];\n}",
+    "expected": 6,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  S [upos <> AUX, word = betalar];\n}",
+    "expected": 13,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  K [lemma = gentemot];\n}",
+    "expected": 5,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  X [upos = PUNCT];\n  I [lemma = re\"n.*\"];\n  I -[punct]-> X;\n}",
+    "expected": 136,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  D [upos <> re\".*N.*\", lemma = \"n\u00e5gon\"];\n}",
+    "expected": 203,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  T [];\n  A [lemma <> efter];\n  A -> T;\n  S [lemma = \"g\u00e5ng\"];\n  A -[re\".*n\"]-> S;\n  A << S;\n}",
+    "expected": 7,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  T [lemma = gammal]|[xpos = MAD];\n  H [word = de];\n}",
+    "expected": 845,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  O [lemma = tolka];\n  J [];\n  J -> O;\n}",
+    "expected": 11,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Q [word = dem];\n}",
+    "expected": 128,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Q [xpos = \"NN|UTR|SIN|DEF|NOM\", lemma = mat];\n}",
+    "expected": 4,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  P [lemma = form];\n  K [];\n  P -> K;\n}",
+    "expected": 383,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  H [lemma = vara];\n  T [word <> re\".*i\"];\n  N [upos <> VERB];\n  N -[nsubj]-> H;\n  N -> T;\n  S [];\n  S << N;\n}",
+    "expected": 66,
+    "meta": {
+      "regexes": 1,
+      "tokens": 4,
+      "edges": 2,
+      "permutations": 12
+    }
+  },
+  {
+    "query": "pattern {\n  X [lemma = sig];\n}",
+    "expected": 693,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  P [word = vardera];\n}",
+    "expected": 5,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  E [lemma = antal];\n}",
+    "expected": 50,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  E [word = \"\u00e4r\", lemma <> re\".*d\"];\n  P [];\n  G [];\n  C [lemma = bilist];\n}",
+    "expected": 462,
+    "meta": {
+      "regexes": 1,
+      "tokens": 4,
+      "edges": 0,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  H [upos <> VERB, lemma = kunna];\n}",
+    "expected": 786,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  L [lemma = re\"n.*\"];\n  T [upos = re\".*O.*\"];\n  L -> T;\n  T << L;\n}",
+    "expected": 542,
+    "meta": {
+      "regexes": 2,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  I [word = \",\"]|[upos = ADP];\n  Q [lemma = \"fastst\u00e4lla\"];\n  U [];\n  U -[re\".*m.*\"]-> Q;\n  H [];\n  H -> I;\n}",
+    "expected": 24,
+    "meta": {
+      "regexes": 1,
+      "tokens": 4,
+      "edges": 2,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  N [word = Med];\n}",
+    "expected": 30,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  U [word <> \"samh\u00e4llets\", lemma = om];\n}",
+    "expected": 753,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  S [word = kanske];\n}",
+    "expected": 70,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  H [xpos <> \"JJ|KOM|UTR/NEU|SIN/PLU|IND/DEF|NOM\"];\n  C [xpos = \"JJ|POS|UTR/NEU|SIN|DEF|NOM\"];\n  C -> H;\n}",
+    "expected": 428,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Y [];\n  Q [];\n  Q -> Y;\n  I [word = re\"K.*\"];\n  Q -> I;\n  I -> Y;\n  I << Q;\n}",
+    "expected": 29,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  K [upos <> NOUN, word = litet];\n}",
+    "expected": 20,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Y [];\n  L [word = eller];\n  L -> Y;\n  L << Y;\n}",
+    "expected": 8,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  A [lemma = \"st\u00e4lla\"];\n  V [];\n  V -> A;\n  F [];\n  V << F;\n}",
+    "expected": 319,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  G [lemma = skola];\n  E [xpos <> PP, word = till, lemma <> re\".*o\"];\n  E << G;\n}",
+    "expected": 9,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  R [lemma = komma];\n}",
+    "expected": 285,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  E [upos <> NOUN];\n  Q [];\n  E -[re\".*m\"]-> Q;\n}",
+    "expected": 929,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  W [xpos <> \"VB|PRS|AKT\"];\n  A [upos = ADP, word = bland];\n  W -> A;\n}",
+    "expected": 68,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  J [];\n  U [lemma = \"u-land\"];\n}",
+    "expected": 896,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  P [xpos = AB, lemma = re\"i.*\"];\n}",
+    "expected": 832,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  U [word = att];\n  E [xpos = \"JJ|KOM|UTR/NEU|SIN/PLU|IND/DEF|NOM\"];\n  U << E;\n}",
+    "expected": 167,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  D [word = praktiska];\n}",
+    "expected": 16,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  G [lemma = re\".*n.*\", xpos = \"JJ|POS|UTR/NEU|PLU|IND/DEF|NOM\"];\n  M [];\n  G -> M;\n  F [];\n  G -> F;\n  M -> F;\n}",
+    "expected": 109,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  P [lemma = \"s\u00e5\", upos = ADV];\n}",
+    "expected": 314,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Q [word = \"v\u00e5r\"]|[lemma = \"gl\u00f6mma\"];\n}",
+    "expected": 57,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Z [upos = SYM];\n}",
+    "expected": 86,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  M [xpos = PP];\n  I [word = \"D\u00e5\"];\n}",
+    "expected": 42,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  L [upos = NOUN, lemma = re\".*i\"];\n}",
+    "expected": 300,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  L [lemma = den];\n  T [upos = ADP];\n  T -[re\".*u.*\"]-> L;\n}",
+    "expected": 2,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  G [xpos = re\".*|.*\"];\n  R [xpos = re\".*O.*\"];\n  F [];\n  F -> G;\n  F << R;\n  N [xpos <> re\"|.*\"];\n  F -[aux]-> N;\n  R << N;\n}",
+    "expected": 33,
+    "meta": {
+      "regexes": 3,
+      "tokens": 4,
+      "edges": 2,
+      "permutations": 4
+    }
+  },
+  {
+    "query": "pattern {\n  X [word = av];\n  N [xpos = \"NN|UTR|SIN|IND|NOM\"];\n  N -> X;\n}",
+    "expected": 586,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  H [lemma = \"g\u00e5\"]|[word = re\".*n\"]|[upos <> PUNCT];\n  F [];\n  H -> F;\n  A [];\n  A -> F;\n  H -[nsubj:pass]-> A;\n}",
+    "expected": 57,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  B [word = \"f\u00f6r\"];\n  O [lemma <> kemisk, xpos <> re\".*N.*\"];\n  B -> O;\n  O << B;\n}",
+    "expected": 21,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  D [xpos = \"JJ|POS|UTR|SIN|IND|NOM\"]|[xpos <> \"NN|UTR|SIN|IND|NOM\", upos = ADP];\n  Y [word = sin, lemma <> \",\"];\n  D << Y;\n  S [xpos = \"VB|INF|AKT\", lemma <> re\".*e.*\"];\n  S << Y;\n}",
+    "expected": 273,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  A [lemma = mellan];\n}",
+    "expected": 170,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  V [word = sig];\n}",
+    "expected": 372,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  B [word = \"ocks\u00e5\"];\n  V [];\n  B -> V;\n}",
+    "expected": 5,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  F [lemma = denna];\n  P [upos = ADV];\n  U [word <> relationer];\n  O [upos = NOUN];\n  P -> O;\n  F << O;\n  W [upos = CCONJ];\n}",
+    "expected": 858,
+    "meta": {
+      "regexes": 0,
+      "tokens": 5,
+      "edges": 1,
+      "permutations": 60
+    }
+  },
+  {
+    "query": "pattern {\n  F [xpos <> \"JJ|POS|NEU|SIN|IND|NOM\", lemma = \"l\u00e4tt\"];\n}",
+    "expected": 39,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  M [xpos <> re\"E.*\", lemma = Indien, word <> re\"n.*\"]|[lemma = under];\n}",
+    "expected": 268,
+    "meta": {
+      "regexes": 2,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  J [];\n  N [upos = re\".*C.*\"];\n  I [xpos = \"HP|NEU|SIN|IND\"];\n  O [word = tid];\n  O -[re\".*o.*\"]-> J;\n}",
+    "expected": 16,
+    "meta": {
+      "regexes": 2,
+      "tokens": 4,
+      "edges": 1,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  I [];\n  F [word = amerikanska];\n  I -> F;\n}",
+    "expected": 16,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Z [lemma = bra];\n}",
+    "expected": 137,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  V [lemma = du];\n  U [];\n  U -> V;\n}",
+    "expected": 655,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  D [lemma = till];\n  R [xpos = re\".*|.*\"];\n  D -> R;\n  P [];\n}",
+    "expected": 216,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  C [xpos = \"HP|-|-|-\"];\n  I [upos = NOUN, xpos = \"NN|NEU|SIN|IND|NOM\"];\n}",
+    "expected": 823,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  D [word = behandlas];\n  Z [lemma = den];\n  I [];\n  D << I;\n}",
+    "expected": 10,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  T [word = \"h\u00e4nder\", upos = NOUN];\n}",
+    "expected": 2,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  E [];\n  L [lemma = \".\"];\n  V [upos <> PRON, word = re\".*r.*\"];\n  E -> V;\n  J [upos = NOUN, lemma <> att];\n  J -> L;\n  J -> V;\n  K [];\n  K -> V;\n}",
+    "expected": 108,
+    "meta": {
+      "regexes": 1,
+      "tokens": 5,
+      "edges": 4,
+      "permutations": 120
+    }
+  },
+  {
+    "query": "pattern {\n  Z [lemma = par];\n}",
+    "expected": 24,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  F [lemma = med];\n  B [upos = ADV];\n  B -> F;\n  Y [];\n}",
+    "expected": 128,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  N [upos = PUNCT];\n  E [];\n  N -> E;\n  F [word = re\"t.*\"];\n}",
+    "expected": 1,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  H [lemma = kvinna];\n}",
+    "expected": 266,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  U [word = inte];\n  S [upos <> PUNCT];\n  S -> U;\n  S << U;\n}",
+    "expected": 445,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  F [];\n  A [lemma = \",\"];\n  Y [];\n  T [lemma = lokal];\n  T -> Y;\n  U [lemma = \"m\u00f6jligen\"];\n  F -> U;\n}",
+    "expected": 76,
+    "meta": {
+      "regexes": 0,
+      "tokens": 5,
+      "edges": 2,
+      "permutations": 120
+    }
+  },
+  {
+    "query": "pattern {\n  I [];\n  Q [xpos = PP];\n  Q -> I;\n}",
+    "expected": 238,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  R [word = kurser];\n  G [lemma = re\".*l.*\"];\n}",
+    "expected": 15,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  F [lemma = re\".*t\"];\n  C [];\n  F -[re\"p.*\"]-> C;\n}",
+    "expected": 531,
+    "meta": {
+      "regexes": 2,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  R [lemma = utveckling];\n}",
+    "expected": 49,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  I [word = andra];\n}",
+    "expected": 204,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  C [upos = DET];\n  R [lemma <> \"f\u00f6r\"];\n  C -> R;\n}",
+    "expected": 112,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  I [word = re\".*s\"];\n  L [lemma = vad];\n  F [word = och];\n}",
+    "expected": 65,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  F [lemma = riskera];\n}",
+    "expected": 6,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  F [upos = AUX, xpos = re\".*R.*\", lemma <> som];\n  V [upos = PRON];\n  F -> V;\n  V << F;\n}",
+    "expected": 8,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  E [lemma = till, word <> om];\n  G [upos = PUNCT, word = \".\"];\n  E << G;\n}",
+    "expected": 941,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  I [word = vid, lemma = vid];\n}",
+    "expected": 233,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  T [word = barnens];\n  Q [xpos <> re\".*N.*\"];\n  Y [];\n  Y -> Q;\n  Y -> T;\n}",
+    "expected": 68,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  F [xpos = \"VB|INF|AKT\"];\n  X [lemma = uppsamlingstank];\n  F -> X;\n  H [];\n  X.upos <> H.upos;\n  H.lemma <> F.lemma;\n}",
+    "expected": 56,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  G [];\n  B [];\n  B << G;\n  E [];\n  E << G;\n  T [];\n  B.lemma = T.lemma;\n}",
+    "expected": 158,
+    "meta": {
+      "regexes": 0,
+      "tokens": 4,
+      "edges": 0,
+      "permutations": 8
+    }
+  },
+  {
+    "query": "pattern {\n  E [lemma = negativ];\n}",
+    "expected": 9,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  V [word = Han];\n}",
+    "expected": 31,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  S [word = De];\n  C [];\n  C -> S;\n  Y [];\n  S -> Y;\n  C -> Y;\n}",
+    "expected": 15,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  S [word = av];\n  Z [];\n  S -> Z;\n}",
+    "expected": 5,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  O [];\n  M [lemma = \"f\u00f6rsta\"];\n  M -[^nsubj:outer]-> O;\n  O << M;\n}",
+    "expected": 26,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Q [word = USA];\n}",
+    "expected": 25,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  I [word = \"inf\u00f6r\", lemma <> i];\n}",
+    "expected": 15,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  D [lemma = re\".*k.*\"];\n  A [upos <> CCONJ];\n  V [];\n  H [];\n  H -[^nmod:poss]-> D;\n  V -[cop]-> H;\n}",
+    "expected": 167,
+    "meta": {
+      "regexes": 1,
+      "tokens": 4,
+      "edges": 2,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  F [];\n  H [upos = NOUN];\n  A [upos = NOUN];\n  A -[re\"d.*\"]-> F;\n  A -[re\".*t.*\"]-> H;\n  T [];\n  F -> T;\n}",
+    "expected": 12,
+    "meta": {
+      "regexes": 2,
+      "tokens": 4,
+      "edges": 3,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  C [xpos = \"JJ|KOM|UTR/NEU|SIN/PLU|IND/DEF|NOM\"];\n}",
+    "expected": 540,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  A [upos = ADJ];\n  R [];\n  A -> R;\n  R.upos = A.upos;\n}",
+    "expected": 984,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  H [xpos = \"PS|UTR/NEU|PLU|DEF\"];\n  L [xpos = \"VB|PRS|AKT\"];\n}",
+    "expected": 319,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  L [lemma = \"\u00f6ppen\"];\n  W [upos <> NOUN];\n  W << L;\n}",
+    "expected": 394,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  O [xpos = \"NN|NEU|PLU|IND|NOM\"];\n  M [];\n  O -[re\".*n\"]-> M;\n}",
+    "expected": 11,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  P [xpos = \"JJ|SUV|UTR/NEU|SIN/PLU|DEF|NOM\"];\n  C [upos = ADJ];\n  C -> P;\n  P << C;\n}",
+    "expected": 10,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Z [word = Eftersom];\n  H [];\n}",
+    "expected": 394,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  V [word = Det];\n  Y [upos = ADJ];\n}",
+    "expected": 777,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  P [lemma = viss];\n}",
+    "expected": 147,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  N [lemma = hus]|[upos = re\".*N\", word = \"s\u00e5dant\"];\n}",
+    "expected": 31,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  X [];\n  C [];\n  C -> X;\n  A [];\n  C -[compound:prt]-> A;\n  A -> X;\n}",
+    "expected": 2,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  B [xpos = re\".*P.*\", word = re\".*t.*\"];\n  N [upos = ADV];\n  N -> B;\n}",
+    "expected": 382,
+    "meta": {
+      "regexes": 2,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Z [xpos = \"NN|UTR|SIN|DEF|GEN\"];\n}",
+    "expected": 427,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  K [word = genom];\n}",
+    "expected": 138,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  N [lemma = \"avg\u00f6ra\"];\n}",
+    "expected": 8,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  J [lemma = bli, word <> \"n\u00e4r\"];\n}",
+    "expected": 363,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  A [word = lag]|[word <> \",\", xpos = HA, lemma = den];\n  M [];\n}",
+    "expected": 238,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  C [upos = CCONJ];\n  D [lemma <> under];\n  C -> D;\n}",
+    "expected": 35,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  X [word = barn, xpos <> KN, lemma <> bra];\n}",
+    "expected": 215,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  M [xpos = re\".*|.*\"];\n  X [xpos = \"NN|UTR|PLU|IND|NOM\"]|[xpos = re\".*S.*\"];\n  Y [lemma = inflytande];\n  X -> Y;\n  R [upos = PRON]|[word = \"f\u00f6rs\u00f6ka\"];\n  Y << R;\n  K [];\n  K << Y;\n  K << M;\n}",
+    "expected": 478,
+    "meta": {
+      "regexes": 2,
+      "tokens": 5,
+      "edges": 1,
+      "permutations": 15
+    }
+  },
+  {
+    "query": "pattern {\n  S [lemma = socialpolitik];\n}",
+    "expected": 22,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  E [lemma = samspel];\n}",
+    "expected": 6,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  P [];\n  J [upos <> VERB];\n  P -[advcl]-> J;\n}",
+    "expected": 349,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  P [word = ringa];\n  G [];\n}",
+    "expected": 374,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  V [lemma = re\".*p.*\", word = re\".*e\"];\n}",
+    "expected": 237,
+    "meta": {
+      "regexes": 2,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  K [];\n  S [lemma = stanna];\n  T [upos = re\".*R.*\"];\n  T -> K;\n}",
+    "expected": 208,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  W [];\n  Y [word = \"\u00e5r\"];\n  Y -> W;\n}",
+    "expected": 755,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  C [word = du];\n}",
+    "expected": 170,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  K [word = inom];\n  B [lemma = till];\n  K -> B;\n  K << B;\n}",
+    "expected": 2,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  E [word = Man];\n}",
+    "expected": 133,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  F [xpos = MAD];\n  Y [];\n  F -> Y;\n}",
+    "expected": 1,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  X [lemma = re\"\u00f6.*\"]|[xpos = \"PC|PRF|UTR/NEU|PLU|IND/DEF|NOM\"];\n}",
+    "expected": 956,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  M [word = re\".*z\"];\n  G [];\n  G -> M;\n}",
+    "expected": 11,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  A [lemma = som];\n  B [];\n  A -> B;\n}",
+    "expected": 124,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Y [lemma = re\".*n\"];\n  X [];\n  X -> Y;\n  M [word = dem];\n  M -> Y;\n  M -> X;\n}",
+    "expected": 6,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  O [xpos <> \"NN|NEU|SIN|IND|GEN\", upos = VERB, lemma = leva];\n}",
+    "expected": 63,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  G [];\n  D [word = utom];\n  G -> D;\n}",
+    "expected": 24,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Y [];\n  Q [upos = ADP];\n  Q -> Y;\n  W [upos = VERB];\n}",
+    "expected": 593,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  I [];\n  N [upos = CCONJ, xpos <> \"JJ|POS|UTR|SIN|IND|NOM\"];\n  I -> N;\n  I << N;\n}",
+    "expected": 261,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  D [lemma <> \"n\u00e4r\", word = dels];\n}",
+    "expected": 17,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  O [word = Sverige];\n}",
+    "expected": 95,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  H [word = re\".*D.*\"];\n  P [];\n  H -[^advmod]-> P;\n  P << H;\n}",
+    "expected": 90,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  A [word = majoriteten];\n}",
+    "expected": 6,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  P [word = \"r\u00e5der\"];\n}",
+    "expected": 13,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  X [];\n  E [lemma = utrymme];\n  I [xpos <> re\".*N.*\"];\n  X -> I;\n}",
+    "expected": 99,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  I [];\n  T [word = \"p\u00e5\"];\n  A [xpos = \"VB|PRS|AKT\"];\n  T -> A;\n}",
+    "expected": 32,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  Y [upos = NOUN];\n  M [];\n  Y -[acl:relcl]-> M;\n}",
+    "expected": 983,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  R [word = ge];\n}",
+    "expected": 70,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  D [upos <> NOUN, lemma = \"f\u00f6rsta\"];\n  L [];\n  D -> L;\n}",
+    "expected": 32,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Z [upos = ADJ, word <> antal];\n  Q [];\n  Z -> Q;\n  A [];\n  Q -[conj]-> A;\n  Z -[^nmod:poss]-> A;\n}",
+    "expected": 522,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  Q [];\n  O [lemma = finna];\n  O -> Q;\n}",
+    "expected": 400,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  K [xpos = \"JJ|POS|UTR/NEU|SIN|DEF|NOM\"];\n  D [upos <> PRON];\n  M [];\n  M -> K;\n  C [xpos = \"VB|SUP|AKT\"];\n  C -> D;\n  H [upos <> ADP];\n  H -> D;\n  M -> H;\n}",
+    "expected": 4,
+    "meta": {
+      "regexes": 0,
+      "tokens": 5,
+      "edges": 4,
+      "permutations": 120
+    }
+  },
+  {
+    "query": "pattern {\n  F [upos = NOUN, word = re\"r.*\"];\n}",
+    "expected": 786,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  W [xpos = \"PC|PRF|UTR|SIN|IND|NOM\", upos = VERB];\n}",
+    "expected": 21,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  V [];\n  B [];\n  N [lemma = sig, upos <> PUNCT];\n  N -> V;\n  T [upos = ADJ];\n  A [lemma = \"ocks\u00e5\"];\n}",
+    "expected": 104,
+    "meta": {
+      "regexes": 0,
+      "tokens": 5,
+      "edges": 1,
+      "permutations": 120
+    }
+  },
+  {
+    "query": "pattern {\n  O [];\n  C [word = re\".*n.*\", lemma = vara];\n  O -> C;\n}",
+    "expected": 6,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  A [xpos = re\".*O.*\"];\n  U [lemma = ge];\n  U -[re\".*c.*\"]-> A;\n  I [];\n  I << U;\n}",
+    "expected": 250,
+    "meta": {
+      "regexes": 2,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  D [lemma <> om];\n  B [word <> \"p\u00e5\"];\n  B -[^det]-> D;\n  C [lemma = olik];\n  C -> B;\n  C -> D;\n}",
+    "expected": 8,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  L [lemma = re\".*s.*\", xpos = \"JJ|POS|UTR/NEU|PLU|IND/DEF|NOM\"];\n}",
+    "expected": 770,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  G [lemma = 31, xpos = re\"R.*\"];\n  I [xpos <> \"NN|UTR|SIN|IND|NOM\"];\n}",
+    "expected": 88,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  T [lemma = annan];\n  M [];\n  M -> T;\n  T << M;\n}",
+    "expected": 524,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  L [word = band];\n}",
+    "expected": 8,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  F [lemma = \"\u00f6ka\"];\n  K [xpos = PP];\n  F -[re\".*m.*\"]-> K;\n}",
+    "expected": 8,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Q [];\n  C [lemma = re\".*e.*\", word = deras, upos = PRON];\n  Q -> C;\n}",
+    "expected": 144,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  M [xpos = HA];\n}",
+    "expected": 728,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  B [lemma <> genom];\n  K [word = hela]|[lemma = vara];\n  K -> B;\n}",
+    "expected": 391,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  X [];\n  E [lemma = hand];\n  E -> X;\n}",
+    "expected": 115,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  W [lemma = \"!\"];\n}",
+    "expected": 44,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  U [word = ansvaret];\n}",
+    "expected": 11,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  G [word = helst];\n}",
+    "expected": 26,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  N [word = \"m\u00e5nga\"];\n}",
+    "expected": 113,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  D [xpos = \"PN|UTR|PLU|DEF|SUB\"];\n  S [];\n  D -> S;\n}",
+    "expected": 33,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Y [xpos = \"NN|NEU|SIN|IND|NOM\"];\n  U [lemma = re\".*a\"];\n  U -> Y;\n  I [];\n  Y -> I;\n  U -> I;\n  I << Y;\n}",
+    "expected": 84,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  Z [lemma = \".\"];\n  V [];\n  Z -> V;\n  Z.lemma <> V.lemma;\n  V << Z;\n}",
+    "expected": 1,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  M [word = \"fr\u00e5n\"];\n  C [];\n  M -> C;\n}",
+    "expected": 14,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  R [word = flera];\n  L [word <> \".\"]|[xpos <> \"PN|UTR/NEU|SIN/PLU|DEF|OBJ\", lemma <> bara];\n  J [lemma = av];\n  L -> J;\n  E [word = re\".*s.*\", lemma <> re\"i.*\"];\n}",
+    "expected": 220,
+    "meta": {
+      "regexes": 2,
+      "tokens": 4,
+      "edges": 1,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  J [word = inte]|[lemma = ekonomisk, xpos = MAD];\n}",
+    "expected": 704,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  E [];\n  Z [];\n  N [xpos = re\".*S\"];\n  Y [word <> re\".*n.*\"];\n  O [word = exempel];\n  Z -> O;\n  O -> E;\n}",
+    "expected": 684,
+    "meta": {
+      "regexes": 2,
+      "tokens": 5,
+      "edges": 2,
+      "permutations": 120
+    }
+  },
+  {
+    "query": "pattern {\n  T [lemma = re\".*i.*\"];\n  R [xpos = \"PC|PRS|UTR/NEU|SIN/PLU|IND/DEF|NOM\"];\n  R -> T;\n  T << R;\n}",
+    "expected": 129,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  A [lemma = och];\n  Z [lemma = re\"n.*\", xpos = \"VB|INF|SFO\"]|[upos = CCONJ]|[lemma = kolla];\n  Z -> A;\n}",
+    "expected": 4,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  V [lemma = \"-\"];\n  L [xpos = AB];\n}",
+    "expected": 657,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  U [];\n  B [word = mot];\n  U -> B;\n  U << B;\n}",
+    "expected": 2,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  V [];\n  K [word = ha];\n  V -> K;\n}",
+    "expected": 193,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  B [word = re\".*r\", xpos <> \"NN|UTR|SIN|IND|NOM\"];\n  Y [word = \"f\u00e5r\"];\n  Y -> B;\n}",
+    "expected": 173,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  M [];\n  I [lemma = den];\n  I -> M;\n  M << I;\n}",
+    "expected": 185,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  I [upos = VERB];\n  W [word = \"sv\u00e5rare\"];\n}",
+    "expected": 36,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  X [upos = NOUN];\n  A [xpos = \"PN|NEU|SIN|DEF|SUB/OBJ\"];\n  A -[nsubj]-> X;\n}",
+    "expected": 9,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  O [upos = PRON, xpos <> re\".*|.*\"];\n}",
+    "expected": 3,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  D [word = om];\n}",
+    "expected": 655,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  M [];\n  J [xpos = MID]|[upos = CCONJ];\n  R [];\n  K [];\n}",
+    "expected": 336,
+    "meta": {
+      "regexes": 0,
+      "tokens": 4,
+      "edges": 0,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  E [lemma = \"f\u00f6r\"];\n  R [];\n  R -[re\"o.*\"]-> E;\n}",
+    "expected": 6,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  S [lemma = doktor];\n}",
+    "expected": 31,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  W [];\n  F [];\n  R [lemma = re\"i.*\"];\n  W -[nmod:poss]-> R;\n}",
+    "expected": 418,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  A [lemma = du];\n}",
+    "expected": 306,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  C [];\n  E [lemma = re\"o.*\", upos = NOUN]|[lemma = re\"t.*\"];\n  C -> E;\n  V [];\n  V -> E;\n}",
+    "expected": 943,
+    "meta": {
+      "regexes": 2,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  O [word = av];\n  X [lemma = bil];\n}",
+    "expected": 9,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  V [xpos = AB, upos = NOUN]|[upos = PART, word = re\".*a\"];\n}",
+    "expected": 3,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  C [];\n  G [word = \"milit\u00e4ra\"];\n  D [];\n  C -> D;\n}",
+    "expected": 187,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  P [word = annat];\n}",
+    "expected": 52,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Q [];\n  Y [xpos = \"NN|NEU|SIN|IND|NOM\"];\n  Q -[re\".*c.*\"]-> Y;\n}",
+    "expected": 925,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  V [xpos = \"PC|PRF|UTR|SIN|IND|NOM\"];\n  T [lemma = \"p\u00e5\"];\n}",
+    "expected": 92,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  T [word = adresskort];\n}",
+    "expected": 5,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  C [];\n  K [xpos = re\".*I.*\"]|[lemma = av];\n  C -> K;\n  C.lemma = K.lemma;\n}",
+    "expected": 285,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  D [lemma = \"r\u00e4ttighet\"];\n  B [lemma = den];\n  O [lemma = \",\", xpos <> \"VB|INF|AKT\"];\n}",
+    "expected": 17,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  K [lemma = \"f\u00f6rb\u00e4ttring\"];\n}",
+    "expected": 9,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  P [lemma = re\".*o\"];\n}",
+    "expected": 318,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  P [upos <> re\".*V\", xpos = \"HP|NEU|SIN|IND\"];\n}",
+    "expected": 157,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  I [xpos = re\".*L.*\", lemma = re\".*e.*\", upos = ADP];\n}",
+    "expected": 79,
+    "meta": {
+      "regexes": 2,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  G [upos = NOUN];\n  F [lemma = erbjuda];\n  F -[^case]-> G;\n}",
+    "expected": 56,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  H [];\n  M [word = de];\n  U [word = \"t\u00e4nkt\"];\n  H -> U;\n}",
+    "expected": 2,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  Y [];\n  A [upos = VERB];\n  H [upos = re\"C.*\"];\n  B [];\n  W [];\n}",
+    "expected": 210,
+    "meta": {
+      "regexes": 1,
+      "tokens": 5,
+      "edges": 0,
+      "permutations": 120
+    }
+  },
+  {
+    "query": "pattern {\n  Y [word = re\".*j\"];\n}",
+    "expected": 85,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  C [];\n  W [];\n  C -[re\"c.*\"]-> W;\n  Z [upos = ADJ];\n  W -> Z;\n  C -> Z;\n}",
+    "expected": 52,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  N [word <> \",\", lemma = \"l\u00e5g\"];\n  S [];\n  N -> S;\n}",
+    "expected": 88,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  C [word = statliga];\n  U [];\n}",
+    "expected": 318,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  P [];\n  N [];\n  R [lemma = motiv]|[xpos = \"JJ|POS|UTR|SIN|IND|NOM\", lemma = men]|[xpos = \"VB|INF|SFO\", upos = ADP];\n  P -> R;\n  Q [xpos = \"VB|PRS|AKT\"];\n  P -> Q;\n}",
+    "expected": 392,
+    "meta": {
+      "regexes": 0,
+      "tokens": 4,
+      "edges": 2,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  A [];\n  S [word = dig];\n  A -> S;\n  S << A;\n}",
+    "expected": 6,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  W [xpos <> \"AB|POS\"];\n  X [lemma = yttre];\n  W << X;\n}",
+    "expected": 202,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  C [];\n  A [word = \"k\u00e4nner\", lemma = re\".*a\"];\n}",
+    "expected": 566,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Q [upos = ADJ];\n  J [lemma = stor];\n  G [upos = re\".*S.*\", word = re\".*r.*\"];\n  M [];\n  M.lemma = G.lemma;\n}",
+    "expected": 2,
+    "meta": {
+      "regexes": 2,
+      "tokens": 4,
+      "edges": 0,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  E [word = \"d\u00e4rf\u00f6r\"];\n}",
+    "expected": 74,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  V [word = \"\u00e5rs\"];\n}",
+    "expected": 21,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  F [word = jag];\n}",
+    "expected": 53,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  S [word = \"\u00e5t\"];\n  B [];\n  A [upos = NOUN];\n  A -> S;\n  B << A;\n}",
+    "expected": 926,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  X [];\n  A [];\n  A -[compound:prt]-> X;\n  A << X;\n}",
+    "expected": 800,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  M [word = oss];\n  L [xpos = \"JJ|POS|UTR|SIN|IND|NOM\"];\n  M << L;\n  V [];\n}",
+    "expected": 435,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  C [lemma = \"ungef\u00e4r\"];\n}",
+    "expected": 33,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  L [xpos = re\".*I.*\", word = re\".*a.*\"];\n  O [upos = ADJ];\n  O.lemma = L.lemma;\n  O << L;\n}",
+    "expected": 146,
+    "meta": {
+      "regexes": 2,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  P [word = skall, upos = VERB];\n}",
+    "expected": 3,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  U [];\n  Y [];\n  M [xpos = MAD];\n  M -> U;\n  Y << M;\n}",
+    "expected": 21,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  I [word = \"f\u00f6r\"];\n  X [lemma = professor];\n  Y [word = en];\n}",
+    "expected": 2,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  E [lemma = anslutning];\n}",
+    "expected": 7,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  X [upos = NOUN];\n  D [word = dem];\n  D -> X;\n}",
+    "expected": 5,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Y [];\n  E [word = det];\n  Y -> E;\n  A [xpos = \"VB|PRS|AKT\"];\n  A -> E;\n  Y -> A;\n}",
+    "expected": 16,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  Q [upos = ADP];\n  C [];\n  Q -[^conj]-> C;\n}",
+    "expected": 229,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  A [];\n  I [];\n  S [word = \".\"];\n  S -> I;\n  O [word = och];\n}",
+    "expected": 20,
+    "meta": {
+      "regexes": 0,
+      "tokens": 4,
+      "edges": 1,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  P [word = \"P\u00e5\"];\n}",
+    "expected": 83,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  D [word = enbart];\n}",
+    "expected": 17,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  C [];\n  K [upos <> ADJ, lemma = redan];\n  C -> K;\n}",
+    "expected": 108,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  B [word = re\".*l.*\"];\n  W [xpos <> \"JJ|POS|UTR|SIN|IND|NOM\"];\n  B -[nmod:poss]-> W;\n}",
+    "expected": 676,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  X [];\n  N [];\n  N -[parataxis]-> X;\n  N.xpos <> X.xpos;\n}",
+    "expected": 331,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  G [lemma = \"f\u00e5\"];\n  L [];\n  L -> G;\n  G << L;\n}",
+    "expected": 306,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  M [lemma = vid];\n}",
+    "expected": 276,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  G [word = \"Ocks\u00e5\"];\n  B [];\n  G << B;\n}",
+    "expected": 248,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Z [];\n  X [upos = re\"D.*\"];\n  X -> Z;\n  F [upos = ADP];\n}",
+    "expected": 276,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  Q [lemma = \"s\u00e5\"];\n}",
+    "expected": 333,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  M [];\n  D [lemma = de, xpos <> \"PM|NOM\"];\n  D -> M;\n  U [];\n  D -> U;\n  D << U;\n}",
+    "expected": 827,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  O [xpos = \"PN|UTR/NEU|SIN/PLU|DEF|OBJ\"];\n  T [lemma <> \"s\u00e4ga\"];\n  T -> O;\n}",
+    "expected": 812,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  N [];\n  I [word = \"tj\u00e4nster\"];\n  I << N;\n}",
+    "expected": 35,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  A [lemma = skaffa];\n  N [];\n  A -> N;\n}",
+    "expected": 149,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Z [xpos = \"DT|UTR|SIN|DEF\"];\n}",
+    "expected": 952,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  D [lemma = \"h\u00e5lla\"];\n}",
+    "expected": 72,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  W [word = upp];\n}",
+    "expected": 94,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  E [upos = NOUN];\n  C [word = \"d\u00e4r\"];\n}",
+    "expected": 985,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  X [word <> \"\u00e4n\", lemma = sig];\n}",
+    "expected": 693,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  P [];\n  G [];\n  I [upos = SCONJ];\n  I -> P;\n}",
+    "expected": 772,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  G [lemma = all];\n}",
+    "expected": 249,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Y [xpos = \"JJ|POS|UTR/NEU|SIN|DEF|NOM\"];\n  T [word = ha, upos = VERB];\n}",
+    "expected": 19,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  O [lemma = hel];\n}",
+    "expected": 97,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  C [xpos = \"NN|UTR|PLU|DEF|NOM\"];\n  P [xpos = re\".*O\"];\n  H [xpos <> \"VB|PRS|AKT\", upos = VERB, word = re\".*i\"];\n}",
+    "expected": 5,
+    "meta": {
+      "regexes": 2,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  H [];\n  R [word = re\".*e\", upos = ADJ];\n  H -> R;\n  A [upos <> PUNCT];\n  A -> R;\n}",
+    "expected": 395,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  H [];\n  U [upos = ADJ];\n  U -[case]-> H;\n  U << H;\n}",
+    "expected": 2,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Z [];\n  S [lemma = vara];\n  Z -> S;\n  Z.lemma = S.lemma;\n}",
+    "expected": 4,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  T [];\n  B [xpos = SN, lemma = re\"e.*\"]|[upos = ADP, lemma = betingelse];\n  B -> T;\n  T << B;\n}",
+    "expected": 2,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  P [lemma = den];\n  H [xpos = \"VB|PRS|AKT\", word <> \"energik\u00e4llorna\"];\n  H -> P;\n  C [];\n  C -> H;\n  C -[nsubj]-> P;\n}",
+    "expected": 18,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  V [xpos = \"PN|UTR|SIN|DEF|SUB\"];\n  Q [word = \"D\u00e4rf\u00f6r\"];\n}",
+    "expected": 2,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  X [word = under];\n}",
+    "expected": 212,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  C [word = vara, xpos = re\".*U.*\"];\n}",
+    "expected": 7,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  H [upos <> ADP];\n  G [word = skolan];\n  H << G;\n}",
+    "expected": 362,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Q [upos = ADP];\n  O [upos <> ADP];\n  Q -> O;\n  W [];\n  Q -> W;\n}",
+    "expected": 320,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  C [lemma = \"hj\u00e4lp\"];\n}",
+    "expected": 47,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  J [];\n  I [];\n  J -[re\".*d\"]-> I;\n  B [xpos = \"NN|UTR|PLU|IND|NOM\"]|[word <> det]|[word = \"\u00e4ktenskap\"];\n  B -> I;\n  J -[re\"a.*\"]-> B;\n}",
+    "expected": 297,
+    "meta": {
+      "regexes": 2,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  H [xpos = re\".*-\"];\n  P [xpos = \"PN|UTR|SIN|DEF|SUB/OBJ\"];\n  L [];\n  Y [xpos <> \"JJ|POS|UTR/NEU|PLU|IND/DEF|NOM\"];\n  Y -[^case]-> H;\n  Y -[re\".*p.*\"]-> P;\n}",
+    "expected": 115,
+    "meta": {
+      "regexes": 2,
+      "tokens": 4,
+      "edges": 2,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  U [word <> re\".*a.*\", upos = VERB];\n  Q [lemma = som];\n  Z [];\n  R [];\n  Z -[mark]-> R;\n  R << U;\n}",
+    "expected": 979,
+    "meta": {
+      "regexes": 1,
+      "tokens": 4,
+      "edges": 1,
+      "permutations": 12
+    }
+  },
+  {
+    "query": "pattern {\n  O [word <> dessutom];\n  L [upos <> VERB];\n  O -[nmod:poss]-> L;\n  O << L;\n}",
+    "expected": 7,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  G [upos = ADV];\n  I [lemma = huvud];\n  D [];\n}",
+    "expected": 537,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  J [upos = ADV];\n  K [];\n  J -> K;\n  D [];\n  J -> D;\n  K -> D;\n}",
+    "expected": 97,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  X [word = re\".*s\"];\n  K [];\n  K -[obl]-> X;\n}",
+    "expected": 130,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Q [word = vare];\n}",
+    "expected": 9,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  G [lemma = kunna];\n}",
+    "expected": 799,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  E [xpos = \"VB|IMP|AKT\"];\n}",
+    "expected": 196,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  W [lemma = \"sv\u00e5r\"];\n}",
+    "expected": 70,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  V [word = \"f\u00e5r\"];\n  J [];\n  J -> V;\n}",
+    "expected": 279,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  V [];\n  E [lemma = sig];\n  V << E;\n  B [word = per];\n}",
+    "expected": 62,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  J [word = \"s\u00e4rskilt\"];\n}",
+    "expected": 47,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  G [word = \"v\u00e5rt\"];\n}",
+    "expected": 31,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  C [upos = re\".*P\"];\n  E [];\n  C -> E;\n}",
+    "expected": 246,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Y [lemma = ena, upos <> AUX];\n}",
+    "expected": 24,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  K [xpos = \"NN|UTR|SIN|DEF|NOM\"];\n  D [];\n  K -> D;\n  W [upos = ADV, lemma <> i];\n  D -> W;\n  K.word <> W.word;\n  D << W;\n}",
+    "expected": 166,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  D [lemma = \"f\u00f6r\", word <> \"f\u00f6r\"];\n  B [];\n  D -> B;\n}",
+    "expected": 18,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  A [lemma = om];\n  Y [xpos = \"NN|NEU|SIN|IND|NOM\"];\n  J [];\n  J -> A;\n}",
+    "expected": 950,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  S [word = hand];\n}",
+    "expected": 43,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  J [word = 18];\n  R [lemma <> sak];\n  F [upos = PUNCT];\n}",
+    "expected": 228,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  Y [xpos = re\".*O\", upos = re\".*O.*\"];\n}",
+    "expected": 32,
+    "meta": {
+      "regexes": 2,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  R [];\n  H [lemma = fram];\n  H -> R;\n  H << R;\n}",
+    "expected": 54,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Q [];\n  H [];\n  H -[nsubj:pass]-> Q;\n  H << Q;\n  Y [lemma = som, xpos = re\"P.*\"]|[upos = NOUN];\n}",
+    "expected": 896,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 3
+    }
+  },
+  {
+    "query": "pattern {\n  M [xpos = \"NN|NEU|SIN|DEF|GEN\"];\n}",
+    "expected": 169,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  G [word = av]|[lemma = vara]|[xpos = \"PS|UTR/NEU|SIN/PLU|DEF\"];\n  A [lemma = re\".*d.*\"];\n  A -> G;\n  A << G;\n}",
+    "expected": 140,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  T [word = \"\u00f6ver\"];\n}",
+    "expected": 92,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  I [];\n  Y [lemma = kvinnlig];\n}",
+    "expected": 409,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Y [xpos <> \"NN|UTR|SIN|IND|NOM\", upos <> AUX];\n  M [word = gemensam];\n  E [];\n  G [word = De, upos = re\".*E.*\"];\n}",
+    "expected": 25,
+    "meta": {
+      "regexes": 1,
+      "tokens": 4,
+      "edges": 0,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  E [upos <> SCONJ, lemma = en];\n  X [lemma = transportera];\n  W [upos = PUNCT];\n}",
+    "expected": 1,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  V [lemma = \"ocks\u00e5\"]|[lemma = re\".*o\"]|[xpos = PP, lemma = delta];\n}",
+    "expected": 642,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  V [xpos = \"AB|SUV\"];\n  O [xpos = \"JJ|KOM|UTR/NEU|SIN/PLU|IND/DEF|NOM\"];\n  P [upos = NOUN, word = \".\"]|[lemma = \"l\u00e4genhet\", upos = NOUN];\n  T [];\n  Y [];\n}",
+    "expected": 342,
+    "meta": {
+      "regexes": 0,
+      "tokens": 5,
+      "edges": 0,
+      "permutations": 120
+    }
+  },
+  {
+    "query": "pattern {\n  I [word = \"F\u00f6r\"];\n}",
+    "expected": 113,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  B [];\n  Q [xpos = \"VB|PRS|AKT\", lemma = \"t\u00e4nka\"];\n  Q -> B;\n}",
+    "expected": 95,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  B [word = inom];\n}",
+    "expected": 111,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  S [lemma = \"l\u00e5ng\"]|[upos = ADV, word <> \".\"];\n  K [word = driver];\n}",
+    "expected": 9,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  D [word = vi];\n  X [];\n  D -[advmod]-> X;\n}",
+    "expected": 2,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  B [xpos = \"NN|UTR|SIN|DEF|NOM\", word = situationen];\n}",
+    "expected": 12,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  L [word = Danmark];\n}",
+    "expected": 13,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  P [];\n  D [upos = ADV];\n  P -> D;\n  M [];\n  M -> D;\n  P -[^amod]-> M;\n}",
+    "expected": 579,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  M [];\n  R [word = den, upos = PRON];\n  R -> M;\n}",
+    "expected": 233,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  U [lemma = re\"u.*\"];\n  N [xpos = MAD];\n  U -> N;\n}",
+    "expected": 596,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Y [];\n  A [lemma = re\".*i\"];\n  D [];\n  H [xpos <> PP];\n}",
+    "expected": 252,
+    "meta": {
+      "regexes": 1,
+      "tokens": 4,
+      "edges": 0,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  T [];\n  C [upos <> NOUN, word = 1];\n  T << C;\n}",
+    "expected": 523,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  X [word = mannen];\n}",
+    "expected": 45,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  V [xpos = \"DT|NEU|SIN|IND\"];\n  L [];\n  C [upos <> PRON, word = finns];\n  Y [xpos = AB];\n}",
+    "expected": 761,
+    "meta": {
+      "regexes": 0,
+      "tokens": 4,
+      "edges": 0,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  T [word = var];\n}",
+    "expected": 173,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  H [upos = DET]|[word = till]|[word = re\"o.*\"];\n  O [word = re\".*\u00f6\", xpos = \"DT|UTR|SIN|DEF\"]|[lemma = flyttning];\n  D [];\n  H -> D;\n}",
+    "expected": 14,
+    "meta": {
+      "regexes": 2,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  R [xpos = \"PN|UTR/NEU|PLU|DEF|SUB\"];\n}",
+    "expected": 385,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  D [xpos = MID];\n  Q [xpos = re\"I.*\"];\n  D << Q;\n}",
+    "expected": 598,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  M [word = grupper];\n}",
+    "expected": 26,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  P [];\n  R [word = inte];\n  R -> P;\n  P << R;\n}",
+    "expected": 17,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  C [xpos = \"HP|NEU|SIN|IND\"];\n}",
+    "expected": 157,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  K [xpos = \"NN|AN\"];\n}",
+    "expected": 330,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  H [word = Eftersom];\n}",
+    "expected": 18,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  B [word = om, upos = re\".*J.*\"];\n  A [xpos = MAD];\n}",
+    "expected": 245,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  W [lemma = Lund];\n}",
+    "expected": 11,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  D [xpos = MID, word = Alla]|[lemma = om];\n}",
+    "expected": 753,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  C [word = En];\n}",
+    "expected": 163,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  F [lemma = \"h\u00e4nda\"];\n}",
+    "expected": 17,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Y [lemma = acceptera];\n}",
+    "expected": 18,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  R [xpos = \"JJ|KOM|SIN/PLU|IND/DEF|NOM\"];\n}",
+    "expected": 5,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  R [];\n  V [lemma = \"unders\u00f6kning\"];\n  R -[^advmod]-> V;\n  V << R;\n}",
+    "expected": 65,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  N [lemma = re\".*\u00e4\"];\n}",
+    "expected": 5,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Z [lemma = behov];\n}",
+    "expected": 37,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  K [];\n  E [lemma = till];\n  E -> K;\n}",
+    "expected": 35,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Q [lemma <> och, upos = re\".*V.*\"];\n  I [upos = re\".*R.*\", word = re\".*u\"];\n  Q -[nsubj:pass]-> I;\n}",
+    "expected": 5,
+    "meta": {
+      "regexes": 3,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  W [lemma <> kanske, word = gjort];\n}",
+    "expected": 21,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  M [word = de];\n}",
+    "expected": 806,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  R [upos = ADV];\n  D [lemma = ena];\n  M [];\n}",
+    "expected": 784,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 0,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  H [word = liv];\n  J [word = att];\n}",
+    "expected": 17,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  V [word = ca];\n}",
+    "expected": 52,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  D [lemma = \"\u00e4ven\"];\n}",
+    "expected": 117,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  I [lemma = \"s\u00e4rskild\"];\n}",
+    "expected": 47,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  L [lemma = \"arbetsf\u00f6rdelning\"];\n}",
+    "expected": 10,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  A [];\n  V [word <> \".\"];\n  V -> A;\n  Z [];\n  Z -> A;\n  Z -[nsubj]-> V;\n}",
+    "expected": 786,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  M [];\n  R [lemma = \"r\u00f6str\u00e4tt\"];\n  R -[^obj]-> M;\n}",
+    "expected": 49,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  P [lemma = re\"\u00e4.*\"];\n}",
+    "expected": 846,
+    "meta": {
+      "regexes": 1,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  I [word = stora];\n}",
+    "expected": 99,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  D [word = bilen];\n}",
+    "expected": 21,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  B [word = ensamma];\n  E [word <> i];\n}",
+    "expected": 381,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 0,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  C [word = vi];\n}",
+    "expected": 247,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  W [xpos <> \"DT|UTR/NEU|PLU|IND/DEF\", word = posten];\n}",
+    "expected": 10,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  V [lemma = paket];\n}",
+    "expected": 16,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  P [lemma = \"h\u00f6jd\"];\n  L [];\n  P -> L;\n}",
+    "expected": 16,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  B [xpos = \"AB|AN\"];\n}",
+    "expected": 442,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  W [word = helt];\n  A [lemma = re\".*n.*\", upos = re\".*U.*\", word = re\".*e.*\"];\n  W -> A;\n}",
+    "expected": 2,
+    "meta": {
+      "regexes": 3,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  J [upos = CCONJ, word = \"F\u00f6r\"];\n}",
+    "expected": 5,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  S [];\n  O [word = \"\u00e4n\"];\n  S -> O;\n  F [xpos = \"NN|UTR|PLU|IND|NOM\"];\n  S -> F;\n}",
+    "expected": 44,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 2,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  Y [word = ensamma];\n}",
+    "expected": 13,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  O [];\n  Q [];\n  Q -[nsubj:pass]-> O;\n  J [];\n  Q -[^nsubj:pass]-> J;\n  O -> J;\n}",
+    "expected": 114,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  R [word = \"h\u00f6gt\"];\n}",
+    "expected": 12,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  Y [lemma = procent];\n}",
+    "expected": 170,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  C [];\n  X [xpos = PP];\n  C -[compound:prt]-> X;\n}",
+    "expected": 3,
+    "meta": {
+      "regexes": 0,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 2
+    }
+  },
+  {
+    "query": "pattern {\n  Q [upos = PRON, word = re\".*d.*\"];\n  R [];\n  Q -[obl]-> R;\n  Q << R;\n}",
+    "expected": 7,
+    "meta": {
+      "regexes": 1,
+      "tokens": 2,
+      "edges": 1,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  X [word = Till];\n}",
+    "expected": 30,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  X [word = \"unders\u00f6kning\"]|[word = \"?\"];\n}",
+    "expected": 325,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  L [word = kostnaderna];\n}",
+    "expected": 7,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  C [];\n  W [];\n  L [];\n  A [];\n  A.lemma = W.lemma;\n}",
+    "expected": 364,
+    "meta": {
+      "regexes": 0,
+      "tokens": 4,
+      "edges": 0,
+      "permutations": 24
+    }
+  },
+  {
+    "query": "pattern {\n  D [upos = re\".*N.*\"];\n  Z [word = \"p\u00e5\"];\n  D -[^acl:relcl]-> Z;\n  X [lemma = bli];\n}",
+    "expected": 144,
+    "meta": {
+      "regexes": 1,
+      "tokens": 3,
+      "edges": 1,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  G [upos = NOUN];\n  H [];\n  G -> H;\n  Z [xpos = \"PN|UTR|SIN|DEF|SUB/OBJ\"];\n  Z -> H;\n  Z -> G;\n}",
+    "expected": 14,
+    "meta": {
+      "regexes": 0,
+      "tokens": 3,
+      "edges": 3,
+      "permutations": 6
+    }
+  },
+  {
+    "query": "pattern {\n  B [lemma = vad];\n}",
+    "expected": 128,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  },
+  {
+    "query": "pattern {\n  P [upos <> NOUN, xpos <> \"NN|NEU|PLU|DEF|NOM\", word = Till];\n}",
+    "expected": 30,
+    "meta": {
+      "regexes": 0,
+      "tokens": 1,
+      "edges": 0,
+      "permutations": 1
+    }
+  }
+]
