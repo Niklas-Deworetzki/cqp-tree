@@ -31,7 +31,7 @@
                             {% if cfg.homepage %}
                             <a href="{{ cfg.homepage }}">
                                 {% endif %}
-                                <img src="{{ url_for('branding') }}" alt="Institution logo"
+                                <img src=".{{ url_for('branding') }}" alt="Institution logo"
                                     class="d-none d-sm-inline me-2"
                                     style="height: 4rem; width: 7rem; object-fit: contain;">
                                 {% if cfg.homepage %}
@@ -45,9 +45,9 @@
                                 CQP/Tree
                             </span>
                             <span class="fs-6 text-muted d-block">
-                                Syntactic queries for 
-                                {% if cfg.system_name != "corpus"%} 
-                                {{ cfg.system_name }} 
+                                Syntactic queries for
+                                {% if cfg.system_name != "corpus"%}
+                                {{ cfg.system_name }}
                                 {% else %}
                                 large-scale corpora
                                 {% endif %}
@@ -55,19 +55,15 @@
                         </div>
 
                         <div class="me-1">
-                            <a title="Show information about this tool"
-                               class="btn btn-outline-secondary"
-                               href="{{ url_for('about') }}"
-                               target="_blank"
-                               rel="noopener noreferrer">
+                            <a title="Show information about this tool" class="btn btn-outline-secondary"
+                                href=".{{ url_for('about') }}" target="_blank" rel="noopener noreferrer">
                                 <i class="bi bi-info"></i>
                             </a>
                         </div>
 
                         <div class="dropdown">
-                            <button title="Open the settings menu"
-                                    class="btn btn-outline-secondary" type="button" data-bs-toggle="dropdown"
-                                data-bs-auto-close="outside">
+                            <button title="Open the settings menu" class="btn btn-outline-secondary" type="button"
+                                data-bs-toggle="dropdown" data-bs-auto-close="outside">
                                 <i class="bi bi-gear"></i>
                             </button>
 
@@ -89,11 +85,10 @@
                 {% if corpus_configs | length > 1 %}
                 <div class="mb-3">
                     <label for="corpora-select" class="form-label">Corpus:</label>
-                    <select id="corpora-select" class="form-select"
-                        onchange="populateSettingsFromDropdown(this)">
+                    <select id="corpora-select" class="form-select" onchange="populateSettingsFromDropdown(this)">
                         {% for preconfigured_corpus in corpus_configs %}
-                        <option value="{{ preconfigured_corpus.corpus_id }}"
-                            {% if preconfigured_corpus.preselected %} selected {% endif %}>
+                        <option value="{{ preconfigured_corpus.corpus_id }}" {% if preconfigured_corpus.preselected %}
+                            selected {% endif %}>
                             {{ preconfigured_corpus.display_name }}
                         </option>
                         {% endfor %}
@@ -104,7 +99,7 @@
                 <!-- QUERY INPUT -->
                 <div class="mb-3 position-relative">
                     <label for="query-input-field" class="form-label">
-                        Your query (click <a href="{{ url_for('about') }}" target="_blank">here</a> for examples):
+                        Your query (click <a href=".{{ url_for('about') }}" target="_blank">here</a> for examples):
                     </label>
                     <textarea id="query-input-field" class="form-control font-monospace border" rows="5"
                         placeholder="Write your query here..."></textarea>
@@ -161,7 +156,8 @@
                 <!-- RUN ON CORPUS INTEGRATION -->
                 <div id="translation-result-area" class="mb-3 fade">
                     <div class="mb-3 d-grid col-md-10 mx-auto">
-                        <a id="run-on-korp-link" class="btn btn-outline-primary" target="_blank" rel="noopener noreferrer">
+                        <a id="run-on-korp-link" class="btn btn-outline-primary" target="_blank"
+                            rel="noopener noreferrer">
                             Run on {{ cfg.system_name }}
                         </a>
                     </div>
@@ -171,15 +167,9 @@
                             <label for="external-search-url" class="form-label mb-0">
                                 ...or another corpus
                             </label>
-                            <input
-                                type="text"
-                                id="external-search-url"
-                                class="form-control w-25"
+                            <input type="text" id="external-search-url" class="form-control w-25"
                                 placeholder="corpus url">
-                            <button
-                                type="button"
-                                id="run-external-search"
-                                class="btn btn-outline-primary">
+                            <button type="button" id="run-external-search" class="btn btn-outline-primary">
                                 Run
                             </button>
                         </div>
@@ -196,7 +186,7 @@
                         </a>
                     </div>
                     <div class="container">
-                        If you use this tool in your research, please cite 
+                        If you use this tool in your research, please cite
                         <a href="https://lrec.elra.info/lrec2026-main-914"> <!--replaced with anthology link?-->
                             this paper
                         </a>
@@ -356,7 +346,7 @@
                 request['translator'] = translator
             }
 
-            fetch('{{ url_for("translate") }}', {
+            fetch('.{{ url_for("translate") }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -399,7 +389,7 @@
 
         // Make the external search button do a request
         externalSearchButton.addEventListener('click', () => {
-            const url = new URL('{{ url_for("external_search") }}', location.href);
+            const url = new URL('.{{ url_for("external_search") }}', location.href);
             url.searchParams.set('url', encodeURIComponent(externalSearchUrl.value));
             url.searchParams.set('query', encodeURIComponent(queryOutput.value));
             window.open(url, '_blank', 'noopener,noreferrer');
