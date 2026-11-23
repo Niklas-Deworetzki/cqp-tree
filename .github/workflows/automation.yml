@@ -9,8 +9,8 @@ jobs:
   style:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.14'
       - name: Check source code formatting
@@ -34,9 +34,9 @@ jobs:
         # List all supported python versions.
         python-version: [ '3.12', '3.13', '3.14' ]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies ${{ matrix.python-version }}
@@ -44,4 +44,4 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install .
       - name: Run unittest ${{ matrix.python-version }}
-        run: python -m unittest
+        run: python -m unittest discover -s tests/unit

@@ -1,0 +1,13 @@
+[meta]
+display_name = "Integration Test Corpus"
+preselected = true
+
+[annotation_scheme]
+form = "word"
+lemma = "lemma"
+upos = "upos"
+xpos = "xpos"
+feats = "feats"
+id = "id"
+head = "head"
+deprel = "deprel"

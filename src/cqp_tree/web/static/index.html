@@ -31,7 +31,7 @@
                             {% if cfg.homepage %}
                             <a href="{{ cfg.homepage }}">
                                 {% endif %}
-                                <img src="./{{ url_for('branding') }}" alt="Institution logo"
+                                <img src="{{ url_for('branding') }}" alt="Institution logo"
                                     class="d-none d-sm-inline me-2"
                                     style="height: 4rem; width: 7rem; object-fit: contain;">
                                 {% if cfg.homepage %}
@@ -56,7 +56,7 @@
 
                         <div class="me-1">
                             <a title="Show information about this tool" class="btn btn-outline-secondary"
-                                href="./about.html" target="_blank" rel="noopener noreferrer">
+                                href="{{ url_for('about') }}" target="_blank" rel="noopener noreferrer">
                                 <i class="bi bi-info"></i>
                             </a>
                         </div>
@@ -98,7 +98,9 @@
 
                 <!-- QUERY INPUT -->
                 <div class="mb-3 position-relative">
-                    <label for="query-input-field" class="form-label">Your query:</label>
+                    <label for="query-input-field" class="form-label">
+                        Your query (click <a href="{{ url_for('about') }}" target="_blank">here</a> for examples):
+                    </label>
                     <textarea id="query-input-field" class="form-control font-monospace border" rows="5"
                         placeholder="Write your query here..."></textarea>
                     <div id="history-dropdown" class="dropdown-menu"
@@ -115,8 +117,10 @@
                     </div>
                     <div class="">
                         <select id="query-language-selection" class="form-select">
-                            <option selected value="">Detect automatically
-                            </option>
+                            <option selected value="">Detect automatically</option>
+                            {% for language in translators %}
+                            <option value="{{language}}">{{language}}</option>
+                            {% endfor %}
                         </select>
                     </div>
                 </div>
@@ -150,7 +154,7 @@
                 </div>
 
                 <!-- RUN ON CORPUS INTEGRATION -->
-                <div id="translation-result-area" class="mb-3">
+                <div id="translation-result-area" class="mb-3 fade">
                     <div class="mb-3 d-grid col-md-10 mx-auto">
                         <a id="run-on-korp-link" class="btn btn-outline-primary" target="_blank"
                             rel="noopener noreferrer">
@@ -323,25 +327,11 @@
                 option.onclick = () => {
                     queryInput.value = item;
                     queryHistory.classList.remove('show');
+                    hide(translationResultArea);
                 };
                 queryHistory.appendChild(option);
             });
         }
-
-        // Populate list of supported languages.
-        fetch('./translators')
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                data.forEach(lang => {
-                    const option = document.createElement('option');
-                    option.textContent = lang;
-                    option.value = lang;
-                    queryLanguage.appendChild(option);
-                });
-            });
 
         // Make the submit button call the server.
         submitQuery.addEventListener('click', () => {
@@ -356,7 +346,7 @@
                 request['translator'] = translator
             }
 
-            fetch('./translate', {
+            fetch('{{ url_for("translate") }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -399,7 +389,7 @@
 
         // Make the external search button do a request
         externalSearchButton.addEventListener('click', () => {
-            const url = new URL('./external_search', location.href);
+            const url = new URL('{{ url_for("external_search") }}', location.href);
             url.searchParams.set('url', encodeURIComponent(externalSearchUrl.value));
             url.searchParams.set('query', encodeURIComponent(queryOutput.value));
             window.open(url, '_blank', 'noopener,noreferrer');
@@ -419,6 +409,9 @@
                 this.selectionStart = this.selectionEnd = start + 1;
             }
         });
+
+        queryInput.addEventListener('beforeinput', () => hide(translationResultArea));
+        corpusSelection.addEventListener('change', () => hide(translationResultArea));
 
         // Make history selection dropdown visible when textarea is clicked.
         queryInput.addEventListener('focus', () => {

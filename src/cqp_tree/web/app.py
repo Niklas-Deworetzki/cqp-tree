@@ -3,6 +3,7 @@ import errno
 import sys
 
 from waitress import serve
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 import cqp_tree
 from cqp_tree.web.server import setup_server
@@ -41,6 +42,17 @@ def argument_parser() -> argparse.ArgumentParser:
         action='store_true',
         help='Enable debug mode.',
     )
+    parser.add_argument(
+        '--log',
+        '-l',
+        metavar='PATH',
+        help='The path to write logs to.',
+    )
+    parser.add_argument(
+        '--proxy',
+        action='store_true',
+        help='Tells the application that it is running behind a reverse proxy.',
+    )
     cqp_tree.add_config_flag_to_parser(parser)
     cqp_tree.add_config_flags_group_to_parser(parser)
     return parser
@@ -57,7 +69,15 @@ def main():
     port = args.port or DEFAULT_PORT
 
     config = cqp_tree.configuration_from_args(args, cqp_tree.default_configuration())
+    if args.log:
+        config.log_path = args.log
+    if args.proxy:
+        config.proxy = args.proxy
+
     server = setup_server(config)
+    if config.proxy:
+        server.wsgi_app = ProxyFix(server.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
     if args.debug:
         server.run(host=host, port=port, debug=True)
     else:

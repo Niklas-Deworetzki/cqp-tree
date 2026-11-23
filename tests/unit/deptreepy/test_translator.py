@@ -94,7 +94,7 @@ class TranslationTests(unittest.TestCase):
         (q,) = translate_deptreepy('TRUE', CONFIG).queries
         self.assertEqual(1, len(q.tokens), 'Query should have one token.')
         self.assertEqual(0, len(q.predicates), 'Query should not have any predicates.')
-        (token, ) = q.tokens
+        (token,) = q.tokens
         self.assertIsNone(token.attributes)
 
     def test_and_predicate(self):

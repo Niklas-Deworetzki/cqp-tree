@@ -15,4 +15,3 @@ class UtilsTest(unittest.TestCase):
 
             if index == limit:
                 break
-

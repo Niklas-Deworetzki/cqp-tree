@@ -1,10 +1,10 @@
 [project]
 name = 'cqp-tree'
-version = '0.2a1'
+version = '1.0.1'
 description = 'Translate queries from tree-based formats to sequential CQP format used by Corpus Workbench.'
 keywords = ['corpus search', 'query translation', 'corpus workbench', 'korp']
 classifiers = [
-    'Development Status :: 3 - Alpha',
+    'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
     'Intended Audience :: Science/Research',
     'Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator',
@@ -26,6 +26,14 @@ dependencies = [
     'conllu==6.0.0',
     'Flask==3.1.2',
     'waitress==3.0.2',
+]
+
+[project.optional-dependencies]
+test = [
+    'pytest==9.1.1',
+    'pytest-playwright==0.9.0',
+    'pydantic==2.13.4',
+    'pyyaml==6.0.3',
 ]
 
 [project.urls]

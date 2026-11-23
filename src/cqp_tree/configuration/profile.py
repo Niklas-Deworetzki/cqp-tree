@@ -22,7 +22,7 @@ def available_profiles() -> set[str]:
 def configuration_from_profile(
     name: str,
     inherited: Optional[Configuration] = None,
-    inherit_from_default: bool = False,
+    inherit_from_default: bool = True,
 ) -> Configuration:
     """
     Attempt to load an ActiveConfig from a profile file.

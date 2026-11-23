@@ -61,5 +61,5 @@ IgnoredComments: '%' ~( '\r' | '\n' )* -> skip;
 
 Identifier : [0-9]+ | [a-zA-Z_] | [A-Za-z_] [A-Za-z0-9_'\-$]* [a-zA-Z0-9_'$] ;
 
-String : '"' (~'"' | '\\.')* '"';
-PCREString : '/' (~'/' | '\\/')* ('/'|'/i')?;
+String : '"' (~'"' | '\\'. )* '"';
+PCREString : '/' (~'/')* ('/' | '/i');
