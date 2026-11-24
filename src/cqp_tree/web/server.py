@@ -143,6 +143,10 @@ def setup_server(config: Configuration) -> Flask:
     def slovene_examples():
         return serve_examples('slovene')
 
+    @server.route('/swedish_examples.html', methods=['GET'])
+    def swedish_examples():
+        return serve_examples('swedish')
+        
     return server
 
 
